@@ -1,61 +1,76 @@
 # Firebase App Hosting runtime config
 # https://firebase.google.com/docs/app-hosting/configure
+#
+# All vars need BUILD availability too: Next.js executes route modules
+# while collecting page data during `next build`, and these are all read
+# at module scope (not lazily inside handlers), so they must be present then.
 
 env:
   # Plain (non-secret) runtime config
   - variable: ADMIN_EMAIL
     value: admin@grainandgrind.com
     availability:
+      - BUILD
       - RUNTIME
 
   - variable: SUPABASE_URL
     value: https://fdoukqqdqllistvqxvtu.supabase.co
     availability:
+      - BUILD
       - RUNTIME
 
   - variable: SUPABASE_STORAGE_BUCKET
     value: product-media
     availability:
+      - BUILD
       - RUNTIME
 
   # iyzico sandbox endpoint — switch to https://api.iyzipay.com for production payments
   - variable: IYZIPAY_BASE_URL
     value: https://sandbox-api.iyzipay.com
     availability:
+      - BUILD
       - RUNTIME
 
   # Secrets — values live in Secret Manager, set via `firebase apphosting:secrets:set`
   - variable: JWT_SECRET
     secret: JWT_SECRET
     availability:
+      - BUILD
       - RUNTIME
 
   - variable: ADMIN_PASSWORD
     secret: ADMIN_PASSWORD
     availability:
+      - BUILD
       - RUNTIME
 
   - variable: SUPABASE_SERVICE_ROLE_KEY
     secret: SUPABASE_SERVICE_ROLE_KEY
     availability:
+      - BUILD
       - RUNTIME
 
   - variable: DATABASE_URL
     secret: DATABASE_URL
     availability:
+      - BUILD
       - RUNTIME
 
   - variable: DIRECT_URL
     secret: DIRECT_URL
     availability:
+      - BUILD
       - RUNTIME
 
   - variable: IYZIPAY_API_KEY
     secret: IYZIPAY_API_KEY
     availability:
+      - BUILD
       - RUNTIME
 
   - variable: IYZIPAY_SECRET_KEY
     secret: IYZIPAY_SECRET_KEY
     availability:
+      - BUILD
       - RUNTIME
