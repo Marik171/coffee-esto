@@ -1,0 +1,190 @@
+.productsSection {
+  background-color: var(--color-text-primary); /* White (#ffffff) */
+  padding: 100px 20px;
+  font-family: var(--font-family-primary);
+}
+
+.sectionInner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.sectionBadge {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-surface-raised); /* #ff3601 */
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+
+.sectionTitle {
+  font-size: var(--font-size-4xl); /* 25px */
+  color: var(--color-text-secondary); /* #272626 */
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.sectionDescription {
+  font-size: var(--font-size-lg); /* 16px */
+  color: var(--color-text-inverse); /* #666666 */
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: var(--font-line-height-base);
+}
+
+/* Products Grid */
+.productsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+/* Product Card */
+.card {
+  background-color: var(--color-text-primary);
+  border: 1px solid var(--color-surface-strong); /* #f2f2f1 */
+  border-radius: var(--radius-md); /* 22px */
+  overflow: hidden;
+  box-shadow: var(--shadow-1);
+  transition: transform var(--motion-duration-normal) ease, box-shadow var(--motion-duration-normal) ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.cardImageContainer {
+  background-color: var(--color-surface-strong); /* #f2f2f1 */
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color var(--motion-duration-fast) ease;
+}
+
+.card:hover .cardImageContainer {
+  background-color: #eaeaea;
+}
+
+.cardContent {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.cardTitle {
+  font-size: var(--font-size-2xl); /* 20px */
+  color: var(--color-text-secondary);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.cardPrice {
+  font-size: var(--font-size-xl); /* 18px */
+  font-weight: 700;
+  color: var(--color-surface-raised);
+}
+
+.cardRoast {
+  font-size: var(--font-size-sm); /* 14px */
+  font-weight: 600;
+  color: var(--color-text-inverse);
+  margin-bottom: 4px;
+}
+
+.cardOrigin {
+  font-size: var(--font-size-xs); /* 13px */
+  color: var(--color-text-inverse);
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+.cardNotes {
+  font-size: var(--font-size-md); /* 15px */
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+  margin-bottom: 24px;
+  flex-grow: 1;
+}
+
+/* Buy Button */
+.buyBtn {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--color-text-secondary);
+  color: var(--color-text-primary);
+  font-weight: 700;
+  font-size: var(--font-size-md);
+  border-radius: var(--radius-sm); /* 4px */
+  transition: background-color var(--motion-duration-fast) ease, transform var(--motion-duration-instant) ease;
+}
+
+.buyBtn:hover {
+  background-color: var(--color-surface-raised);
+}
+
+.buyBtn:active {
+  transform: scale(0.98);
+}
+
+/* Footer CTA */
+.footerCTA {
+  text-align: center;
+  margin-top: 40px;
+  font-size: var(--font-size-md);
+}
+
+.footerCTAText {
+  color: var(--color-text-inverse);
+  margin-bottom: 8px;
+}
+
+.footerCTALink {
+  color: var(--color-surface-raised);
+  font-weight: 700;
+  text-decoration: underline;
+  transition: color var(--motion-duration-fast) ease;
+}
+
+.footerCTALink:hover {
+  color: var(--color-text-secondary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .productsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .productsSection {
+    padding: 60px 20px;
+  }
+
+  .productsGrid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin: 0 auto 40px;
+  }
+}

@@ -1,0 +1,244 @@
+.section {
+  background-color: var(--color-text-primary); /* White #ffffff */
+  padding: 100px 20px;
+  font-family: var(--font-family-primary);
+  overflow: hidden;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header styling */
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 55px;
+}
+
+.badge {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-surface-raised);
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: var(--font-size-4xl); /* 25px */
+  color: var(--color-text-secondary); /* #272626 */
+  font-weight: 800;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: var(--font-size-lg); /* 16px */
+  color: var(--color-text-inverse); /* #666666 */
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* Bento Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+}
+
+/* Card Styling */
+.card {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  border-radius: var(--radius-md); /* 22px */
+  box-shadow: var(--shadow-1);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  outline: none;
+  opacity: 0; /* Animated on inView */
+  transform: translateY(40px);
+}
+
+@keyframes bentoFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.inView .card {
+  animation: bentoFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.card:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+}
+
+.card:focus-visible {
+  outline: 3px solid var(--color-surface-raised);
+  outline-offset: 4px;
+  transform: translateY(-4px);
+}
+
+/* Spans for Bento Grid Layout (Desktop) */
+.cardCoffee {
+  grid-column: span 4;
+  height: 320px;
+}
+
+.cardBrewBags {
+  grid-column: span 4;
+  height: 320px;
+}
+
+.cardBundles {
+  grid-column: span 4;
+  height: 320px;
+}
+
+.cardSubscriptions {
+  grid-column: span 6;
+  height: 360px;
+}
+
+.cardEquipment {
+  grid-column: span 6;
+  height: 360px;
+}
+
+.cardWholesale {
+  grid-column: span 8;
+  height: 360px;
+}
+
+.cardLocations {
+  grid-column: span 4;
+  height: 360px;
+}
+
+/* Graphic background illustration layer */
+.graphic {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.card:hover .graphic {
+  transform: scale(1.06) rotate(1deg);
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Glassmorphic Floating Label */
+.label {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 12px 24px;
+  border-radius: var(--radius-md); /* 22px */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  transition: background-color var(--motion-duration-fast) ease, border-color var(--motion-duration-fast) ease, box-shadow var(--motion-duration-fast) ease;
+}
+
+.card:hover .label {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.name {
+  font-size: var(--font-size-md); /* 15px */
+  font-weight: 800;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.05em;
+}
+
+.arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  transition: transform var(--motion-duration-fast) cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card:hover .arrow {
+  transform: translateX(4px);
+}
+
+/* Tablet Media Query (2-Column Grid Layout) */
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .cardCoffee,
+  .cardBrewBags,
+  .cardBundles,
+  .cardSubscriptions,
+  .cardEquipment {
+    grid-column: span 1;
+    height: 300px;
+  }
+
+  .cardWholesale,
+  .cardLocations {
+    grid-column: span 2;
+    height: 340px;
+  }
+}
+
+/* Mobile Media Query (Single Column Stack) */
+@media (max-width: 600px) {
+  .section {
+    padding: 60px 16px;
+  }
+
+  .sectionHeader {
+    margin-bottom: 40px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .card {
+    grid-column: span 1 !important;
+    height: 260px !important;
+  }
+
+  .label {
+    bottom: 16px;
+    left: 16px;
+    padding: 10px 20px;
+  }
+}

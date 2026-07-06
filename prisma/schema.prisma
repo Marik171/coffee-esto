@@ -1,0 +1,65 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Order {
+  id                String      @id
+  email             String
+  phone             String      @default("")
+  address           String
+  paymentId         String      @default("")
+  subtotal          Float
+  shippingFee       Float
+  totalAmount       Float
+  status            String      @default("pending")
+  paymentStatus     String      @default("awaiting")
+  fulfillmentStatus String      @default("not_fulfilled")
+  trackingNumber    String      @default("")
+  shippingProvider  String      @default("")
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  items             OrderItem[]
+}
+
+model OrderItem {
+  id       String @id @default(uuid())
+  orderId  String
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  coffeeId String
+  name     String
+  quantity Int
+  price    Float
+}
+
+model Product {
+  id           String   @id
+  name         String
+  category     String
+  origin       String
+  altitude     String
+  varietal     String
+  roastLevel   Int
+  tastingNotes String
+  description  String
+  price        Float
+  wholesalePrice Float   @default(0.0)
+  stock        Int      @default(0)
+  imageUrl     String   @default("")
+  videoUrl     String   @default("")
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  slug      String   @unique
+  label     String
+  createdAt DateTime @default(now())
+}

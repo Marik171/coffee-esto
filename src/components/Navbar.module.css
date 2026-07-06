@@ -1,0 +1,299 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  transition: background-color var(--motion-duration-normal) ease, 
+              padding var(--motion-duration-normal) ease, 
+              box-shadow var(--motion-duration-normal) ease;
+}
+
+.headerTransparent {
+  background-color: transparent;
+  padding: 20px 0;
+}
+
+.headerSolid {
+  background-color: rgba(22, 12, 6, 0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(201, 150, 58, 0.12);
+  box-shadow: 0 4px 24px rgba(26, 14, 7, 0.3);
+}
+
+.headerInner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Logo styling */
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.05;
+  text-decoration: none;
+  letter-spacing: 0.12em;
+  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
+}
+
+.logoTop,
+.logoBottom {
+  color: #c9963a;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.logoMiddle {
+  color: rgba(245, 237, 224, 0.6);
+  font-size: 10px;
+  font-style: italic;
+  font-weight: 400;
+  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
+  margin: 2px 0;
+  letter-spacing: 0.28em;
+  text-transform: lowercase;
+}
+
+/* Desktop Navigation */
+.nav {
+  display: flex;
+  align-items: center;
+}
+
+.navList {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLink {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm); /* 14px */
+  font-weight: 500;
+  padding: 6px 4px;
+  position: relative;
+  transition: color var(--motion-duration-fast) ease;
+  text-decoration: none;
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-surface-raised);
+  transition: width var(--motion-duration-fast) ease;
+}
+
+.navLink:hover {
+  color: var(--color-surface-raised);
+}
+
+.navLink:hover::after {
+  width: 100%;
+}
+
+.navLinkActive {
+  color: #e5c158 !important; /* Gold */
+}
+
+.navLinkActive::after {
+  width: 100% !important;
+  background-color: #e5c158 !important;
+}
+
+/* User Actions */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.registerBtn {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  transition: color var(--motion-duration-fast) ease;
+  text-decoration: none;
+}
+
+.registerBtn:hover {
+  color: var(--color-surface-raised);
+}
+
+/* Cart Button */
+.cartBtn {
+  position: relative;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform var(--motion-duration-instant) ease, color var(--motion-duration-fast) ease;
+  outline: none;
+}
+
+.cartBtn:hover {
+  color: var(--color-surface-raised);
+  transform: scale(1.05);
+}
+
+.cartBtn:active {
+  transform: scale(0.95);
+}
+
+.cartIcon {
+  stroke: currentColor;
+}
+
+.cartBadge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  font-size: 11px;
+  font-weight: bold;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+}
+
+/* Mobile Hamburger Menu */
+.burger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 110;
+  padding: 0;
+  outline: none;
+}
+
+.burgerBar {
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-text-primary);
+  transition: transform var(--motion-duration-fast) ease, opacity var(--motion-duration-fast) ease;
+}
+
+/* Responsive Media breakpoints */
+@media (max-width: 992px) {
+  .headerInner {
+    padding: 0 20px;
+  }
+
+  .burger {
+    display: flex;
+  }
+
+  /* Hamburger Active transitions */
+  .burgerActive .burgerBar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+
+  .burgerActive .burgerBar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .burgerActive .burgerBar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+
+  /* Collapsible mobile drawer overlay */
+  .nav {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background-color: rgba(20, 11, 5, 0.99);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 105;
+    padding: 100px 40px;
+    transition: right var(--motion-duration-normal) ease;
+    box-shadow: -8px 0 32px rgba(26, 14, 7, 0.4);
+    border-left: 1px solid rgba(201, 150, 58, 0.1);
+  }
+
+  .navOpen {
+    right: 0;
+  }
+
+  .navList {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .navLink {
+    font-size: var(--font-size-lg);
+  }
+}
+
+/* On small mobile, keep the hamburger menu visible so users can access sitemap */
+@media (max-width: 768px) {
+  .registerBtn {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .logoTop,
+  .logoBottom {
+    font-size: var(--font-size-xl);
+  }
+
+  .logoMiddle {
+    font-size: 10px;
+  }
+}
+
+/* Premium Language Switcher Button */
+.langToggle {
+  color: #c9963a; /* Coffee Esto gold */
+  font-size: var(--font-size-xs, 12px);
+  font-weight: 700;
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid rgba(201, 150, 58, 0.35);
+  transition: all var(--motion-duration-fast) ease;
+  letter-spacing: 0.05em;
+  background: rgba(201, 150, 58, 0.04);
+}
+
+.langToggle:hover {
+  color: var(--color-text-primary, #ffffff);
+  background: rgba(201, 150, 58, 0.2);
+  border-color: rgba(201, 150, 58, 0.7);
+  transform: translateY(-1px);
+}
+
+.langToggle:active {
+  transform: translateY(0);
+}
+

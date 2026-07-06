@@ -1,0 +1,345 @@
+.pageWrapper {
+  background-color: #faf8f6;
+  min-height: 100vh;
+  font-family: var(--font-family-primary);
+  color: #272626;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* Minimal Checkout Header */
+.header {
+  width: 100%;
+  z-index: 10;
+  background-color: #1c2430; /* Dark slate matching main header navbar */
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.headerInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Centered Logo */
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+  text-decoration: none;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.logoTop,
+.logoBottom {
+  color: #e5c158; /* Gold Accent */
+  font-size: 16px;
+}
+
+.logoMiddle {
+  color: #ffffff;
+  font-size: 10px;
+  font-style: italic;
+  font-weight: 400;
+  margin: 1px 0;
+  letter-spacing: 0.2em;
+}
+
+/* Container */
+.container {
+  max-width: 660px;
+  margin: 0 auto;
+  padding: 40px 24px 80px 24px;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.successCard {
+  background-color: #ffffff;
+  border: 1px solid #eaeaea;
+  border-radius: 24px;
+  padding: 48px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.01);
+}
+
+/* Animated Checkmark Circle */
+.checkmarkWrapper {
+  width: 72px;
+  height: 72px;
+  display: block;
+  margin-bottom: 24px;
+}
+
+.checkmark {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 2.5;
+  stroke: #4aa57f; /* Green checkmark */
+  stroke-miterlimit: 10;
+  box-shadow: inset 0 0 0 #4aa57f;
+  animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+}
+
+.checkmarkCircle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2.5;
+  stroke-miterlimit: 10;
+  stroke: #4aa57f;
+  fill: none;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmarkCheck {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 900;
+  color: #272626;
+  letter-spacing: -0.01em;
+  margin: 0 0 10px 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #666666;
+  line-height: 1.6;
+  max-width: 440px;
+  margin: 0 0 32px 0;
+}
+
+/* Receipt Details Box */
+.receiptBox {
+  width: 100%;
+  background-color: #fcfbf9;
+  border: 1px solid #eaeaea;
+  border-radius: 14px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.receiptRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  gap: 16px;
+}
+
+.label {
+  color: #888888;
+  font-weight: 600;
+}
+
+.valueMono {
+  font-family: monospace;
+  font-weight: 700;
+  color: #272626;
+  font-size: 13px;
+}
+
+.valueTotal {
+  font-weight: 900;
+  color: var(--color-surface-raised); /* Orange */
+  font-size: 15px;
+}
+
+.valueEmail {
+  font-weight: 700;
+  color: #272626;
+}
+
+/* Logistics block */
+.logisticsBlock {
+  width: 100%;
+  text-align: left;
+  border-top: 1px solid #eaeaea;
+  padding-top: 24px;
+  margin-bottom: 36px;
+}
+
+.logisticsTitle {
+  font-size: 13px;
+  font-weight: 800;
+  color: #272626;
+  margin: 0 0 16px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.logisticsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.logisticsList li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.logisticsIcon {
+  font-size: 18px;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+
+.logisticsText {
+  font-size: 13px;
+  color: #666666;
+  line-height: 1.6;
+}
+
+/* CTA buttons */
+.actionRow {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.continueBtn {
+  flex: 1.2;
+  height: 48px;
+  border: none;
+  border-radius: 50px;
+  background-color: var(--color-surface-raised);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(255, 54, 1, 0.2);
+  transition: opacity 0.2s, transform 0.1s;
+  min-width: 200px;
+}
+
+.continueBtn:hover {
+  opacity: 0.92;
+}
+
+.continueBtn:active {
+  transform: scale(0.97);
+}
+
+.homeBtn {
+  flex: 0.8;
+  height: 48px;
+  border: 1px solid #eaeaea;
+  border-radius: 50px;
+  background-color: #ffffff;
+  color: #272626;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, transform 0.1s;
+  min-width: 120px;
+}
+
+.homeBtn:hover {
+  background-color: #f7f7f7;
+}
+
+.homeBtn:active {
+  transform: scale(0.97);
+}
+
+/* Loading fallback spinner */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  gap: 12px;
+  color: #888888;
+}
+
+.spinner {
+  font-size: 32px;
+  animation: spin 1.5s linear infinite;
+  display: inline-block;
+}
+
+/* Checkmark Keyframe Animations */
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes scale {
+  0%, 100% {
+    transform: none;
+  }
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes fill {
+  100% {
+    box-shadow: inset 0 0 0 40px rgba(74, 165, 127, 0.1);
+  }
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+/* Mobile responsive */
+@media (max-width: 576px) {
+  .successCard {
+    padding: 30px 20px;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .actionRow {
+    flex-direction: column;
+  }
+
+  .continueBtn,
+  .homeBtn {
+    width: 100%;
+    flex: none;
+  }
+}

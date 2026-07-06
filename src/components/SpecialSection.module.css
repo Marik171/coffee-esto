@@ -1,0 +1,276 @@
+.section {
+  background-color: var(--color-surface-strong); /* Light gray #f2f2f1 */
+  padding: 80px 20px 100px 20px;
+  font-family: var(--font-family-primary);
+  overflow: hidden;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Header Content & Animation States */
+.headerContent {
+  text-align: center;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.title {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 800;
+  color: var(--color-text-secondary); /* #272626 */
+  margin-bottom: 20px;
+  line-height: 1.2;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.description {
+  font-size: var(--font-size-lg); /* 16px */
+  color: var(--color-text-inverse); /* #666666 */
+  line-height: 1.6;
+  margin-bottom: 30px;
+  opacity: 0;
+  transform: translateY(35px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: 0.1s;
+}
+
+.buyBtn {
+  background-color: var(--color-surface-raised); /* #ff3601 */
+  color: var(--color-text-primary);
+  padding: 14px 44px;
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  border-radius: var(--radius-xs);
+  box-shadow: 0 4px 15px rgba(255, 54, 1, 0.2);
+  transition: background-color var(--motion-duration-fast) ease, transform var(--motion-duration-instant) ease, opacity 0.8s ease, transform 0.8s ease;
+  opacity: 0;
+  transform: translateY(40px);
+  transition-delay: 0.2s;
+}
+
+.buyBtn:hover {
+  background-color: var(--color-text-secondary);
+}
+
+.buyBtn:active {
+  transform: scale(0.97);
+}
+
+/* Scroll Trigger Active States for Header */
+.inView .title {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.inView .description {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.inView .buyBtn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Coffee Bags Container */
+.bagsContainer {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  height: 380px;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+/* Individual Bag Wrapper & Positions */
+.bagWrapper {
+  position: absolute;
+  bottom: 0;
+  width: 180px;
+  height: 250px;
+  left: calc(50% - 90px);
+  transform-origin: 50% 100%;
+  opacity: 0;
+  transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease;
+  pointer-events: auto;
+}
+
+.imageContainer {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle, rgba(251, 250, 245, 0.95) 0%, rgba(227, 221, 211, 0.5) 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(26, 14, 7, 0.06);
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.8), 0 8px 24px rgba(26, 14, 7, 0.08);
+  overflow: hidden;
+  padding: 12px 0;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.bagImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bagWrapper:hover .imageContainer {
+  background: radial-gradient(circle, rgba(251, 250, 245, 1) 0%, rgba(227, 221, 211, 0.7) 100%);
+  border-color: rgba(26, 14, 7, 0.12);
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.9), 0 20px 48px rgba(26, 14, 7, 0.16);
+  transform: translateY(-8px);
+}
+
+.bagWrapper:hover .bagImage {
+  transform: scale(1.06);
+}
+
+/* Sumatra - Far Left */
+.bagFarLeft {
+  z-index: 1;
+  transform: translate3d(0, 80px, 0) scale(0.5) rotate(0deg);
+  transition-delay: 0.4s;
+}
+
+.inView .bagFarLeft {
+  opacity: 1;
+  transform: translate3d(-240px, -90px, 0) scale(0.85) rotate(-14deg);
+}
+
+/* Colombia - Inner Left */
+.bagInnerLeft {
+  z-index: 2;
+  transform: translate3d(0, 80px, 0) scale(0.6) rotate(0deg);
+  transition-delay: 0.25s;
+}
+
+.inView .bagInnerLeft {
+  opacity: 1;
+  transform: translate3d(-120px, -80px, 0) scale(0.93) rotate(-7deg);
+}
+
+/* Kenya - Center (Front) */
+.bagCenter {
+  z-index: 10;
+  transform: translate3d(0, 80px, 0) scale(0.7) rotate(0deg);
+  transition-delay: 0.1s;
+}
+
+.inView .bagCenter {
+  opacity: 1;
+  transform: translate3d(0, -70px, 0) scale(1.05) rotate(0deg);
+}
+
+/* Papua New Guinea - Inner Right */
+.bagInnerRight {
+  z-index: 2;
+  transform: translate3d(0, 80px, 0) scale(0.6) rotate(0deg);
+  transition-delay: 0.25s;
+}
+
+.inView .bagInnerRight {
+  opacity: 1;
+  transform: translate3d(120px, -80px, 0) scale(0.93) rotate(7deg);
+}
+
+/* Ethiopia - Far Right */
+.bagFarRight {
+  z-index: 1;
+  transform: translate3d(0, 80px, 0) scale(0.5) rotate(0deg);
+  transition-delay: 0.4s;
+}
+
+.inView .bagFarRight {
+  opacity: 1;
+  transform: translate3d(240px, -90px, 0) scale(0.85) rotate(14deg);
+}
+
+/* Tablet Media Query */
+@media (max-width: 900px) {
+  .bagsContainer {
+    height: 320px;
+    max-width: 600px;
+  }
+
+  .bagWrapper {
+    width: 140px;
+    height: 196px;
+    left: calc(50% - 70px);
+  }
+
+  .inView .bagFarLeft {
+    transform: translate3d(-170px, -70px, 0) scale(0.85) rotate(-12deg);
+  }
+
+  .inView .bagInnerLeft {
+    transform: translate3d(-85px, -62px, 0) scale(0.93) rotate(-6deg);
+  }
+
+  .inView .bagCenter {
+    transform: translate3d(0, -55px, 0) scale(1.05) rotate(0deg);
+  }
+
+  .inView .bagInnerRight {
+    transform: translate3d(85px, -62px, 0) scale(0.93) rotate(6deg);
+  }
+
+  .inView .bagFarRight {
+    transform: translate3d(170px, -70px, 0) scale(0.85) rotate(12deg);
+  }
+}
+
+/* Mobile Media Query (Double Row / Stacked Overlap) */
+@media (max-width: 600px) {
+  .section {
+    padding: 60px 10px 80px 10px;
+  }
+
+  .bagsContainer {
+    height: 280px;
+    max-width: 320px;
+  }
+
+  .bagWrapper {
+    width: 110px;
+    height: 154px;
+    left: calc(50% - 55px);
+  }
+
+  .inView .bagFarLeft {
+    transform: translate3d(-90px, -50px, 0) scale(0.8) rotate(-10deg);
+  }
+
+  .inView .bagInnerLeft {
+    transform: translate3d(-45px, -45px, 0) scale(0.9) rotate(-5deg);
+  }
+
+  .inView .bagCenter {
+    transform: translate3d(0, -40px, 0) scale(1.0) rotate(0deg);
+  }
+
+  .inView .bagInnerRight {
+    transform: translate3d(45px, -45px, 0) scale(0.9) rotate(5deg);
+  }
+
+  .inView .bagFarRight {
+    transform: translate3d(90px, -50px, 0) scale(0.8) rotate(10deg);
+  }
+}

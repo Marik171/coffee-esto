@@ -1,0 +1,537 @@
+.heroContainer {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 600px;
+  overflow: hidden;
+  font-family: var(--font-family-primary);
+  user-select: none;
+}
+
+/* Header Styling */
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  background: rgba(61, 75, 92, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: var(--space-8) 0;
+  /* 10px */
+  box-shadow: var(--shadow-1);
+}
+
+.headerInner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Logo: "COFFEE ESTO ROASTERY" Layout */
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+  text-decoration: none;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.logoTop,
+.logoBottom {
+  color: #e5c158;
+  /* Premium Gold/Beige */
+  font-size: var(--font-size-2xl);
+  /* 20px */
+}
+
+.logoMiddle {
+  color: var(--color-text-primary);
+  /* White */
+  font-size: var(--font-size-xs);
+  /* 13px */
+  font-style: italic;
+  font-weight: 400;
+  margin: 1px 0;
+  letter-spacing: 0.2em;
+}
+
+/* Navigation Menu */
+.nav {
+  display: flex;
+  align-items: center;
+}
+
+.navList {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+}
+
+.navLink {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  /* 14px */
+  font-weight: 500;
+  padding: 6px 4px;
+  position: relative;
+  transition: color var(--motion-duration-fast) ease;
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-surface-raised);
+  transition: width var(--motion-duration-fast) ease;
+}
+
+.navLink:hover {
+  color: var(--color-surface-raised);
+}
+
+.navLink:hover::after {
+  width: 100%;
+}
+
+/* Actions: Register / Cart */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.registerBtn {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  transition: color var(--motion-duration-fast) ease;
+}
+
+.registerBtn:hover {
+  color: var(--color-surface-raised);
+}
+
+.cartBtn {
+  position: relative;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  transition: transform var(--motion-duration-instant) ease, color var(--motion-duration-fast) ease;
+}
+
+.cartBtn:hover {
+  color: var(--color-surface-raised);
+  transform: scale(1.05);
+}
+
+.cartBtn:active {
+  transform: scale(0.95);
+}
+
+.cartIcon {
+  stroke: currentColor;
+}
+
+.cartBadge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  font-size: 11px;
+  font-weight: bold;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+}
+
+/* Hamburger for Mobile */
+.burger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 110;
+}
+
+.burgerBar {
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-text-primary);
+  transition: transform var(--motion-duration-fast) ease, opacity var(--motion-duration-fast) ease;
+}
+
+/* Slider / Carousel Container */
+.slidesWrapper {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.slidesContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--motion-duration-slow) cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.slide {
+  width: 100%;
+  height: 100vh;
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+}
+
+/* Background Image styling */
+.backgroundImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.65;
+}
+
+/* Dark gradient overlay for text readability */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom,
+      rgba(20, 11, 5, 0.45) 0%,
+      rgba(20, 11, 5, 0.75) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+@keyframes slowZoom {
+  0% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(1.08);
+  }
+}
+
+/* Content overlay */
+.contentOverlay {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  color: var(--color-text-primary);
+  max-width: 800px;
+  padding: 20px;
+  animation: slideFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.title {
+  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
+  font-size: clamp(36px, 5.5vw, 72px);
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1.12;
+  margin-bottom: 18px;
+  letter-spacing: -0.01em;
+  color: var(--color-warm-white, #f5ede0);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+}
+
+.subtitle {
+  font-size: clamp(15px, 2vw, 19px);
+  margin-bottom: 12px;
+  font-weight: 300;
+  color: rgba(245, 237, 224, 0.82);
+  line-height: 1.6;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+}
+
+.accentText {
+  display: inline-block;
+  font-size: clamp(11px, 1.5vw, 13px);
+  font-weight: 600;
+  color: var(--color-warm-white, #f5ede0);
+  background: rgba(245, 237, 224, 0.1);
+  border: 1px solid rgba(201, 150, 58, 0.35);
+  padding: 6px 18px;
+  border-radius: 50px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+
+.ctaRow {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-orange, #e84d00);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 13px 30px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 8px 28px rgba(232, 77, 0, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  letter-spacing: 0.01em;
+}
+
+.ctaBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(232, 77, 0, 0.45);
+}
+
+.ctaSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(245, 237, 224, 0.75);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 12px 4px;
+  border-bottom: 1px solid rgba(201, 150, 58, 0.4);
+  transition: color 0.2s, border-color 0.2s;
+  letter-spacing: 0.02em;
+}
+
+.ctaSecondary:hover {
+  color: #c9963a;
+  border-color: #c9963a;
+}
+
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Wavy bottom pattern transition */
+.waveContainer {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  z-index: 5;
+  pointer-events: none;
+  line-height: 0;
+}
+
+.waveSvg {
+  width: 100%;
+  height: clamp(90px, 15vw, 220px);
+  display: block;
+}
+
+/* Carousel controls (right side dots) */
+.dotsContainer {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 10;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform var(--motion-duration-fast) ease, background-color var(--motion-duration-fast) ease, border-color var(--motion-duration-fast) ease;
+}
+
+.dot:hover {
+  transform: scale(1.2);
+  background-color: var(--color-text-primary);
+}
+
+.dotActive {
+  background-color: var(--color-surface-raised);
+  transform: scale(1.3);
+  box-shadow: 0 0 10px rgba(255, 54, 1, 0.6);
+}
+
+.dot:focus-visible {
+  outline: 2px solid var(--color-surface-raised);
+  outline-offset: 4px;
+}
+
+/* Floating Back to Top Button */
+.scrollTopBtn {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: rgba(22, 12, 6, 0.88);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(201, 150, 58, 0.2);
+  color: #c9963a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(26, 14, 7, 0.3);
+  cursor: pointer;
+  z-index: 90;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: opacity var(--motion-duration-fast) ease, transform var(--motion-duration-fast) ease, background-color var(--motion-duration-fast) ease;
+}
+
+.scrollTopBtn:hover {
+  background-color: var(--color-surface-raised);
+  transform: translateY(-2px);
+}
+
+.scrollTopBtn:active {
+  transform: translateY(1px);
+}
+
+.scrollTopVisible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Responsive styling (Mobile / Tablet) */
+@media (max-width: 992px) {
+  .headerInner {
+    padding: 0 20px;
+  }
+
+  .burger {
+    display: flex;
+  }
+
+  /* Hamburger transformations */
+  .burgerActive .burgerBar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+
+  .burgerActive .burgerBar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .burgerActive .burgerBar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+
+  /* Collapsible Navigation */
+  .nav {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background-color: rgba(61, 75, 92, 0.98);
+    backdrop-filter: blur(15px);
+    z-index: 105;
+    padding: 100px 40px;
+    transition: right var(--motion-duration-normal) ease;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .navOpen {
+    right: 0;
+  }
+
+  .navList {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .navLink {
+    font-size: var(--font-size-lg);
+  }
+
+  .dotsContainer {
+    right: 20px;
+  }
+
+  .scrollTopBtn {
+    bottom: 30px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (max-width: 576px) {
+
+  .logoTop,
+  .logoBottom {
+    font-size: var(--font-size-xl);
+  }
+
+  .logoMiddle {
+    font-size: 10px;
+  }
+
+  .contentOverlay {
+    padding: 0 10px;
+  }
+
+  .dotsContainer {
+    gap: 12px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+  }
+}

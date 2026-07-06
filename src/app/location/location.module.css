@@ -1,0 +1,566 @@
+/* ── Page ───────────────────────────────────────────────────────── */
+.page {
+  background: var(--color-cream, #fdf8f0);
+  min-height: 100vh;
+  font-family: var(--font-family-primary);
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+/* ── Shared eyebrow pill ────────────────────────────────────────── */
+.eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--color-amber, #c9963a);
+  border: 1px solid rgba(201, 150, 58, 0.28);
+  background: rgba(201, 150, 58, 0.07);
+  padding: 5px 14px;
+  border-radius: 50px;
+}
+
+.eyebrowLight {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--color-amber, #c9963a);
+  border: 1px solid rgba(201, 150, 58, 0.3);
+  background: rgba(201, 150, 58, 0.08);
+  padding: 5px 14px;
+  border-radius: 50px;
+}
+
+/* ── 1. Hero ────────────────────────────────────────────────────── */
+.hero {
+  background: var(--color-espresso, #1a0e07);
+  padding: 188px 28px 148px;
+  text-align: center;
+  position: relative;
+}
+
+.heroInner {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+}
+
+.heroEyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--color-amber, #c9963a);
+  border: 1px solid rgba(201, 150, 58, 0.3);
+  background: rgba(201, 150, 58, 0.08);
+  padding: 5px 16px;
+  border-radius: 50px;
+}
+
+.heroTitle {
+  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
+  font-size: clamp(44px, 7vw, 80px);
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1.08;
+  color: var(--color-warm-white, #f5ede0);
+  letter-spacing: -0.01em;
+}
+
+.heroSub {
+  font-size: 17px;
+  color: rgba(245, 237, 224, 0.6);
+  line-height: 1.7;
+  max-width: 480px;
+  font-weight: 300;
+}
+
+.heroDirectionsBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--color-amber, #c9963a);
+  color: var(--color-espresso, #1a0e07);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 13px 28px;
+  border-radius: 50px;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  box-shadow: 0 8px 28px rgba(201, 150, 58, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  margin-top: 6px;
+}
+
+.heroDirectionsBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(201, 150, 58, 0.42);
+}
+
+.heroWave {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  line-height: 0;
+  pointer-events: none;
+}
+
+.heroWave svg {
+  width: 100%;
+  height: clamp(60px, 8vw, 100px);
+  display: block;
+}
+
+/* ── 2. Map + Contact ───────────────────────────────────────────── */
+.mapSection {
+  background: var(--color-cream, #fdf8f0);
+  padding: 100px 0 90px;
+}
+
+.mapGrid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 60px;
+  align-items: stretch;
+}
+
+.mapCol {
+  min-height: 500px;
+}
+
+.mapFrame {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(201, 150, 58, 0.12);
+  box-shadow: 0 20px 60px rgba(26, 14, 7, 0.12);
+}
+
+.mapIframe {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.infoCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.infoCard {
+  background: var(--color-roast, #2c1a0e);
+  border-radius: 22px;
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  height: 100%;
+  box-shadow: 0 20px 60px rgba(26, 14, 7, 0.15);
+}
+
+.infoAccentLine {
+  width: 44px;
+  height: 3px;
+  background: var(--color-amber, #c9963a);
+  border-radius: 2px;
+}
+
+.infoHeading {
+  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
+  font-size: clamp(22px, 2.8vw, 32px);
+  font-weight: 700;
+  font-style: italic;
+  color: var(--color-warm-white, #f5ede0);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.contactList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+}
+
+.contactRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.15s;
+}
+
+a.contactRow:hover {
+  opacity: 0.8;
+}
+
+.contactIcon {
+  color: var(--color-amber, #c9963a);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.contactLabel {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(201, 150, 58, 0.7);
+  margin-bottom: 4px;
+}
+
+.contactValue {
+  display: block;
+  font-size: 14px;
+  color: var(--color-warm-white, #f5ede0);
+  line-height: 1.55;
+}
+
+.directionsBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(201, 150, 58, 0.12);
+  border: 1px solid rgba(201, 150, 58, 0.25);
+  color: var(--color-amber, #c9963a);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 12px 22px;
+  border-radius: 50px;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  width: fit-content;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.directionsBtn:hover {
+  background: rgba(201, 150, 58, 0.2);
+  border-color: rgba(201, 150, 58, 0.45);
+}
+
+/* ── 3. Hours ───────────────────────────────────────────────────── */
+.hoursSection {
+  background: var(--color-parchment, #ede5d0);
+  padding: 100px 0;
+}
+
+.sectionHeader {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 60px;
+}
+
+.sectionTitle {
+  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
+  font-size: clamp(30px, 4vw, 52px);
+  font-weight: 700;
+  font-style: italic;
+  color: var(--color-warm-text, #2a1a0e);
+  letter-spacing: -0.01em;
+  line-height: 1.12;
+}
+
+.sectionSub {
+  font-size: 15px;
+  color: var(--color-warm-mid, #6b4e30);
+  max-width: 480px;
+  line-height: 1.65;
+  font-weight: 300;
+}
+
+.hoursTable {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(201, 150, 58, 0.13);
+  box-shadow: 0 8px 40px rgba(26, 14, 7, 0.07);
+}
+
+.hoursRow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 16px 32px;
+  border-bottom: 1px solid rgba(201, 150, 58, 0.08);
+  transition: background 0.15s;
+}
+
+.hoursRow:last-child {
+  border-bottom: none;
+}
+
+.hoursRowToday {
+  background: rgba(201, 150, 58, 0.07);
+}
+
+.hoursDay {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-warm-text, #2a1a0e);
+  min-width: 110px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.todayBadge {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-espresso, #1a0e07);
+  background: var(--color-amber, #c9963a);
+  padding: 2px 8px;
+  border-radius: 50px;
+}
+
+.hoursDivider {
+  flex: 1;
+  height: 1px;
+  background: rgba(201, 150, 58, 0.12);
+  margin: 0 20px;
+}
+
+.hoursTime {
+  font-size: 14px;
+  color: var(--color-warm-mid, #6b4e30);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ── 4. Getting Here ────────────────────────────────────────────── */
+.transport {
+  background: var(--color-espresso, #1a0e07);
+  padding: 0 0 110px;
+  position: relative;
+}
+
+.transportWaveTop {
+  line-height: 0;
+  pointer-events: none;
+}
+
+.transportWaveTop svg {
+  width: 100%;
+  height: clamp(50px, 7vw, 80px);
+  display: block;
+}
+
+.sectionHeaderLight {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 64px;
+  padding-top: 72px;
+}
+
+.sectionTitleLight {
+  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
+  font-size: clamp(30px, 4vw, 52px);
+  font-weight: 700;
+  font-style: italic;
+  color: var(--color-warm-white, #f5ede0);
+  letter-spacing: -0.01em;
+  line-height: 1.12;
+}
+
+.transportGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.transportCard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(201, 150, 58, 0.12);
+  border-radius: 18px;
+  padding: 32px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: background 0.2s ease;
+}
+
+.transportCard:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.transportIcon {
+  color: var(--color-amber, #c9963a);
+}
+
+.transportName {
+  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-amber, #c9963a);
+  line-height: 1.3;
+}
+
+.transportDetail {
+  font-size: 13px;
+  color: rgba(245, 237, 224, 0.6);
+  line-height: 1.7;
+}
+
+/* ── 5. CTA ─────────────────────────────────────────────────────── */
+.cta {
+  background: var(--color-cream, #fdf8f0);
+  padding: 100px 0;
+  border-top: 1px solid rgba(201, 150, 58, 0.12);
+}
+
+.ctaInner {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.ctaTitle {
+  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 700;
+  font-style: italic;
+  color: var(--color-warm-text, #2a1a0e);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.ctaSub {
+  font-size: 15px;
+  color: var(--color-warm-mid, #6b4e30);
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+.ctaButtons {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.ctaPrimary {
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-orange, #e84d00);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 13px 30px;
+  border-radius: 50px;
+  text-decoration: none;
+  box-shadow: 0 8px 28px rgba(232, 77, 0, 0.3);
+  letter-spacing: 0.01em;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ctaPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(232, 77, 0, 0.42);
+}
+
+.ctaSecondary {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-warm-mid, #6b4e30);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 13px 24px;
+  border-radius: 50px;
+  text-decoration: none;
+  border: 1px solid rgba(107, 78, 48, 0.25);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.ctaSecondary:hover {
+  border-color: rgba(107, 78, 48, 0.5);
+  color: var(--color-warm-text, #2a1a0e);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────── */
+@media (max-width: 992px) {
+  .mapGrid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .mapFrame {
+    min-height: 380px;
+  }
+
+  .transportGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding: 148px 20px 112px;
+  }
+
+  .mapSection {
+    padding: 72px 0 60px;
+  }
+
+  .infoCard {
+    padding: 36px 28px;
+  }
+
+  .hoursSection {
+    padding: 72px 0;
+  }
+
+  .hoursRow {
+    padding: 14px 24px;
+  }
+
+  .hoursDay {
+    min-width: 90px;
+  }
+
+  .transportGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sectionHeaderLight {
+    padding-top: 56px;
+  }
+
+  .container {
+    padding: 0 20px;
+  }
+}

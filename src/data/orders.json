@@ -1,0 +1,24 @@
+[
+  {
+    "id": "ESTO-MR6F1SQT-936",
+    "email": "khodjaev.umarkhuja2002@gmail.com",
+    "address": "Akmer Sokak, Building 26, Kağıthane",
+    "subtotal": 180,
+    "shippingFee": 35,
+    "totalAmount": 215,
+    "status": "completed",
+    "payment_status": "captured",
+    "fulfillment_status": "shipped",
+    "trackingNumber": "YK-24535",
+    "shippingProvider": "Yurtici Kargo",
+    "items": [
+      {
+        "id": "guatemala",
+        "name": "Guatemala Antigua",
+        "quantity": 1,
+        "price": 180
+      }
+    ],
+    "createdAt": "2026-07-04T13:46:48.392Z"
+  }
+]

@@ -1,0 +1,382 @@
+.footer {
+  color: #ffffff;
+  position: relative;
+  font-family: var(--font-family-primary);
+  overflow: visible; /* Allows the top wave to overlap the preceding section */
+}
+
+.waveTopContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 5;
+  line-height: 0;
+  pointer-events: none;
+  background: transparent;
+  transform: translateY(-100%); /* Dynamically shifts the wave up by its exact height */
+}
+
+.waveSvg {
+  width: 100%;
+  height: clamp(60px, 10vw, 120px);
+  display: block;
+}
+
+.footerContent {
+  background-color: #0f131a; /* Deep charcoal/black footer body */
+  padding: 60px 20px 60px 20px; /* Generous padding for the sitemap and grid */
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Footer Grid */
+.footerGrid {
+  display: grid;
+  grid-template-columns: 1.25fr 0.75fr 1.15fr 0.85fr;
+  gap: 50px;
+}
+
+/* Brand Column */
+.brandCol {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.logoGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.logoTop,
+.logoBottom {
+  color: #e5c158; /* Gold Accent */
+  font-size: 18px;
+}
+
+.logoMiddle {
+  color: #ffffff;
+  font-size: 11px;
+  font-style: italic;
+  font-weight: 400;
+  margin: 1px 0;
+  letter-spacing: 0.2em;
+}
+
+.brandStatement {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+  max-width: 280px;
+}
+
+.contactList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.contactItem:hover {
+  color: var(--color-surface-raised);
+}
+
+.contactIcon {
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+/* Google Map Frame with Dark Mode Filter */
+.mapContainer {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  height: 130px;
+  width: 100%;
+  max-width: 280px;
+  margin-top: 8px;
+  position: relative;
+}
+
+.mapIframe {
+  width: 100%;
+  height: 100%;
+  filter: grayscale(1) invert(0.9) contrast(1.25); /* Premium dark mode map filter */
+  transition: filter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mapContainer:hover .mapIframe {
+  filter: grayscale(0.2) invert(0) contrast(1); /* Reveal full colors on hover */
+}
+
+/* Sitemap Column */
+.navCol {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.colTitle {
+  font-size: 12px;
+  font-weight: 800;
+  color: #e5c158; /* Gold Accent */
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+.navLinks {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footerLink {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: inline-block;
+}
+
+.footerLink:hover {
+  color: var(--color-surface-raised);
+  transform: translateX(3px);
+}
+
+/* Hours Column */
+.hoursCol {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.hoursHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.statusBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(74, 165, 127, 0.1);
+  border: 1px solid rgba(74, 165, 127, 0.25);
+  padding: 3px 10px;
+  border-radius: 50px;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  background-color: #4aa57f;
+  border-radius: 50%;
+  display: inline-block;
+  animation: footerPulse 2s infinite;
+}
+
+.statusText {
+  font-size: 9.5px;
+  font-weight: 750;
+  color: #4aa57f;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hoursList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hoursRow {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 6px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.hoursRowActive {
+  color: #e5c158 !important; /* Gold */
+  font-weight: 700;
+  border-bottom-color: rgba(229, 193, 88, 0.25);
+}
+
+.activeTag {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #e5c158;
+  margin-left: 6px;
+}
+
+.hoursTime {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* Delivery Column */
+.deliveryCol {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.deliveryStatement {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+}
+
+.orderBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  border-radius: 50px; /* Rounded pill style */
+  background-color: var(--color-surface-raised); /* Orange */
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 13.5px;
+  box-shadow: 0 8px 20px rgba(255, 54, 1, 0.25);
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.orderBtn:hover {
+  opacity: 0.92;
+}
+
+.orderBtn:active {
+  transform: scale(0.97);
+}
+
+.partnerText {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+  text-align: center;
+  display: block;
+  margin-top: -10px;
+}
+
+/* Bottom Bar */
+.footerBottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 30px;
+  margin-top: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.copyText {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
+  margin: 0;
+}
+
+.bottomLinks {
+  display: flex;
+  gap: 24px;
+}
+
+.bottomLink {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.bottomLink:hover {
+  color: var(--color-surface-raised);
+}
+
+/* Animations */
+@keyframes footerPulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 165, 127, 0.5); }
+  70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(74, 165, 127, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 165, 127, 0); }
+}
+
+/* Scroll Entrance Animations */
+.footer {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.inView {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Responsive breakdowns */
+@media (max-width: 992px) {
+  .footer {
+    padding: 120px 20px 50px 20px;
+  }
+
+  .footerGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 576px) {
+  .footer {
+    padding: 100px 16px 40px 16px;
+  }
+
+  .footerGrid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .brandCol, .navCol, .hoursCol, .deliveryCol {
+    gap: 16px;
+  }
+
+  .mapContainer {
+    max-width: 100%;
+    height: 150px;
+  }
+
+  .footerBottom {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 16px;
+    margin-top: 40px;
+    padding-top: 20px;
+  }
+
+  .bottomLinks {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+}

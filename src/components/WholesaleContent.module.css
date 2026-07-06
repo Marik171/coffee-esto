@@ -1,0 +1,520 @@
+.pageContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-cream);
+  color: var(--color-warm-text);
+}
+
+/* ── Hero Section ────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  background: var(--color-espresso);
+  color: var(--color-warm-white);
+  padding: 100px 24px 120px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.heroInner {
+  position: relative;
+  z-index: 10;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.b2bTag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: var(--color-amber);
+  background: rgba(201, 150, 58, 0.1);
+  padding: 6px 14px;
+  border-radius: 50px;
+  border: 1px solid rgba(201, 150, 58, 0.2);
+  margin-bottom: 18px;
+  text-transform: uppercase;
+}
+
+.title {
+  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
+  font-size: 42px;
+  font-weight: 800;
+  margin: 0 0 16px;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.subtitle {
+  font-size: 17px;
+  color: var(--color-warm-muted);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.heroWave {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  z-index: 5;
+}
+
+.heroWave svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Falling Beans Ornaments ─────────────────────────────────────── */
+.beansContainer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.bean {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  opacity: 0.18;
+  filter: brightness(2.8) contrast(1.1) saturate(1.4);
+}
+
+.bean1 { top: 15%; left: 8%; transform: rotate(20deg); }
+.bean2 { top: 45%; left: 82%; transform: rotate(-35deg) scale(1.2); }
+.bean3 { top: 70%; left: 14%; transform: rotate(85deg) scale(0.95); }
+.bean4 { top: 25%; left: 88%; transform: rotate(115deg) scale(1.1); }
+.bean5 { top: 60%; left: 74%; transform: rotate(-60deg) scale(0.85); }
+
+/* ── Main Layout ─────────────────────────────────────────────────── */
+.mainContent {
+  flex: 1;
+  padding: 0 24px 140px;
+  position: relative;
+  z-index: 10;
+}
+
+.container {
+  max-width: 1100px;
+  margin: -50px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Instructions Card ───────────────────────────────────────────── */
+.instructionsCard {
+  background: var(--color-cream);
+  border: 1px solid rgba(107, 78, 48, 0.12);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(26, 14, 7, 0.04);
+}
+
+.instructionText {
+  font-size: 15px;
+  color: var(--color-warm-mid);
+  line-height: 1.7;
+  margin: 0 0 24px;
+}
+
+.progressSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.progressText {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.progressAlert {
+  color: var(--color-orange);
+}
+
+.progressSuccess {
+  color: #4aa57f;
+}
+
+.progressBar {
+  height: 8px;
+  background: rgba(26, 14, 7, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--color-amber);
+  border-radius: 10px;
+  transition: width 0.4s ease-out;
+}
+
+.successFill {
+  background: #4aa57f;
+}
+
+/* ── Loading Spinner ─────────────────────────────────────────────── */
+.loadingSpinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 80px 0;
+  color: var(--color-warm-mid);
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(26, 14, 7, 0.08);
+  border-top-color: var(--color-espresso);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Wholesale Cards Grid ────────────────────────────────────────── */
+.coffeeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 12px;
+}
+
+@media (max-width: 900px) {
+  .coffeeGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .coffeeGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Wholesale Coffee Card ───────────────────────────────────────── */
+.coffeeCard {
+  position: relative;
+  border-radius: 20px;
+  background-color: #ffffff;
+  border: 1px solid rgba(26, 14, 7, 0.08);
+  box-shadow: 0 4px 20px rgba(26, 14, 7, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.activeCard {
+  border: 2px solid #5d6b59; /* A classy olive-green border for active selection */
+  box-shadow: 0 12px 32px rgba(93, 107, 89, 0.15);
+}
+
+.b2bBadge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 10;
+  background: #5d6b59; /* Classy sage-olive signifying B2B */
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 50px;
+  letter-spacing: 0.1em;
+}
+
+/* ── Visual Bag Wrapper ──────────────────────────────────────────── */
+.bagWrapper {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(circle, #fbfaf5 0%, #e3ddd3 100%);
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  padding: 16px 0;
+}
+
+.vectorArt {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Card Info Details ──────────────────────────────────────────── */
+.cardDetails {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.cardName {
+  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-espresso);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.priceContainer {
+  display: flex;
+  align-items: baseline;
+}
+
+.cardPrice {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--color-espresso);
+}
+
+.priceUnit {
+  font-size: 12px;
+  color: var(--color-warm-mid);
+  margin-left: 2px;
+  font-weight: 600;
+}
+
+.comparisonRow {
+  margin-top: -6px;
+  margin-bottom: 2px;
+}
+
+.retailCompare {
+  font-size: 11px;
+  color: var(--color-warm-mid);
+  opacity: 0.85;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.cardOrigin {
+  font-size: 12px;
+  color: var(--color-warm-mid);
+  margin: 0;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.cardNotes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.noteTag {
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--color-parchment);
+  color: var(--color-warm-mid);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(26, 14, 7, 0.05);
+}
+
+/* ── Action Kilogram Pickers ────────────────────────────────────── */
+.cardActions {
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.quantityPicker {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 12px;
+  border: 1px solid rgba(26, 14, 7, 0.12);
+  background: #faf7f2;
+  padding: 4px;
+}
+
+.pickerBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--color-espresso);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.pickerBtn:hover {
+  background: rgba(26, 14, 7, 0.06);
+}
+
+.pickerInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-espresso);
+  width: 100%;
+  outline: none;
+}
+
+/* ── Sticky Bottom Summary Drawer Panel ───────────────────────────── */
+.summaryBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: #fdf8f0;
+  border-top: 1px solid rgba(26, 14, 7, 0.08);
+  box-shadow: 0 -10px 40px rgba(26, 14, 7, 0.06);
+}
+
+.summaryBarInner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+@media (max-width: 600px) {
+  .summaryBarInner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 20px 16px;
+  }
+}
+
+.summaryStats {
+  display: flex;
+  gap: 32px;
+}
+
+@media (max-width: 600px) {
+  .summaryStats {
+    justify-content: space-between;
+  }
+}
+
+.summaryStatItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-warm-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.statVal {
+  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--color-espresso);
+}
+
+.summaryAction {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .summaryAction {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.lockWarning {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-orange);
+}
+
+.checkoutBtn {
+  background: #a8a095;
+  color: #ffffff;
+  border: none;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 14px 28px;
+  border-radius: 12px;
+  cursor: not-allowed;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.checkoutBtnActive {
+  background: var(--color-orange);
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(255, 54, 1, 0.2);
+}
+
+.checkoutBtnActive:hover {
+  background: #e22800;
+  transform: translateY(-1px);
+}
+
+.shippingBar {
+  background: #5d6b59; /* Matching brand B2B sage-olive color */
+  color: #ffffff;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
