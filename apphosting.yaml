@@ -1,0 +1,61 @@
+# Firebase App Hosting runtime config
+# https://firebase.google.com/docs/app-hosting/configure
+
+env:
+  # Plain (non-secret) runtime config
+  - variable: ADMIN_EMAIL
+    value: admin@grainandgrind.com
+    availability:
+      - RUNTIME
+
+  - variable: SUPABASE_URL
+    value: https://fdoukqqdqllistvqxvtu.supabase.co
+    availability:
+      - RUNTIME
+
+  - variable: SUPABASE_STORAGE_BUCKET
+    value: product-media
+    availability:
+      - RUNTIME
+
+  # iyzico sandbox endpoint — switch to https://api.iyzipay.com for production payments
+  - variable: IYZIPAY_BASE_URL
+    value: https://sandbox-api.iyzipay.com
+    availability:
+      - RUNTIME
+
+  # Secrets — values live in Secret Manager, set via `firebase apphosting:secrets:set`
+  - variable: JWT_SECRET
+    secret: JWT_SECRET
+    availability:
+      - RUNTIME
+
+  - variable: ADMIN_PASSWORD
+    secret: ADMIN_PASSWORD
+    availability:
+      - RUNTIME
+
+  - variable: SUPABASE_SERVICE_ROLE_KEY
+    secret: SUPABASE_SERVICE_ROLE_KEY
+    availability:
+      - RUNTIME
+
+  - variable: DATABASE_URL
+    secret: DATABASE_URL
+    availability:
+      - RUNTIME
+
+  - variable: DIRECT_URL
+    secret: DIRECT_URL
+    availability:
+      - RUNTIME
+
+  - variable: IYZIPAY_API_KEY
+    secret: IYZIPAY_API_KEY
+    availability:
+      - RUNTIME
+
+  - variable: IYZIPAY_SECRET_KEY
+    secret: IYZIPAY_SECRET_KEY
+    availability:
+      - RUNTIME
