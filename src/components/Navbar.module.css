@@ -1,29 +1,136 @@
-.header {
+/* Header Wrapper fixed to the top */
+.headerWrapper {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 100;
-  transition: background-color var(--motion-duration-normal) ease, 
-              padding var(--motion-duration-normal) ease, 
-              box-shadow var(--motion-duration-normal) ease;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.headerTransparent {
-  background-color: transparent;
-  padding: 20px 0;
+/* Slide up announcement bar when scrolled */
+.headerScrolled {
+  transform: translateY(-40px); /* height of announcement bar */
 }
 
-.headerSolid {
-  background-color: rgba(22, 12, 6, 0.97);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(201, 150, 58, 0.12);
-  box-shadow: 0 4px 24px rgba(26, 14, 7, 0.3);
+.headerScrolled .brandBar {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.headerInner {
+/* 1. Black Top Announcement Bar */
+.announcementBar {
+  background-color: #0c0c0c;
+  color: #ffffff;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-family-primary);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.announcementInner {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+.announcementLeft {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.orderAheadBtn {
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.orderAheadBtn:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.announcementCenter {
+  color: #ffffff;
+  text-align: center;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.announcementRight {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+}
+
+.searchBtn {
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+}
+
+.searchBtn:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.searchText {
+  text-transform: uppercase;
+}
+
+.searchIcon {
+  margin-left: 6px;
+}
+
+.barDivider {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.langToggleTop {
+  color: #ffffff;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+.langToggleTop:hover {
+  opacity: 0.7;
+}
+
+/* 2. White Main Brand Bar */
+.brandBar {
+  background-color: #ffffff;
+  border-bottom: 1px solid #eaeaea;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  transition: box-shadow 0.3s ease;
+}
+
+.brandInner {
+  width: 100%;
   max-width: 1440px;
   margin: 0 auto;
   padding: 0 40px;
@@ -32,268 +139,342 @@
   align-items: center;
 }
 
-/* Logo styling */
-.logo {
+/* Menu links styling */
+.desktopMenuLeft,
+.desktopMenuRight {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  line-height: 1.05;
-  text-decoration: none;
+  gap: 28px;
+  flex: 1;
+}
+
+.desktopMenuLeft {
+  justify-content: flex-start;
+}
+
+.desktopMenuRight {
+  justify-content: flex-end;
+}
+
+.brandLink {
+  color: #1a0e07;
+  font-family: var(--font-family-primary);
+  font-size: 11px;
+  font-weight: 600;
   letter-spacing: 0.12em;
-  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
-}
-
-.logoTop,
-.logoBottom {
-  color: #c9963a;
-  font-size: 19px;
-  font-weight: 700;
-}
-
-.logoMiddle {
-  color: rgba(245, 237, 224, 0.6);
-  font-size: 10px;
-  font-style: italic;
-  font-weight: 400;
-  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
-  margin: 2px 0;
-  letter-spacing: 0.28em;
-  text-transform: lowercase;
-}
-
-/* Desktop Navigation */
-.nav {
-  display: flex;
-  align-items: center;
-}
-
-.navList {
-  display: flex;
-  gap: 24px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.navLink {
-  color: var(--color-text-primary);
-  font-size: var(--font-size-sm); /* 14px */
-  font-weight: 500;
-  padding: 6px 4px;
+  text-transform: uppercase;
+  padding: 8px 0;
   position: relative;
-  transition: color var(--motion-duration-fast) ease;
+  transition: color 0.2s ease;
   text-decoration: none;
 }
 
-.navLink::after {
+.brandLink::after {
   content: '';
   position: absolute;
   bottom: 0;
   left: 0;
   width: 0;
   height: 2px;
-  background-color: var(--color-surface-raised);
-  transition: width var(--motion-duration-fast) ease;
+  background-color: var(--color-orange, #e84d00);
+  transition: width 0.2s ease;
 }
 
-.navLink:hover {
-  color: var(--color-surface-raised);
+.brandLink:hover {
+  color: var(--color-orange, #e84d00);
 }
 
-.navLink:hover::after {
+.brandLink:hover::after {
   width: 100%;
 }
 
-.navLinkActive {
-  color: #e5c158 !important; /* Gold */
-}
-
-.navLinkActive::after {
-  width: 100% !important;
-  background-color: #e5c158 !important;
-}
-
-/* User Actions */
-.actions {
+/* Brand Logo (Center) */
+.logoContainer {
   display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.registerBtn {
-  color: var(--color-text-primary);
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  transition: color var(--motion-duration-fast) ease;
-  text-decoration: none;
-}
-
-.registerBtn:hover {
-  color: var(--color-surface-raised);
-}
-
-/* Cart Button */
-.cartBtn {
-  position: relative;
-  color: var(--color-text-primary);
-  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 8px;
-  border-radius: var(--radius-sm);
-  background: none;
-  border: none;
+  text-align: center;
+  text-decoration: none;
   cursor: pointer;
-  transition: transform var(--motion-duration-instant) ease, color var(--motion-duration-fast) ease;
-  outline: none;
+  padding: 0 20px;
+  flex-shrink: 0;
 }
 
-.cartBtn:hover {
-  color: var(--color-surface-raised);
-  transform: scale(1.05);
+.logoTitle {
+  font-family: var(--font-family-display, 'Playfair Display', serif);
+  font-size: 22px;
+  font-weight: 500;
+  color: #1a0e07;
+  letter-spacing: 0.28em;
+  line-height: 1.1;
+  text-transform: uppercase;
 }
 
-.cartBtn:active {
-  transform: scale(0.95);
+.logoSubtitle {
+  font-family: var(--font-family-primary);
+  font-size: 8px;
+  font-weight: 500;
+  color: #8a7a70;
+  letter-spacing: 0.28em;
+  margin-top: 4px;
+  text-transform: uppercase;
 }
 
-.cartIcon {
-  stroke: currentColor;
-}
-
-.cartBadge {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  background-color: var(--color-surface-raised);
-  color: var(--color-text-primary);
-  font-size: 11px;
-  font-weight: bold;
-  min-width: 16px;
-  height: 16px;
+/* Cart bubble count */
+.cartBubbleBtn {
+  position: relative;
+  background: #f0f0f0;
+  color: #1a0e07;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2px;
+  font-family: var(--font-family-primary);
+  font-size: 11px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-/* Mobile Hamburger Menu */
-.burger {
+.cartBubbleBtn:hover {
+  background-color: #1a0e07;
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+.cartCount {
+  display: inline-block;
+}
+
+/* Mobile Actions */
+.mobileRightControls {
   display: none;
+  align-items: center;
+  gap: 16px;
+}
+
+.cartBubbleBtnMobile {
+  background: #f0f0f0;
+  color: #1a0e07;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-primary);
+  font-size: 11px;
+  font-weight: 700;
+  border: none;
+}
+
+/* Mobile Hamburger Menu icon overrides */
+.burger {
+  display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 24px;
-  height: 18px;
+  width: 22px;
+  height: 16px;
   background: transparent;
   border: none;
   cursor: pointer;
-  z-index: 110;
   padding: 0;
-  outline: none;
+  z-index: 110;
 }
 
 .burgerBar {
   width: 100%;
   height: 2px;
-  background-color: var(--color-text-primary);
-  transition: transform var(--motion-duration-fast) ease, opacity var(--motion-duration-fast) ease;
+  background-color: #1a0e07;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-/* Responsive Media breakpoints */
-@media (max-width: 992px) {
-  .headerInner {
-    padding: 0 20px;
-  }
-
-  .burger {
-    display: flex;
-  }
-
-  /* Hamburger Active transitions */
-  .burgerActive .burgerBar:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
-  }
-
-  .burgerActive .burgerBar:nth-child(2) {
-    opacity: 0;
-  }
-
-  .burgerActive .burgerBar:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
-  }
-
-  /* Collapsible mobile drawer overlay */
-  .nav {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 280px;
-    height: 100vh;
-    background-color: rgba(20, 11, 5, 0.99);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    z-index: 105;
-    padding: 100px 40px;
-    transition: right var(--motion-duration-normal) ease;
-    box-shadow: -8px 0 32px rgba(26, 14, 7, 0.4);
-    border-left: 1px solid rgba(201, 150, 58, 0.1);
-  }
-
-  .navOpen {
-    right: 0;
-  }
-
-  .navList {
-    flex-direction: column;
-    gap: 30px;
-  }
-
-  .navLink {
-    font-size: var(--font-size-lg);
-  }
+.burgerActive .burgerBar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
 }
 
-/* On small mobile, keep the hamburger menu visible so users can access sitemap */
-@media (max-width: 768px) {
-  .registerBtn {
-    display: none;
-  }
+.burgerActive .burgerBar:nth-child(2) {
+  opacity: 0;
 }
 
-@media (max-width: 576px) {
-  .logoTop,
-  .logoBottom {
-    font-size: var(--font-size-xl);
-  }
-
-  .logoMiddle {
-    font-size: 10px;
-  }
+.burgerActive .burgerBar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
-/* Premium Language Switcher Button */
-.langToggle {
-  color: #c9963a; /* Coffee Esto gold */
-  font-size: var(--font-size-xs, 12px);
-  font-weight: 700;
+/* 3. Mobile Navigation Drawer styling */
+.mobileDrawer {
+  position: fixed;
+  top: 120px; /* height of announcements + brandBar */
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 120px);
+  background-color: #ffffff;
+  z-index: 99;
+  padding: 40px;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border-top: 1px solid #f0f0f0;
+  overflow-y: auto;
+}
+
+.mobileDrawerOpen {
+  transform: translateX(0);
+}
+
+.mobileDrawerList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.mobileDrawerList li a {
+  color: #1a0e07;
+  font-family: var(--font-family-primary);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   text-decoration: none;
-  padding: 4px 8px;
-  border-radius: var(--radius-sm, 6px);
-  border: 1px solid rgba(201, 150, 58, 0.35);
-  transition: all var(--motion-duration-fast) ease;
-  letter-spacing: 0.05em;
-  background: rgba(201, 150, 58, 0.04);
+  display: block;
 }
 
-.langToggle:hover {
-  color: var(--color-text-primary, #ffffff);
-  background: rgba(201, 150, 58, 0.2);
-  border-color: rgba(201, 150, 58, 0.7);
-  transform: translateY(-1px);
+.mobileLangLi {
+  margin-top: 20px;
+  border-top: 1px solid #eaeaea;
+  padding-top: 20px;
 }
 
-.langToggle:active {
+.mobileLangToggle {
+  color: var(--color-orange, #e84d00) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+}
+
+/* Shop Dropdown Wrapper */
+.shopDropdownWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Shop Dropdown Menu */
+.shopDropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #ffffff;
+  border: 1px solid #eaeaea;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 200px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+  z-index: 105;
+}
+
+/* Show dropdown on hover */
+.shopDropdownWrapper:hover .shopDropdownMenu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
   transform: translateY(0);
 }
 
+.shopDropdownWrapper:hover .dropdownArrow {
+  transform: rotate(180deg);
+}
+
+/* Dropdown sub-links */
+.dropdownLink {
+  color: #1a0e07;
+  font-family: var(--font-family-primary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: block;
+}
+
+.dropdownLink:hover {
+  color: var(--color-orange, #e84d00);
+  transform: translateX(4px);
+}
+
+.dropdownArrow {
+  transition: transform 0.2s ease;
+}
+
+/* Responsive Media Breakpoints */
+@media (max-width: 992px) {
+  .announcementBar {
+    height: 36px;
+    font-size: 10px;
+  }
+  
+  .announcementInner {
+    padding: 0 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .announcementLeft,
+  .announcementRight {
+    display: none;
+  }
+
+  .announcementCenter {
+    text-align: center;
+  }
+
+  .brandBar {
+    height: 64px;
+  }
+
+  .brandInner {
+    padding: 0 20px;
+  }
+
+  .desktopMenuLeft,
+  .desktopMenuRight {
+    display: none;
+  }
+
+  .logoContainer {
+    padding: 0;
+  }
+
+  .logoTitle {
+    font-size: 18px;
+  }
+
+  .logoSubtitle {
+    font-size: 8px;
+  }
+
+  .mobileRightControls {
+    display: flex;
+  }
+
+  .mobileDrawer {
+    top: 100px; /* 36px + 64px */
+    height: calc(100vh - 100px);
+  }
+
+  .headerScrolled {
+    transform: translateY(-36px);
+  }
+}

@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Navbar from '../../../components/Navbar';
 import Footer from '../../../components/Footer';
 import CoffeeCatalogContent from '../../../components/CoffeeCatalogContent';
+import styles from '../../coffee/coffee.module.css';
 
 export const metadata: Metadata = {
   title: 'Buy Specialty Coffee Online — Coffee Esto Roastery',
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function CoffeePage() {
   return (
-    <div className="pageWrapper">
+    <div className={styles.pageWrapper}>
       <Navbar locale="en" />
       <CoffeeCatalogContent locale="en" />
       <Footer waveColor="#faf8f6" locale="en" />

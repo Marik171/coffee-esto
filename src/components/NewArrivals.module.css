@@ -1,283 +1,289 @@
 .section {
-  background-color: #3d4b5c; /* Dark slate-blue matching the original theme */
-  padding: 160px 20px 100px 20px; /* Top padding is larger to cover the top wave overlap */
-  font-family: var(--font-family-primary);
-  position: relative;
-  overflow: hidden;
-}
-
-/* Wavy Top Border Overlay */
-.waveTopContainer {
-  position: absolute;
-  top: -2px;
-  left: 0;
+  background-color: #ffffff;
+  padding: 100px 0 80px 0;
   width: 100%;
-  z-index: 5;
-  pointer-events: none;
-  line-height: 0;
-}
-
-.waveSvg {
-  width: 100%;
-  height: clamp(80px, 12vw, 180px);
-  display: block;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
-  position: relative;
-  z-index: 10;
+  padding: 0 40px;
 }
 
 /* Section Header */
 .sectionHeader {
-  text-align: center;
-  color: var(--color-text-primary); /* White */
-  margin-bottom: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 40px;
+  width: 100%;
 }
 
-.badge {
-  display: inline-block;
-  font-size: var(--font-size-xs);
+.headerText {
+  text-align: left;
+  flex: 1;
+  max-width: 800px;
+}
+
+.categoryLabel {
+  font-family: var(--font-family-primary);
+  font-size: 11px;
   font-weight: 700;
+  color: #8a7a70;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: #e5c158; /* Gold Accent */
-  letter-spacing: 0.1em;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+  display: block;
 }
 
 .title {
-  font-size: var(--font-size-4xl); /* 25px */
-  font-weight: 800;
-  margin-bottom: 16px;
+  font-family: var(--font-family-display, 'Playfair Display', serif);
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 400;
+  color: #1a0e07;
+  margin-bottom: 12px;
   line-height: 1.2;
 }
 
-.subtitle {
-  font-size: var(--font-size-lg); /* 16px */
-  color: rgba(255, 255, 255, 0.85);
-  max-width: 600px;
-  margin: 0 auto;
+.description {
+  font-family: var(--font-family-primary);
+  font-size: 14px;
+  color: #666666;
   line-height: 1.5;
 }
 
-/* 3-Column Grid */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+.underlinedLink {
+  text-decoration: underline;
+  color: #1a0e07;
+  font-weight: 600;
+  transition: color 0.2s ease;
 }
 
-/* Product Showcase Card */
-.card {
+.underlinedLink:hover {
+  color: var(--color-orange, #e84d00);
+}
+
+.headerControls {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.scrollBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background-color: #f5f5f5;
+  color: #1a0e07;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+.scrollBtn:hover {
+  background-color: #1a0e07;
+  color: #ffffff;
+}
+
+.scrollBtn:active {
+  transform: scale(0.95);
+}
+
+/* Horizontal Scroll Container */
+.grid {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px 0 20px 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+
+.grid::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Product Card */
+.cardLink {
+  text-decoration: none;
+  display: block;
+  flex: 0 0 300px; /* Fixed width for card slot in row */
+}
+
+.cardContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.cardBox {
+  height: 380px;
+  width: 100%;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.notesOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(26, 14, 7, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 16px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 45px 20px;
-  border-radius: var(--radius-md); /* 22px */
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  cursor: pointer;
-  outline: none;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  
-  /* Scroll Entrance Initial States */
-  opacity: 0;
-  transform: translateY(50px);
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 5;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Staggered Delays for Scroll Reveal */
-.delay1 {
-  transition-delay: 0.1s;
-}
-
-.delay2 {
-  transition-delay: 0.25s;
-}
-
-.delay3 {
-  transition-delay: 0.4s;
-}
-
-/* Active inView State */
-.inView .card {
-  opacity: 1;
+.cardBox:hover .notesOverlay {
   transform: translateY(0);
 }
 
-/* Hover and Focus States */
-.card:hover {
-  transform: scale(1.03) translateY(-8px);
-  border-color: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+.notesLabel {
+  font-family: var(--font-family-primary);
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.52);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
 }
 
-.card:focus-visible {
-  outline: 3px solid var(--color-surface-raised);
-  outline-offset: 4px;
-  transform: scale(1.03) translateY(-8px);
-}
-
-/* Corner Diagonal Ribbon ("ROASTER'S CHOICE") */
-.ribbonContainer {
-  position: absolute;
-  top: 18px;
-  left: -32px;
-  width: 120px;
-  background-color: var(--color-surface-base); /* Black */
-  color: var(--color-text-primary); /* White */
-  text-align: center;
-  transform: rotate(-45deg);
-  padding: 4px 0;
-  z-index: 15;
-  font-size: 8px;
-  font-weight: 800;
-  letter-spacing: 0.8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Floating Price Capsule */
-.priceBadge {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: var(--color-text-primary); /* White */
-  padding: 6px 14px;
-  border-radius: var(--radius-lg); /* 50px */
-  font-size: 13px;
-  font-weight: 800;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  z-index: 15;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.currentPrice {
-  color: var(--color-text-secondary); /* Dark */
-}
-
-.oldPrice {
-  text-decoration: line-through;
-  color: var(--color-text-inverse); /* Grey */
+.notesText {
+  font-family: var(--font-family-primary);
+  font-size: 12px;
   font-weight: 500;
-  font-size: 11px;
+  color: #ffffff;
+  text-align: center;
+  line-height: 1.4;
 }
 
-/* Showcase Coffee Bag SVG Container */
-.bagContainer {
-  width: 100%;
-  max-width: 210px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10;
-  margin-bottom: 10px;
-}
-
-.imageContainer {
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: radial-gradient(circle, rgba(251, 250, 245, 0.95) 0%, rgba(227, 221, 211, 0.5) 100%);
-  border-radius: 20px;
-  border: 1px solid rgba(26, 14, 7, 0.06);
-  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.8), 0 8px 24px rgba(26, 14, 7, 0.08);
-  overflow: hidden;
-  padding: 16px 0;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.bagImage {
+.bagWrapper {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  display: block;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.card:hover .imageContainer {
-  background: radial-gradient(circle, rgba(251, 250, 245, 1) 0%, rgba(227, 221, 211, 0.7) 100%);
-  border-color: rgba(26, 14, 7, 0.12);
-  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.9), 0 20px 48px rgba(26, 14, 7, 0.16);
-}
-
-.card:hover .bagImage {
-  transform: scale(1.06) translateY(-4px);
-}
-
-/* Button Slide Up Overlay */
-.btnOverlay {
-  position: absolute;
-  bottom: -60px;
-  left: 0;
-  width: 100%;
   display: flex;
+  align-items: center;
   justify-content: center;
-  transition: bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 20;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.card:hover .btnOverlay {
-  bottom: 24px;
+.coffeeBagImage {
+  max-height: 250px;
+  max-width: 75%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.08));
+  transition: transform 0.4s ease;
 }
 
-.viewBtn {
-  background-color: var(--color-surface-raised); /* #ff3601 */
-  color: var(--color-text-primary);
-  border-radius: var(--radius-sm); /* 4px */
-  padding: 10px 28px;
-  font-size: var(--font-size-sm);
+.cardLink:hover .bagWrapper {
+  transform: scale(1.05);
+}
+
+/* Label info below colored box */
+.cardInfo {
+  text-align: center;
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cardOrigin {
+  font-family: var(--font-family-primary);
+  font-size: 10px;
   font-weight: 700;
-  box-shadow: 0 4px 15px rgba(255, 54, 1, 0.35);
-  transition: background-color var(--motion-duration-fast) ease, transform var(--motion-duration-instant) ease;
+  color: #8a7a70;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
-.viewBtn:hover {
-  background-color: var(--color-text-primary);
-  color: var(--color-surface-raised);
+.cardName {
+  font-family: var(--font-family-display, 'Playfair Display', serif);
+  font-size: 17px;
+  font-weight: 500;
+  color: #1a0e07;
+  margin: 2px 0;
+  line-height: 1.3;
 }
 
-.viewBtn:active {
-  transform: scale(0.96);
+.cardPrice {
+  font-family: var(--font-family-primary);
+  font-size: 13px;
+  color: #666666;
+  font-weight: 500;
 }
 
-/* Responsive Media Queries */
-@media (max-width: 900px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
+/* Responsive Overrides */
+@media (max-width: 992px) {
+  .section {
+    padding: 60px 0 40px 0;
+  }
+
+  .container {
+    padding: 0 20px;
+  }
+
+  .sectionHeader {
+    margin-bottom: 30px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .description {
+    font-size: 13px;
+  }
+
+  .cardLink {
+    flex: 0 0 260px; /* slightly smaller on smaller screens */
+  }
+
+  .cardBox {
+    height: 330px;
+  }
+
+  .coffeeBagImage {
+    max-height: 210px;
+  }
+}
+
+@media (max-width: 576px) {
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
     gap: 20px;
   }
-}
 
-@media (max-width: 768px) {
-  .section {
-    padding: 130px 16px 60px 16px;
+  .headerControls {
+    display: none; /* Swipe scroll handles mobile navigation */
   }
 
-  .grid {
-    grid-template-columns: 1fr;
-    max-width: 420px;
-    margin: 0 auto;
+  .cardLink {
+    flex: 0 0 230px;
   }
 
-  /* Keep CTA visible on touch viewports */
-  .btnOverlay {
-    position: relative;
-    bottom: 0 !important;
-    margin-top: 24px;
+  .cardBox {
+    height: 290px;
   }
-  
-  .card:hover {
-    transform: translateY(-4px);
+
+  .coffeeBagImage {
+    max-height: 180px;
   }
 }

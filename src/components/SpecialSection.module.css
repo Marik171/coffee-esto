@@ -1,8 +1,9 @@
 .section {
-  background-color: var(--color-surface-strong); /* Light gray #f2f2f1 */
-  padding: 80px 20px 100px 20px;
+  background-color: #faf6f0; /* Soft warm cream background */
+  padding: 100px 20px 120px 20px;
   font-family: var(--font-family-primary);
   overflow: hidden;
+  width: 100%;
 }
 
 .container {
@@ -24,21 +25,24 @@
 }
 
 .title {
-  font-size: clamp(28px, 4vw, 42px);
-  font-weight: 800;
-  color: var(--color-text-secondary); /* #272626 */
+  font-family: var(--font-family-display, 'Playfair Display', serif);
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 400; /* Regular weight serif */
+  color: #1a0e07;
   margin-bottom: 20px;
-  line-height: 1.2;
+  line-height: 1.25;
   opacity: 0;
   transform: translateY(30px);
   transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .description {
-  font-size: var(--font-size-lg); /* 16px */
-  color: var(--color-text-inverse); /* #666666 */
+  font-family: var(--font-family-primary);
+  font-size: 15px;
+  color: #666666;
   line-height: 1.6;
-  margin-bottom: 30px;
+  margin-bottom: 32px;
+  max-width: 620px;
   opacity: 0;
   transform: translateY(35px);
   transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
@@ -46,21 +50,26 @@
 }
 
 .buyBtn {
-  background-color: var(--color-surface-raised); /* #ff3601 */
-  color: var(--color-text-primary);
+  background-color: transparent;
+  color: #1a0e07;
   padding: 14px 44px;
-  font-size: var(--font-size-md);
+  font-family: var(--font-family-primary);
+  font-size: 11px;
   font-weight: 700;
-  border-radius: var(--radius-xs);
-  box-shadow: 0 4px 15px rgba(255, 54, 1, 0.2);
-  transition: background-color var(--motion-duration-fast) ease, transform var(--motion-duration-instant) ease, opacity 0.8s ease, transform 0.8s ease;
+  border: 1px solid #1a0e07;
+  border-radius: 0; /* rectangular */
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease, opacity 0.8s ease, transform 0.8s ease;
   opacity: 0;
   transform: translateY(40px);
   transition-delay: 0.2s;
 }
 
 .buyBtn:hover {
-  background-color: var(--color-text-secondary);
+  background-color: #1a0e07;
+  color: #ffffff;
 }
 
 .buyBtn:active {
@@ -115,13 +124,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: radial-gradient(circle, rgba(251, 250, 245, 0.95) 0%, rgba(227, 221, 211, 0.5) 100%);
-  border-radius: 20px;
-  border: 1px solid rgba(26, 14, 7, 0.06);
-  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.8), 0 8px 24px rgba(26, 14, 7, 0.08);
-  overflow: hidden;
-  padding: 12px 0;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  background: transparent; /* removed heavy circle background */
+  border: none;
+  box-shadow: none;
+  overflow: visible;
+  padding: 0;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .bagImage {
@@ -129,18 +137,13 @@
   height: 100%;
   object-fit: contain;
   display: block;
+  filter: drop-shadow(0 12px 28px rgba(26, 14, 7, 0.12));
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.bagWrapper:hover .imageContainer {
-  background: radial-gradient(circle, rgba(251, 250, 245, 1) 0%, rgba(227, 221, 211, 0.7) 100%);
-  border-color: rgba(26, 14, 7, 0.12);
-  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.9), 0 20px 48px rgba(26, 14, 7, 0.16);
-  transform: translateY(-8px);
-}
-
 .bagWrapper:hover .bagImage {
-  transform: scale(1.06);
+  transform: scale(1.08) translateY(-8px);
+  filter: drop-shadow(0 20px 40px rgba(26, 14, 7, 0.22));
 }
 
 /* Sumatra - Far Left */
@@ -203,8 +206,55 @@
   transform: translate3d(240px, -90px, 0) scale(0.85) rotate(14deg);
 }
 
+/* Floating CSS animations to make the fanned arrangement feel alive */
+.inView .bagFarLeft {
+  animation: floatFarLeft 6s ease-in-out infinite alternate;
+  animation-delay: 1.6s; /* Wait for entrance animation to finish */
+}
+.inView .bagInnerLeft {
+  animation: floatInnerLeft 5.5s ease-in-out infinite alternate;
+  animation-delay: 1.45s;
+}
+.inView .bagCenter {
+  animation: floatCenter 5s ease-in-out infinite alternate;
+  animation-delay: 1.3s;
+}
+.inView .bagInnerRight {
+  animation: floatInnerRight 5.5s ease-in-out infinite alternate;
+  animation-delay: 1.45s;
+}
+.inView .bagFarRight {
+  animation: floatFarRight 6s ease-in-out infinite alternate;
+  animation-delay: 1.6s;
+}
+
+@keyframes floatFarLeft {
+  0% { transform: translate3d(-240px, -90px, 0) scale(0.85) rotate(-14deg); }
+  100% { transform: translate3d(-240px, -96px, 0) scale(0.85) rotate(-13deg); }
+}
+@keyframes floatInnerLeft {
+  0% { transform: translate3d(-120px, -80px, 0) scale(0.93) rotate(-7deg); }
+  100% { transform: translate3d(-120px, -87px, 0) scale(0.93) rotate(-6.5deg); }
+}
+@keyframes floatCenter {
+  0% { transform: translate3d(0, -70px, 0) scale(1.05) rotate(0deg); }
+  100% { transform: translate3d(0, -78px, 0) scale(1.05) rotate(0.5deg); }
+}
+@keyframes floatInnerRight {
+  0% { transform: translate3d(120px, -80px, 0) scale(0.93) rotate(7deg); }
+  100% { transform: translate3d(120px, -87px, 0) scale(0.93) rotate(6.5deg); }
+}
+@keyframes floatFarRight {
+  0% { transform: translate3d(240px, -90px, 0) scale(0.85) rotate(14deg); }
+  100% { transform: translate3d(240px, -96px, 0) scale(0.85) rotate(13deg); }
+}
+
 /* Tablet Media Query */
 @media (max-width: 900px) {
+  .section {
+    padding: 80px 20px 100px 20px;
+  }
+
   .bagsContainer {
     height: 320px;
     max-width: 600px;
@@ -218,22 +268,27 @@
 
   .inView .bagFarLeft {
     transform: translate3d(-170px, -70px, 0) scale(0.85) rotate(-12deg);
+    animation: none; /* Disable animations on smaller tablets */
   }
 
   .inView .bagInnerLeft {
     transform: translate3d(-85px, -62px, 0) scale(0.93) rotate(-6deg);
+    animation: none;
   }
 
   .inView .bagCenter {
     transform: translate3d(0, -55px, 0) scale(1.05) rotate(0deg);
+    animation: none;
   }
 
   .inView .bagInnerRight {
     transform: translate3d(85px, -62px, 0) scale(0.93) rotate(6deg);
+    animation: none;
   }
 
   .inView .bagFarRight {
     transform: translate3d(170px, -70px, 0) scale(0.85) rotate(12deg);
+    animation: none;
   }
 }
 
@@ -256,21 +311,26 @@
 
   .inView .bagFarLeft {
     transform: translate3d(-90px, -50px, 0) scale(0.8) rotate(-10deg);
+    animation: none;
   }
 
   .inView .bagInnerLeft {
     transform: translate3d(-45px, -45px, 0) scale(0.9) rotate(-5deg);
+    animation: none;
   }
 
   .inView .bagCenter {
     transform: translate3d(0, -40px, 0) scale(1.0) rotate(0deg);
+    animation: none;
   }
 
   .inView .bagInnerRight {
     transform: translate3d(45px, -45px, 0) scale(0.9) rotate(5deg);
+    animation: none;
   }
 
   .inView .bagFarRight {
     transform: translate3d(90px, -50px, 0) scale(0.8) rotate(10deg);
+    animation: none;
   }
 }

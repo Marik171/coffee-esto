@@ -108,4 +108,56 @@ export function cancelPayment(paymentId: string, ip: string): Promise<IyzipayAct
   });
 }
 
+export interface IyzipayCreateCardRequest {
+  email: string;
+  externalId: string;
+  cardUserKey?: string; // omit to create a new cardUserKey for this customer
+  card: {
+    cardAlias: string;
+    cardNumber: string;  // no spaces — sent to iyzico only, never persisted by us
+    expireYear: string;  // "YYYY"
+    expireMonth: string; // "MM"
+    cardHolderName: string;
+  };
+}
+
+export interface IyzipayCardResult {
+  status: 'success' | 'failure';
+  cardUserKey?: string;
+  cardToken?: string;
+  cardAlias?: string;
+  binNumber?: string;
+  lastFourDigits?: string;
+  cardType?: string;
+  cardAssociation?: string;
+  cardFamily?: string;
+  cardBankName?: string;
+  errorCode?: string;
+  errorMessage?: string;
+}
+
+export function createCard(request: IyzipayCreateCardRequest): Promise<IyzipayCardResult> {
+  return new Promise((resolve, reject) => {
+    iyzipay.card.create(
+      { locale: Iyzipay.LOCALE.TR, ...request },
+      (err: Error | null, result: IyzipayCardResult) => {
+        if (err) reject(err);
+        else resolve(result);
+      }
+    );
+  });
+}
+
+export function deleteCard(cardUserKey: string, cardToken: string): Promise<IyzipayActionResult> {
+  return new Promise((resolve, reject) => {
+    iyzipay.card.delete(
+      { locale: Iyzipay.LOCALE.TR, cardUserKey, cardToken },
+      (err: Error | null, result: IyzipayActionResult) => {
+        if (err) reject(err);
+        else resolve(result);
+      }
+    );
+  });
+}
+
 export { Iyzipay };

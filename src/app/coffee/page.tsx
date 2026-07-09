@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import CoffeeCatalogContent from '../../components/CoffeeCatalogContent';
+import styles from './coffee.module.css';
 
 export const metadata: Metadata = {
   title: 'Nitelikli Kahve Satın Al — Coffee Esto Roastery',
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function CoffeePage() {
   return (
-    <div className="pageWrapper">
+    <div className={styles.pageWrapper}>
       <Navbar locale="tr" />
       <CoffeeCatalogContent locale="tr" />
       <Footer waveColor="#faf8f6" locale="tr" />

@@ -537,6 +537,18 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
             >
               {filteredCoffees.map((coffee) => {
                 const style = getStyle(coffee.id);
+                // Map product IDs to solid pastel card background colors
+                const cardBgColors: Record<string, string> = {
+                  guatemala: '#e0ebf5',       // Blue
+                  ethiopia: '#f7ebec',        // Pink
+                  'brazil-mogiana': '#e2e4e6', // Grey
+                  colombia: '#eae9e7',        // Cream
+                  'velora-signature': '#eaebe6', // Sage green
+                  sumatra: '#e0ebf5',
+                  papua: '#eaebe6',
+                  nicaragua: '#f7ebec',
+                };
+                const bgColor = cardBgColors[coffee.id] || '#f5efe6';
                 return (
                   <motion.div
                     key={coffee.id}
@@ -545,11 +557,10 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
                       hidden: { opacity: 0, y: 28 },
                       visible: { opacity: 1, y: 0, transition: { duration: 0.38, ease: [0.25, 0.46, 0.45, 0.94] } },
                     }}
-                    whileHover={{ y: -4, transition: { duration: 0.2 } }}
                   >
                     <Link href={`${linkPrefix}/coffee/${coffee.id}`} className={styles.cardLink}>
-                      {/* Product visual */}
-                      <div className={styles.bagWrapper} style={{ background: 'radial-gradient(circle, #fbfaf5 0%, #e3ddd3 100%)' }}>
+                      {/* Product visual - solid pastel bg */}
+                      <div className={styles.bagWrapper} style={{ backgroundColor: bgColor }}>
                         {coffee.imageUrl ? (
                           <img
                             src={coffee.imageUrl}
@@ -571,20 +582,17 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
                       </div>
                     </Link>
 
-                    {/* Meta info details */}
+                    {/* Meta info details - Clean editorial style */}
                     <div className={styles.cardDetails}>
-                      <div className={styles.cardHeader}>
-                        <h3 className={styles.cardName}>{coffee.name}</h3>
-                        <span className={styles.cardPrice}>₺{coffee.price}</span>
-                      </div>
+                      <span className={styles.cardOrigin}>{coffee.origin}</span>
+                      <h3 className={styles.cardName}>{coffee.name}</h3>
+                      <span className={styles.cardPrice}>
+                        {locale === 'tr' ? `${coffee.price} TL` : `₺${coffee.price}`}
+                      </span>
 
-                      <p className={styles.cardOrigin}>{coffee.origin}</p>
-
-                      <div className={styles.cardNotes}>
-                        {coffee.tastingNotes.split(',').map((note) => (
-                          <span key={note.trim()} className={styles.noteTag}>{note.trim()}</span>
-                        ))}
-                      </div>
+                      <p className={styles.cardNotes}>
+                        {coffee.tastingNotes.split(',').map(note => note.trim()).join(' • ')}
+                      </p>
 
                       <div className={styles.cardActions}>
                         <Link href={`${linkPrefix}/coffee/${coffee.id}`} className={styles.buyBtn}>

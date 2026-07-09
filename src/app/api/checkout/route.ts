@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import db from '@/lib/db';
 import { createPayment, Iyzipay } from '@/lib/iyzipay';
+import { verifyToken } from '@/lib/auth';
 
 interface CheckoutItem {
   id: string;
@@ -204,6 +206,10 @@ export async function POST(request: Request) {
     }
 
     // ── 5. Payment succeeded — persist order + decrement stock atomically ──
+    const customerToken = (await cookies()).get('customer_token')?.value;
+    const customerPayload = customerToken ? await verifyToken(customerToken) : null;
+    const customerId = customerPayload?.role === 'customer' ? (customerPayload.customerId as string) : undefined;
+
     const [newOrder] = await db.$transaction([
       db.order.create({
         data: {
@@ -218,6 +224,7 @@ export async function POST(request: Request) {
           status: 'pending',
           paymentStatus: 'captured',
           fulfillmentStatus: 'not_fulfilled',
+          ...(customerId && { customerId }),
           items: {
             create: mappedItems.map((item) => ({
               coffeeId: item.id,

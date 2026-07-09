@@ -1,45 +1,52 @@
 .section {
-  background-color: var(--color-text-primary); /* White #ffffff */
+  background-color: #ffffff;
   padding: 100px 20px;
   font-family: var(--font-family-primary);
   overflow: hidden;
+  width: 100%;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
+  padding: 0 20px;
 }
 
 /* Header styling */
 .sectionHeader {
-  text-align: center;
-  margin-bottom: 55px;
+  text-align: left; /* Left align! */
+  margin-bottom: 48px;
+  max-width: 800px;
 }
 
 .badge {
   display: inline-block;
-  font-size: var(--font-size-xs);
+  font-family: var(--font-family-primary);
+  font-size: 11px;
   font-weight: 700;
+  color: #8a7a70;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--color-surface-raised);
-  letter-spacing: 0.1em;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+  display: block;
 }
 
 .title {
-  font-size: var(--font-size-4xl); /* 25px */
-  color: var(--color-text-secondary); /* #272626 */
-  font-weight: 800;
-  margin-bottom: 16px;
+  font-family: var(--font-family-display, 'Playfair Display', serif);
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 400; /* Regular weight serif */
+  color: #1a0e07;
+  margin-bottom: 12px;
   line-height: 1.2;
 }
 
 .subtitle {
-  font-size: var(--font-size-lg); /* 16px */
-  color: var(--color-text-inverse); /* #666666 */
-  max-width: 600px;
-  margin: 0 auto;
+  font-family: var(--font-family-primary);
+  font-size: 14px;
+  color: #666666;
   line-height: 1.5;
+  margin: 0;
+  max-width: 600px;
 }
 
 /* Bento Grid */
@@ -54,13 +61,14 @@
   position: relative;
   display: flex;
   overflow: hidden;
-  border-radius: var(--radius-md); /* 22px */
-  box-shadow: var(--shadow-1);
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 0; /* Sharp corners */
+  box-shadow: none; /* Removed heavy shadow */
+  border: 1px solid #eaeaea;
   cursor: pointer;
   outline: none;
   opacity: 0; /* Animated on inView */
   transform: translateY(40px);
+  transition: border-color 0.3s ease, transform 0.3s ease;
 }
 
 @keyframes bentoFadeIn {
@@ -79,12 +87,12 @@
 }
 
 .card:hover {
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-color: #1a0e07;
   transform: translateY(-4px);
 }
 
 .card:focus-visible {
-  outline: 3px solid var(--color-surface-raised);
+  outline: 2px solid var(--color-orange, #e84d00);
   outline-offset: 4px;
   transform: translateY(-4px);
 }
@@ -141,7 +149,7 @@
 }
 
 .card:hover .graphic {
-  transform: scale(1.06) rotate(1deg);
+  transform: scale(1.04) rotate(0.5deg);
 }
 
 .cardImage {
@@ -151,7 +159,7 @@
   object-position: center;
 }
 
-/* Glassmorphic Floating Label */
+/* Outlined Floating Label */
 .label {
   position: absolute;
   bottom: 24px;
@@ -160,41 +168,53 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  padding: 12px 24px;
-  border-radius: var(--radius-md); /* 22px */
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-  transition: background-color var(--motion-duration-fast) ease, border-color var(--motion-duration-fast) ease, box-shadow var(--motion-duration-fast) ease;
+  background-color: #ffffff;
+  border: 1px solid #1a0e07;
+  padding: 10px 20px;
+  border-radius: 0; /* Sharp corners */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .card:hover .label {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(255, 255, 255, 0.7);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  background-color: #1a0e07;
+  border-color: #1a0e07;
+  box-shadow: 0 8px 20px rgba(26, 14, 7, 0.15);
 }
 
 .name {
-  font-size: var(--font-size-md); /* 15px */
-  font-weight: 800;
-  color: var(--color-text-secondary);
-  letter-spacing: 0.05em;
+  font-family: var(--font-family-primary);
+  font-size: 11px;
+  font-weight: 700;
+  color: #1a0e07;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 0.25s ease;
+}
+
+.card:hover .name {
+  color: #ffffff;
 }
 
 .arrow {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-secondary);
-  transition: transform var(--motion-duration-fast) cubic-bezier(0.16, 1, 0.3, 1);
+  color: #1a0e07;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s ease;
 }
 
 .card:hover .arrow {
   transform: translateX(4px);
+  color: #ffffff;
 }
 
 /* Tablet Media Query (2-Column Grid Layout) */
 @media (max-width: 900px) {
+  .section {
+    padding: 80px 20px;
+  }
+
   .grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
@@ -239,6 +259,6 @@
   .label {
     bottom: 16px;
     left: 16px;
-    padding: 10px 20px;
+    padding: 8px 16px;
   }
 }

@@ -1,0 +1,250 @@
+/* ── Canvas Layout Styles ───────────────────────────────────── */
+.pageWrapper {
+  background-color: #ffffff;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.accountSection {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.accountContainer {
+  width: 100%;
+  max-width: 370px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Typography Header ──────────────────────────────────────── */
+.logo {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.logoText {
+  font-family: 'Times New Roman', Times, Baskerville, serif;
+  font-size: 34px;
+  font-weight: 400;
+  letter-spacing: 0.25em;
+  color: #1a1a1a;
+  margin: 0;
+  padding-left: 0.25em;
+  /* Perfectly balances tracking */
+}
+
+.logoSubtext {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  color: #555555;
+  text-transform: uppercase;
+  margin: 10px 0 0 0;
+  padding-left: 0.28em;
+}
+
+.heading {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 4px 0;
+  text-align: left;
+}
+
+.subheading {
+  font-size: 13.5px;
+  color: #666666;
+  margin: 0 0 24px 0;
+  text-align: left;
+}
+
+/* ── Custom Purple Shop App Button ──────────────────────────── */
+.shopButton {
+  background-color: #5a31f4;
+  /* Precise Shop App purple hex signature tint */
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  width: 100%;
+  height: 48px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s ease;
+}
+
+.shopButton:hover {
+  opacity: 0.9;
+}
+
+.shopText {
+  font-style: italic;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* ── Form Element Components ────────────────────────────────── */
+.divider {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 20px 0;
+  color: #777777;
+  font-size: 13px;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background-color: #e2e2e2;
+}
+
+.dividerText {
+  padding: 0 16px;
+}
+
+.formElement {
+  display: flex;
+  flex-direction: column;
+}
+
+.emailInputWrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.emailInput {
+  width: 100%;
+  height: 52px;
+  padding: 0 48px 0 16px;
+  border: 1.5px solid #1a1a1a;
+  border-radius: 14px;
+  /* Smooth matching rounded curves */
+  font-size: 15px;
+  color: #1a1a1a;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.emailInput:focus {
+  outline: none;
+}
+
+.submitButton {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  color: #1a1a1a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Overlapping "Last used" Badge Pill ────────────────────── */
+.lastUsedLabel {
+  position: absolute;
+  bottom: -10px;
+  /* Aligns element precisely split on border line cut */
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a1a;
+  color: #ffffff;
+  font-size: 9.5px;
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+/* ── Circular Round Checkbox ────────────────────────────────── */
+.checkboxWrapper {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 14px;
+  margin-bottom: 24px;
+}
+
+.checkboxInput {
+  display: none;
+}
+
+.checkboxLabelStructure {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.circularCheckbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  /* Smooth uniform circular shape */
+  background-color: #333333;
+  /* Dark fill matching the visual token */
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.checkboxTextLabel {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+/* ── Bottom Footnotes & Disclaimers ─────────────────────────── */
+.termsText {
+  font-size: 11.5px;
+  color: #666666;
+  text-align: center;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.termsLink {
+  color: #666666;
+  text-decoration: underline;
+}
+
+.footer {
+  text-align: center;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.footerLink {
+  font-size: 13px;
+  color: #333333;
+  text-decoration: none;
+  font-weight: 400;
+}
+
+.footerLink:hover {
+  text-decoration: underline;
+}

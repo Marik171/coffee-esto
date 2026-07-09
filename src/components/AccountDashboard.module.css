@@ -1,0 +1,433 @@
+/* ── Main Layout Architecture Canvas Base ───────────────────── */
+.pageWrapper {
+    background-color: #faf9f6;
+    /* Pristine soft warm tone signature canvas tint */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #000000;
+    box-sizing: border-box;
+}
+
+/* ── Minimal Global Header ──────────────────────────────────── */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 32px 64px;
+    background-color: transparent;
+}
+
+.logoContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.logoText {
+    font-family: 'Times New Roman', Times, Baskerville, serif;
+    font-size: 26px;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    margin: 0;
+}
+
+.logoSubtext {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.32em;
+    color: #666666;
+    margin: 4px 0 0 0;
+    padding-left: 0.1em;
+}
+
+.avatarWrapper {
+    cursor: pointer;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    transition: opacity 0.2s ease;
+}
+
+.avatarWrapper:hover {
+    opacity: 0.7;
+}
+
+.avatarIcon {
+    width: 28px;
+    height: 28px;
+}
+
+/* ── Dashboard Split Architecture Grid Grid Layout ───────────── */
+.dashboardContainer {
+    flex: 1;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 80px;
+    padding: 40px 64px 80px;
+    box-sizing: border-box;
+}
+
+/* Sidebar Navigation Items */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+}
+
+.navigation {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.navItem {
+    background: none;
+    border: none;
+    font-family: 'Georgia', serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: #888888;
+    /* Soft text color for inactive tabs */
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.15s ease;
+}
+
+.navItem:hover {
+    color: #1a1a1a;
+}
+
+.activeNav {
+    color: #000000 !important;
+    font-weight: 700 !important;
+}
+
+/* Content Panel Wrapper */
+.contentViewport {
+    width: 100%;
+    max-width: 780px;
+}
+
+/* ── VIEW 1: ORDERS SUBCOMPONENT CARD ───────────────────────── */
+.welcomeCard {
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    border-radius: 20px;
+    /* Smooth rounded interface */
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.015);
+    padding: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.serifHeading {
+    font-family: 'Georgia', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+}
+
+.serifSubheading {
+    font-family: 'Georgia', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: #555555;
+    margin: 0;
+}
+
+.shopNowBtn {
+    background-color: #262626;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 50px;
+    /* Classic pill structure button wrapper */
+    transition: background-color 0.15s ease;
+}
+
+.shopNowBtn:hover {
+    background-color: #000000;
+}
+
+/* ── VIEW 2: SUBSCRIPTIONS EMPTY STATE PANEL ────────────────── */
+.emptyStateContainer {
+    text-align: center;
+    padding: 120px 40px;
+}
+
+.emptyStateTitle {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+}
+
+.emptyStateText {
+    font-size: 13.5px;
+    color: #1a1a1a;
+    line-height: 1.5;
+    max-width: 440px;
+    margin: 0 auto;
+}
+
+/* ── VIEW 3: PROFILE FORM INFRASTRUCTURE STACK ──────────────── */
+.profileStack {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.profileSection {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sectionHeaderRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sectionLabelTitle {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Smooth Rounded Accent Badge Action Buttons */
+.pillActionBtn {
+    background-color: #f0edf9;
+    color: #000000;
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.pillActionBtn:hover {
+    background-color: #e5e1f3;
+}
+
+/* Pure White Informational Card Shell Blocks */
+.infoCardBox {
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.02);
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.01);
+}
+
+.contactRowLayout {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
+}
+
+.mutedLabelText {
+    font-size: 11px;
+    color: #777777;
+}
+
+.boldValueText {
+    font-size: 13.5px;
+    font-weight: 500;
+}
+
+.iconFallbackRow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: #000000;
+}
+
+.cardIconToken {
+    width: 18px;
+    height: 18px;
+    color: #000000;
+    flex-shrink: 0;
+}
+
+.mutedValueText {
+    font-size: 13.5px;
+    color: #555555;
+}
+
+/* Marketing Custom iOS-inspired Switch Component Layout */
+.toggleRowLayout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.toggleSwitch {
+    width: 44px;
+    height: 24px;
+    background-color: #e2e2e2;
+    border-radius: 50px;
+    padding: 2px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toggleOn {
+    background-color: #333333;
+    /* Dark Charcoal filled state toggle matching mockup */
+}
+
+.toggleIndicator {
+    width: 20px;
+    height: 20px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toggleOn .toggleIndicator {
+    transform: translateX(20px);
+}
+
+.toggleCheck {
+    font-size: 11px;
+    font-weight: bold;
+    color: #333333;
+}
+
+/* Sign out configuration elements block */
+.signOutRowBlock {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.signOutBtnBox {
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 10px;
+    height: 42px;
+    padding: 0 20px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.signOutBtnBox:hover {
+    background: #fafafa;
+    border-color: #000000;
+}
+
+.signOutSublabel {
+    font-size: 12.5px;
+    color: #555555;
+}
+
+/* ── Bottom Standalone Link Footer ── */
+.footer {
+    padding: 40px 64px;
+    background-color: transparent;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.footerNavLinks {
+    display: flex;
+    gap: 16px;
+}
+
+.footerLink {
+    font-size: 11px;
+    color: #555555;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.15s ease;
+}
+
+.footerLink:hover {
+    color: #000000;
+}
+
+/* ── Responsive Screen Width Adaptation Breakpoints ──────────── */
+@media (max-width: 992px) {
+    .dashboardContainer {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        padding: 20px 32px 60px;
+    }
+
+    .header {
+        padding: 32px 32px 10px;
+    }
+
+    .navigation {
+        flex-direction: row;
+        gap: 24px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        padding-bottom: 12px;
+        width: 100%;
+    }
+
+    .footer {
+        padding: 40px 32px;
+    }
+}
+
+@media (max-width: 576px) {
+    .header {
+        padding: 24px 16px 10px;
+    }
+
+    .dashboardContainer {
+        padding: 20px 16px 40px;
+    }
+
+    .welcomeCard {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 30px 24px;
+    }
+
+    .shopNowBtn {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    .signOutRowBlock {
+        flex-direction: column;
+        align-items: fill;
+        gap: 8px;
+    }
+
+    .signOutBtnBox {
+        width: 100%;
+    }
+
+    .footer {
+        padding: 32px 16px;
+    }
+}

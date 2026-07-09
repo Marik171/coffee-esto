@@ -1,382 +1,443 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import CoffeeBag, { PRODUCT_STYLES } from './CoffeeBag';
-import { localizeProduct } from '../lib/localize';
 import styles from './WholesaleContent.module.css';
 
-interface Product {
-  id: string;
-  name: string;
-  category: string;
-  origin: string;
-  altitude: string;
-  varietal: string;
-  roastLevel: number;
-  tastingNotes: string;
-  description: string;
-  price: number;
-  wholesalePrice: number;
-  stock: number;
-  imageUrl: string;
-  videoUrl: string;
+/* ── Scroll-triggered fade-up wrapper ───────────────────────── */
+function FadeUp({
+  children,
+  delay = 0,
+  className,
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-72px' });
+  return (
+    <motion.div
+      ref={ref}
+      className={className}
+      initial={{ opacity: 0, y: 32 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94], delay }}
+    >
+      {children}
+    </motion.div>
+  );
 }
 
 interface WholesaleContentProps {
   locale: string;
 }
 
-const DEFAULT_STYLE = {
-  bagColor: '#1a0e07',
-  textColor: '#ffffff',
-  accentColor: '#d97706',
-  emoji: '☕️',
-  illustration: null
-};
-
 export default function WholesaleContent({ locale }: WholesaleContentProps) {
-  const router = useRouter();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [quantities, setQuantities] = useState<Record<string, number>>({});
-  const [isLoading, setIsLoading] = useState(true);
+  const heroRef = useRef(null);
+  const heroInView = useInView(heroRef, { once: true });
+  
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    city: '',
+    zip: '',
+    company: '',
+    website: '',
+    message: ''
+  });
+  const [submitted, setSubmitted] = useState(false);
 
-  const getStyle = (id: string) => {
-    return PRODUCT_STYLES[id] || DEFAULT_STYLE;
-  };
-
-  // Translations
-  const t = {
+  const translations = {
     en: {
-      title: 'Wholesale B2B Portal',
-      subtitle: 'Premium freshly-roasted coffee with direct B2B pricing',
-      description: 'Select your coffee requirements below. A minimum total order of 50kg is required to unlock wholesale reseller rates.',
-      product: 'Product',
-      specifications: 'Specifications & Profile',
-      retailPrice: 'Retail (250g)',
-      wholesalePrice: 'Wholesale (1kg)',
-      qty: 'Quantity (kg)',
-      totalWeight: 'Total Weight',
-      minRequired: 'Min. 50kg required to checkout',
-      addMore: 'Add {amount}kg more',
-      eligible: 'Eligible for wholesale rates! 🎉',
-      subtotal: 'Order Subtotal',
-      checkoutBtn: 'Proceed to Checkout',
-      freeShipping: 'Free B2B Cargo Delivery Included 🚚',
-      loading: 'Loading pricing sheet...',
-      categoryLabels: {
-        'single-origin': 'Single Origin',
-        'espresso': 'Espresso Blend',
-        'filter': 'Filter Coffee',
-        'turkish': 'Turkish Coffee',
-        'limited-edition': 'Limited Edition',
-      }
+      heroLabel: 'WHOLESALE PARTNERSHIPS',
+      heroTitle: 'Serve Coffee Esto\nWherever You Are',
+      heroSub: 'Learn more about our wholesale opportunities and how we can support your business with specialty coffee, equipment, and training.',
+      
+      feed1Label: 'WHOLESALE',
+      feed1Title: 'Cafes',
+      feed1Text: 'We roast micro-lots to order and design specific blends to fit your cafe\'s workflow. Partner with us for coffee that elevates your brand and keeps customers coming back.',
+      
+      feed2Label: 'EQUIPMENT',
+      feed2Title: 'Espresso Machinery & Project Setup',
+      feed2Text: 'We supply commercial espresso machines, grinders, and custom bar setups. Benefit from end-to-end consulting, delivery, and professional installation under one roof.',
+      
+      feed3Label: 'EDUCATION',
+      feed3Title: 'Barista Training',
+      feed3Text: 'Training is key to consistency. We provide hands-on barista classes, recipe mapping, and ongoing tasting cuppings for all our wholesale accounts.',
+      
+      feed4Label: 'DIRECT TRADE',
+      feed4Title: 'Our Sourcing & Values',
+      feed4Text: 'Ethical micro-lots sourced directly from farms in Colombia, Brazil, and Ethiopia. We pay quality premiums that directly support grower communities.',
+      
+      feed5Label: 'OFFICES & COMMERCIAL',
+      feed5Title: 'Office Coffee Programs',
+      feed5Text: 'Bring specialty coffee to your workplace. We offer modular equipment leases, brewers, and recurring fresh-roasted whole bean deliveries tailored for your office size.',
+      
+      quote: '“At Coffee Esto, we work to embody the idea that coffee should be something special through our sourcing, roasting, and wholesale partnerships. We strive to bring you exceptional coffees that reflect and honor the tremendous risk and effort put into growing and cultivating this seemingly simple yet dynamic product.”',
+      quoteAuthor: 'SERVICE WITH VALUES / COFFEE ESTO ROASTERY',
+      
+      formTitle: 'Sign Me Up',
+      formSub: 'Connect with our wholesale team to start a partnership.',
+      labelFirstName: 'FIRST NAME *',
+      phFirstName: 'First Name',
+      labelLastName: 'LAST NAME *',
+      phLastName: 'Last Name',
+      labelEmail: 'EMAIL *',
+      phEmail: 'Email',
+      labelPhone: 'PHONE NUMBER',
+      phPhone: 'Phone number',
+      labelCity: 'CITY *',
+      phCity: 'City',
+      labelZip: 'ZIP CODE',
+      phZip: 'Zip/Postal code',
+      labelCompany: 'COMPANY NAME',
+      phCompany: 'Company name',
+      labelWebsite: 'WEBSITE',
+      phWebsite: 'Website / URL',
+      labelMessage: 'TELL US MORE *',
+      phMessage: 'Tell us about your project/business',
+      btnSubmit: 'SUBMIT',
+      successMsg: 'Thank you! Your inquiry has been sent. Our wholesale team will get in touch with you shortly.',
+      errorMsg: 'Please fill out all required fields.'
     },
     tr: {
-      title: 'Toptan Satış B2B Portalı',
-      subtitle: 'Taze kavrum nitelikli kahveler ve B2B fiyatları',
-      description: 'Sipariş etmek istediğiniz miktarları kilogram (kg) bazında giriniz. Toptan bayi fiyatlarından yararlanmak için toplam sipariş miktarı en az 50 kg olmalıdır.',
-      product: 'Ürün',
-      specifications: 'Özellikler ve Profil',
-      retailPrice: 'Perakende (250g)',
-      wholesalePrice: 'Bayi Fiyatı (1kg)',
-      qty: 'Miktar (kg)',
-      totalWeight: 'Toplam Ağırlık',
-      minRequired: 'Ödeme için en az 50kg gereklidir',
-      addMore: 'En az {amount}kg daha ekleyin',
-      eligible: 'Bayi fiyatları için uygunsunuz! 🎉',
-      subtotal: 'Sipariş Tutarı',
-      checkoutBtn: 'Ödeme Sayfasına İlerle',
-      freeShipping: 'Ücretsiz B2B Kargo Gönderimi 🚚',
-      loading: 'Fiyat listesi yükleniyor...',
-      categoryLabels: {
-        'single-origin': 'Tek Köken',
-        'espresso': 'Espresso Harmanı',
-        'filter': 'Filtre Kahve',
-        'turkish': 'Türk Kahvesi',
-        'limited-edition': 'Özel Seri (Sınırlı Üretim)',
-      }
+      heroLabel: 'TOPTAN ORTAKLIKLAR',
+      heroTitle: 'Nerede Olursanız Olun\nCoffee Esto Sunun',
+      heroSub: 'Toptan satış fırsatlarımız ve işletmenizi nitelikli kahve, ekipman ve eğitimlerle nasıl destekleyebileceğimiz hakkında daha fazla bilgi edinin.',
+      
+      feed1Label: 'TOPTAN SATIŞ',
+      feed1Title: 'Kafeler',
+      feed1Text: 'Kafelerinizin iş akışına uyması için mikro lotları sipariş üzerine kavuruyor ve özel harmanlar tasarlıyoruz. Markanızı yükselten kahveler için bizimle ortak olun.',
+      
+      feed2Label: 'EKİPMAN',
+      feed2Title: 'Espresso Makineleri & Kurulum',
+      feed2Text: 'Ticari espresso makineleri, öğütücüler ve özel bar kurulumları sağlıyoruz. Uçtan uca proje danışmanlığı, teslimat ve profesyonel kurulumdan tek çatı altında yararlanın.',
+      
+      feed3Label: 'EĞİTİM',
+      feed3Title: 'Barista Eğitimi',
+      feed3Text: 'Eğitim, tutarlılığın anahtarıdır. Tüm toptan satış ortaklarımız için uygulamalı barista dersleri, reçete çıkarma ve sürekli tadım seansları sunuyoruz.',
+      
+      feed4Label: 'DOĞRUDAN TEDARİK',
+      feed4Title: 'Kaynaklarımız & Değerlerimiz',
+      feed4Text: 'Kolombiya, Brezilya ve Etiyopya\'daki çiftliklerden doğrudan temin edilen etik mikro lotlar. Üretici topluluklarını doğrudan destekleyen kalite primleri ödüyoruz.',
+      
+      feed5Label: 'OFİS & TİCARİ',
+      feed5Title: 'Ofis Kahve Programları',
+      feed5Text: 'Nitelikli kahveyi iş yerinize taşıyın. Ofis büyüklüğünüze göre uyarlanmış modüler ekipman kiralama, demleyiciler ve düzenli taze kahve gönderimleri sunuyoruz.',
+      
+      quote: '“Coffee Esto olarak, kahvenin tedarik, kavurma ve toptan satış ortaklıklarımız aracılığıyla özel bir şey olması gerektiği fikrini somutlaştırmak için çalışıyoruz. Bu görünüşte basit ama dinamik ürünü yetiştirmek ve işlemek için harcanan muazzam riski ve emeği onurlandıran olağanüstü kahveleri size sunmak için çaba gösteriyoruz.”',
+      quoteAuthor: 'DEĞERLERLE HİZMET / COFFEE ESTO ROASTERY',
+      
+      formTitle: 'Kayıt Olun',
+      formSub: 'Ortaklık başlatmak için toptan satış ekibimizle iletişime geçin.',
+      labelFirstName: 'ADINIZ *',
+      phFirstName: 'Adınız',
+      labelLastName: 'SOYADINIZ *',
+      phLastName: 'Soyadınız',
+      labelEmail: 'E-POSTA ADRESİNİZ *',
+      phEmail: 'E-posta',
+      labelPhone: 'TELEFON NUMARASI',
+      phPhone: 'Telefon numaranız',
+      labelCity: 'ŞEHİR *',
+      phCity: 'Şehir',
+      labelZip: 'POSTA KODU',
+      phZip: 'Posta kodu',
+      labelCompany: 'ŞİRKET ADI',
+      phCompany: 'Şirket adı',
+      labelWebsite: 'WEB SİTESİ',
+      phWebsite: 'Web sitesi / URL',
+      labelMessage: 'BİZE DETAYLARDAN BAHSEDİN *',
+      phMessage: 'Projeniz veya işletmeniz hakkında bilgi verin',
+      btnSubmit: 'GÖNDER',
+      successMsg: 'Teşekkürler! Talebiniz iletildi. Toptan satış ekibimiz en kısa sürede sizinle iletişime geçecektir.',
+      errorMsg: 'Lütfen tüm zorunlu alanları doldurun.'
     }
-  }[locale === 'tr' ? 'tr' : 'en'];
-
-  useEffect(() => {
-    fetch('/api/products')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.success && Array.isArray(data.data)) {
-          const localized = data.data.map((p: any) => localizeProduct(p, locale));
-          setProducts(localized);
-        }
-      })
-      .catch((err) => console.error('Failed to load products:', err))
-      .finally(() => setIsLoading(false));
-  }, [locale]);
-
-  const handleQtyChange = (productId: string, val: string) => {
-    const num = Math.max(0, parseInt(val.replace(/\D/g, '')) || 0);
-    setQuantities((prev) => ({ ...prev, [productId]: num }));
   };
 
-  const handleAdjust = (productId: string, diff: number) => {
-    setQuantities((prev) => {
-      const current = prev[productId] || 0;
-      return { ...prev, [productId]: Math.max(0, current + diff) };
-    });
-  };
+  const t = locale === 'tr' ? translations.tr : translations.en;
+  const linkPrefix = locale === 'tr' ? '' : '/en';
 
-  // Calculations
-  const totalWeight = Object.values(quantities).reduce((sum, q) => sum + q, 0);
-  const isEligible = totalWeight >= 50;
-  const remaining = 50 - totalWeight;
-
-  const totalAmount = products.reduce((sum, p) => {
-    const qty = quantities[p.id] || 0;
-    return sum + qty * p.wholesalePrice;
-  }, 0);
-
-  const handleCheckout = () => {
-    if (!isEligible) return;
-
-    // Filter items with quantity > 0
-    const checkoutItems = products
-      .filter((p) => (quantities[p.id] || 0) > 0)
-      .map((p) => ({
-        id: p.id,
-        name: p.name,
-        price: p.wholesalePrice, // For cart logic integration
-        wholesalePrice: p.wholesalePrice,
-        quantity: quantities[p.id],
-        stock: 9999, // Wholesale bypasses retail stock
-        bagColor: p.id === 'turk-kahvesi' ? '#e07a5f' : '#2c1a0e', // Fallback colors matching design
-        notes: ['Wholesale 1kg Bulk Packaging'],
-        emoji: '★',
-        imageUrl: p.imageUrl,
-      }));
-
-    localStorage.setItem('coffee_esto_wholesale_cart', JSON.stringify(checkoutItems));
-    router.push(`${locale === 'tr' ? '' : '/en'}/checkout/payment?type=wholesale`);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.city || !formData.message) {
+      alert(t.errorMsg);
+      return;
+    }
+    setSubmitted(true);
   };
 
   return (
-    <div className={styles.pageContainer}>
+    <div className={styles.page}>
       <Navbar locale={locale} />
 
-      {/* Hero Banner Section */}
-      <section className={styles.hero}>
-        <div className={styles.heroInner}>
-          <motion.span 
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className={styles.b2bTag}
-          >
-            B2B WHOLESALE
-          </motion.span>
-          <motion.h1 
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className={styles.title}
-          >
-            {t.title}
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.15 }}
-            className={styles.subtitle}
-          >
-            {t.subtitle}
-          </motion.p>
-        </div>
-
-        {/* Decorative Falling Beans WebP */}
-        <div className={styles.beansContainer} aria-hidden="true">
-          <img src="/images/beans.webp" alt="" className={`${styles.bean} ${styles.bean1}`} />
-          <img src="/images/beans.webp" alt="" className={`${styles.bean} ${styles.bean2}`} />
-          <img src="/images/beans.webp" alt="" className={`${styles.bean} ${styles.bean3}`} />
-          <img src="/images/beans.webp" alt="" className={`${styles.bean} ${styles.bean4}`} />
-          <img src="/images/beans.webp" alt="" className={`${styles.bean} ${styles.bean5}`} />
-        </div>
-
-        {/* Wave Divider SVG */}
-        <div className={styles.heroWave} aria-hidden="true">
-          <svg viewBox="0 0 1440 100" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,60 C320,120 420,0 720,60 C1020,120 1120,0 1440,60 L1440,100 L0,100 Z" fill="var(--color-cream)" />
-          </svg>
+      {/* ── 1. Split Hero Section ────────────────────────────── */}
+      <section className={styles.heroSection}>
+        <div className={styles.container}>
+          <div className={styles.heroGrid}>
+            <motion.div
+              ref={heroRef}
+              className={styles.heroContent}
+              initial={{ opacity: 0, y: 28 }}
+              animate={heroInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.7 }}
+            >
+              <span className={styles.heroLabel}>{t.heroLabel}</span>
+              <h1 className={styles.heroTitle}>
+                {t.heroTitle.split('\n')[0]}<br />{t.heroTitle.split('\n')[1]}
+              </h1>
+              <p className={styles.heroSub}>{t.heroSub}</p>
+            </motion.div>
+            
+            <div className={styles.heroImageFrame}>
+              <img
+                src="/images/about/about-7.webp"
+                alt="Serve Coffee Esto"
+                className={styles.heroImg}
+              />
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Main Form Section */}
-      <main className={styles.mainContent}>
+      {/* ── 2. Alternating Feed Grid ─────────────────────────── */}
+      <section className={styles.feedSection}>
         <div className={styles.container}>
-          <div className={styles.instructionsCard}>
-            <p className={styles.instructionText}>{t.description}</p>
-            
-            {/* Real-time Threshold Progress Bar */}
-            <div className={styles.progressSection}>
-              <div className={styles.progressText}>
-                <span>{t.totalWeight}: <strong>{totalWeight} kg / 50 kg</strong></span>
-                <span className={isEligible ? styles.progressSuccess : styles.progressAlert}>
-                  {isEligible ? t.eligible : t.addMore.replace('{amount}', remaining.toString())}
-                </span>
-              </div>
-              <div className={styles.progressBar}>
-                <div 
-                  className={`${styles.progressFill} ${isEligible ? styles.successFill : ''}`} 
-                  style={{ width: `${Math.min((totalWeight / 50) * 100, 100)}%` }} 
-                />
-              </div>
-            </div>
-          </div>
+          <div className={styles.feed}>
 
-          {isLoading ? (
-            <div className={styles.loadingSpinner}>
-              <div className={styles.spinner} />
-              <span>{t.loading}</span>
+            {/* Row 1: Cafes */}
+            <div className={styles.feedRow}>
+              <FadeUp className={styles.feedColImage}>
+                <div className={styles.imageFrame}>
+                  <img src="/images/about/about-2.webp" alt="Cafes" className={styles.feedImg} />
+                </div>
+              </FadeUp>
+              <FadeUp className={styles.feedColContent} delay={0.08}>
+                <span className={styles.feedLabel}>{t.feed1Label}</span>
+                <h2 className={styles.feedHeading}>{t.feed1Title}</h2>
+                <p className={styles.feedText}>{t.feed1Text}</p>
+              </FadeUp>
+            </div>
+
+            {/* Row 2: Equipment */}
+            <div className={styles.feedRowReverse}>
+              <FadeUp className={styles.feedColContent}>
+                <span className={styles.feedLabel}>{t.feed2Label}</span>
+                <h2 className={styles.feedHeading}>{t.feed2Title}</h2>
+                <p className={styles.feedText}>{t.feed2Text}</p>
+              </FadeUp>
+              <FadeUp className={styles.feedColImage} delay={0.08}>
+                <div className={styles.imageFrame}>
+                  <img src="/images/about/about-4.webp" alt="Espresso Equipment Setup" className={styles.feedImg} />
+                </div>
+              </FadeUp>
+            </div>
+
+            {/* Row 3: Barista Training */}
+            <div className={styles.feedRow}>
+              <FadeUp className={styles.feedColImage}>
+                <div className={styles.imageFrame}>
+                  <img src="/images/about/about-6.webp" alt="Barista Training" className={styles.feedImg} />
+                </div>
+              </FadeUp>
+              <FadeUp className={styles.feedColContent} delay={0.08}>
+                <span className={styles.feedLabel}>{t.feed3Label}</span>
+                <h2 className={styles.feedHeading}>{t.feed3Title}</h2>
+                <p className={styles.feedText}>{t.feed3Text}</p>
+              </FadeUp>
+            </div>
+
+            {/* Row 4: Sourcing & Values */}
+            <div className={styles.feedRowReverse}>
+              <FadeUp className={styles.feedColContent}>
+                <span className={styles.feedLabel}>{t.feed4Label}</span>
+                <h2 className={styles.feedHeading}>{t.feed4Title}</h2>
+                <p className={styles.feedText}>{t.feed4Text}</p>
+              </FadeUp>
+              <FadeUp className={styles.feedColImage} delay={0.08}>
+                <div className={styles.imageFrame}>
+                  <img src="/images/about/about-3.webp" alt="Sourcing & Values" className={styles.feedImg} />
+                </div>
+              </FadeUp>
+            </div>
+
+            {/* Row 5: Offices */}
+            <div className={styles.feedRow}>
+              <FadeUp className={styles.feedColImage}>
+                <div className={styles.imageFrame}>
+                  <img src="/images/about/about-1.webp" alt="Office Coffee Setup" className={styles.feedImg} />
+                </div>
+              </FadeUp>
+              <FadeUp className={styles.feedColContent} delay={0.08}>
+                <span className={styles.feedLabel}>{t.feed5Label}</span>
+                <h2 className={styles.feedHeading}>{t.feed5Title}</h2>
+                <p className={styles.feedText}>{t.feed5Text}</p>
+              </FadeUp>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ── 3. Blockquote Section ────────────────────────────── */}
+      <section className={styles.quoteSection}>
+        <div className={styles.container}>
+          <FadeUp className={styles.quoteContainer}>
+            <blockquote className={styles.quoteText}>{t.quote}</blockquote>
+            <div className={styles.quoteRule} />
+            <span className={styles.quoteAuthor}>{t.quoteAuthor}</span>
+          </FadeUp>
+        </div>
+      </section>
+
+      {/* ── 4. B2B Wholesale Signup Form ─────────────────────── */}
+      <section className={styles.formSection}>
+        <div className={styles.formContainer}>
+          <h2 className={styles.formTitle}>{t.formTitle}</h2>
+          <p className={styles.formSub}>{t.formSub}</p>
+
+          {submitted ? (
+            <div className={styles.successBox}>
+              <p>{t.successMsg}</p>
             </div>
           ) : (
-            <div className={styles.coffeeGrid}>
-              {products.map((product) => {
-                const qty = quantities[product.id] || 0;
-                const style = getStyle(product.id);
-                return (
-                  <motion.div
-                    key={product.id}
-                    className={`${styles.coffeeCard} ${qty > 0 ? styles.activeCard : ''}`}
-                    variants={{
-                      hidden: { opacity: 0, y: 28 },
-                      visible: { opacity: 1, y: 0, transition: { duration: 0.38, ease: [0.25, 0.46, 0.45, 0.94] } },
-                    }}
-                    initial="hidden"
-                    animate="visible"
-                    whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                  >
-                    {/* B2B Ribbon Badge */}
-                    <div className={styles.b2bBadge}>
-                      WHOLESALE 1KG
-                    </div>
+            <form onSubmit={handleSubmit} className={styles.form}>
+              
+              {/* Row 1: Name */}
+              <div className={styles.formRow}>
+                <div className={styles.formGroup}>
+                  <label htmlFor="firstName" className={styles.label}>{t.labelFirstName}</label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    placeholder={t.phFirstName}
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    className={styles.input}
+                    required
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label htmlFor="lastName" className={styles.label}>{t.labelLastName}</label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    placeholder={t.phLastName}
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    className={styles.input}
+                    required
+                  />
+                </div>
+              </div>
 
-                    {/* Product visual wrapper */}
-                    <div className={styles.bagWrapper}>
-                      {product.imageUrl ? (
-                        <img
-                          src={product.imageUrl}
-                          alt={product.name}
-                          className={styles.productImage}
-                        />
-                      ) : (
-                        <div className={styles.vectorArt}>
-                          <CoffeeBag
-                            coffeeName={product.name}
-                            origin={product.origin}
-                            bagColor={style.bagColor}
-                            illustration={style.illustration}
-                            emoji={style.emoji}
-                            locale={locale}
-                          />
-                        </div>
-                      )}
-                    </div>
+              {/* Row 2: Email & Phone */}
+              <div className={styles.formRow}>
+                <div className={styles.formGroup}>
+                  <label htmlFor="email" className={styles.label}>{t.labelEmail}</label>
+                  <input
+                    type="email"
+                    id="email"
+                    placeholder={t.phEmail}
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className={styles.input}
+                    required
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label htmlFor="phone" className={styles.label}>{t.labelPhone}</label>
+                  <input
+                    type="text"
+                    id="phone"
+                    placeholder={t.phPhone}
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className={styles.input}
+                  />
+                </div>
+              </div>
 
-                    {/* Meta info details */}
-                    <div className={styles.cardDetails}>
-                      <div className={styles.cardHeader}>
-                        <h3 className={styles.cardName}>{product.name}</h3>
-                        <div className={styles.priceContainer}>
-                          <span className={styles.cardPrice}>₺{product.wholesalePrice}</span>
-                          <span className={styles.priceUnit}>/kg</span>
-                        </div>
-                      </div>
+              {/* Row 3: City & Zip */}
+              <div className={styles.formRow}>
+                <div className={styles.formGroup}>
+                  <label htmlFor="city" className={styles.label}>{t.labelCity}</label>
+                  <input
+                    type="text"
+                    id="city"
+                    placeholder={t.phCity}
+                    value={formData.city}
+                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                    className={styles.input}
+                    required
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label htmlFor="zip" className={styles.label}>{t.labelZip}</label>
+                  <input
+                    type="text"
+                    id="zip"
+                    placeholder={t.phZip}
+                    value={formData.zip}
+                    onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
+                    className={styles.input}
+                  />
+                </div>
+              </div>
 
-                      <div className={styles.comparisonRow}>
-                        <span className={styles.retailCompare}>
-                          {locale === 'tr' ? `Perakende: ₺${product.price} (250g)` : `Retail: ₺${product.price} (250g)`}
-                        </span>
-                      </div>
+              {/* Row 4: Company & Website */}
+              <div className={styles.formRow}>
+                <div className={styles.formGroup}>
+                  <label htmlFor="company" className={styles.label}>{t.labelCompany}</label>
+                  <input
+                    type="text"
+                    id="company"
+                    placeholder={t.phCompany}
+                    value={formData.company}
+                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                    className={styles.input}
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label htmlFor="website" className={styles.label}>{t.labelWebsite}</label>
+                  <input
+                    type="text"
+                    id="website"
+                    placeholder={t.phWebsite}
+                    value={formData.website}
+                    onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                    className={styles.input}
+                  />
+                </div>
+              </div>
 
-                      <p className={styles.cardOrigin}>{product.origin} • {product.altitude}</p>
+              {/* Row 5: Message */}
+              <div className={styles.formGroupFull}>
+                <label htmlFor="message" className={styles.label}>{t.labelMessage}</label>
+                <textarea
+                  id="message"
+                  rows={5}
+                  placeholder={t.phMessage}
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  className={styles.textarea}
+                  required
+                />
+              </div>
 
-                      <div className={styles.cardNotes}>
-                        {product.tastingNotes.split(',').map((note) => (
-                          <span key={note.trim()} className={styles.noteTag}>{note.trim()}</span>
-                        ))}
-                      </div>
+              <button type="submit" className={styles.submitBtn}>{t.btnSubmit}</button>
 
-                      {/* B2B Quantity Controller directly on card */}
-                      <div className={styles.cardActions}>
-                        <div className={styles.quantityPicker}>
-                          <button 
-                            className={styles.pickerBtn} 
-                            onClick={() => handleAdjust(product.id, -5)}
-                            aria-label="Decrease by 5kg"
-                          >
-                            -5
-                          </button>
-                          <input
-                            type="text"
-                            className={styles.pickerInput}
-                            value={qty === 0 ? '' : `${qty}`}
-                            onChange={(e) => handleQtyChange(product.id, e.target.value)}
-                            placeholder="0 kg"
-                          />
-                          <button 
-                            className={styles.pickerBtn} 
-                            onClick={() => handleAdjust(product.id, 5)}
-                            aria-label="Increase by 5kg"
-                          >
-                            +5
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
+            </form>
           )}
         </div>
-      </main>
+      </section>
 
-      {/* Sticky Bottom Order Summary Drawer */}
-      {totalWeight > 0 && (
-        <div className={styles.summaryBar}>
-          <div className={styles.summaryBarInner}>
-            <div className={styles.summaryStats}>
-              <div className={styles.summaryStatItem}>
-                <span className={styles.statLabel}>{t.totalWeight}</span>
-                <span className={styles.statVal}>{totalWeight} kg</span>
-              </div>
-              <div className={styles.summaryStatItem}>
-                <span className={styles.statLabel}>{t.subtotal}</span>
-                <span className={styles.statVal}>₺{totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-              </div>
-            </div>
-
-            <div className={styles.summaryAction}>
-              {!isEligible && (
-                <span className={styles.lockWarning}>
-                  ⚠️ {t.minRequired}
-                </span>
-              )}
-              <button
-                disabled={!isEligible}
-                onClick={handleCheckout}
-                className={`${styles.checkoutBtn} ${isEligible ? styles.checkoutBtnActive : ''}`}
-              >
-                {t.checkoutBtn}
-              </button>
-            </div>
-          </div>
-          <div className={styles.shippingBar}>{t.freeShipping}</div>
-        </div>
-      )}
-
-      <Footer />
+      <Footer waveColor="#111111" locale={locale} />
     </div>
   );
 }

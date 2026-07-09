@@ -132,63 +132,32 @@ button {
   pointer-events: none;
   user-select: none;
   z-index: 1;
-  opacity: 0;
-  filter: brightness(2.6) contrast(1.1) saturate(1.5) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+  opacity: 0.07; /* Extremely subtle watermark details */
+  filter: brightness(0.12) contrast(1.6);
 }
 
 .heroBean1 {
-  width: 50px;
-  height: 50px;
+  width: 55px;
+  height: 55px;
   left: 8%;
-  animation: fallBean1 14s linear infinite;
-}
-
-.heroBean2 {
-  width: 35px;
-  height: 35px;
-  left: 22%;
-  animation: fallBean2 10s linear infinite;
-  animation-delay: 2s;
+  top: 30%;
+  transform: rotate(18deg);
 }
 
 .heroBean3 {
-  width: 60px;
-  height: 60px;
+  width: 65px;
+  height: 65px;
   right: 8%;
-  animation: fallBean3 18s linear infinite;
-  animation-delay: 1s;
+  top: 40%;
+  transform: rotate(-35deg);
 }
 
-.heroBean4 {
-  width: 45px;
-  height: 45px;
-  right: 20%;
-  animation: fallBean4 12s linear infinite;
-  animation-delay: 3.5s;
-}
-
-.heroBean5 {
-  width: 32px;
-  height: 32px;
-  left: 36%;
-  animation: fallBean1 16s linear infinite;
-  animation-delay: 5s;
-}
-
-.heroBean6 {
-  width: 48px;
-  height: 48px;
-  right: 34%;
-  animation: fallBean2 13s linear infinite;
-  animation-delay: 2.5s;
-}
-
+.heroBean2,
+.heroBean4,
+.heroBean5,
+.heroBean6,
 .heroBean7 {
-  width: 40px;
-  height: 40px;
-  left: 50%;
-  animation: fallBean3 15s linear infinite;
-  animation-delay: 6s;
+  display: none; /* Keep it to only 2 subtle beans total */
 }
 
 @keyframes fallBean1 {
@@ -295,11 +264,13 @@ button {
     85% { opacity: 0.18; }
     100% { top: 105%; transform: translateX(-10px) rotate(-360deg); opacity: 0; }
   }
-  .heroBean1 { width: 35px; left: 4%; }
-  .heroBean2 { width: 25px; left: 18%; }
-  .heroBean3 { width: 40px; right: 5%; }
-  .heroBean4 { width: 30px; right: 15%; }
-  .heroBean5 { display: none; }
-  .heroBean6 { display: none; }
-  .heroBean7 { display: none; }
+  .heroBean1 { width: 35px; left: 4%; top: 30%; }
+  .heroBean3 { width: 40px; right: 4%; top: 40%; }
+  .heroBean2,
+  .heroBean4,
+  .heroBean5,
+  .heroBean6,
+  .heroBean7 {
+    display: none;
+  }
 }

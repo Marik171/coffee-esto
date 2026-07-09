@@ -10,6 +10,9 @@ export async function middleware(request: NextRequest) {
     pathname === '/admin/login' ||
     pathname === '/api/admin/login' ||
     pathname === '/api/admin/logout' ||
+    pathname === '/api/account/request-code' ||
+    pathname === '/api/account/verify-code' ||
+    pathname === '/api/account/logout' ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api/checkout') ||
     pathname.startsWith('/api/orders/track') ||
@@ -45,6 +48,30 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // 3. Protect customer account API routes — attach customer id via header
+  if (pathname.startsWith('/api/account')) {
+    const token = request.cookies.get('customer_token')?.value;
+
+    if (!token) {
+      return NextResponse.json(
+        { success: false, error: 'Authorization credentials missing.' },
+        { status: 401 }
+      );
+    }
+
+    const payload = await verifyToken(token);
+    if (!payload || payload.role !== 'customer' || typeof payload.customerId !== 'string') {
+      return NextResponse.json(
+        { success: false, error: 'Session credentials invalid or expired.' },
+        { status: 401 }
+      );
+    }
+
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-customer-id', payload.customerId);
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  }
+
   return NextResponse.next();
 }
 
@@ -56,5 +83,6 @@ export const config = {
     '/admin/:path*',
     '/api/admin/:path*',
     '/api/upload',
+    '/api/account/:path*',
   ],
 };

@@ -1,495 +1,346 @@
-/* ── Page wrapper ───────────────────────────────────────────────── */
+/* ── Page Wrapper ───────────────────────────────────────────────── */
 .page {
-  background: var(--color-cream, #fdf8f0);
+  background: #fdfcf7; /* Clean, warm light cream background */
   min-height: 100vh;
   font-family: var(--font-family-primary);
   overflow-x: hidden;
+  width: 100%;
 }
 
-/* ── Shared container ───────────────────────────────────────────── */
 .container {
-  max-width: 1180px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 28px;
-}
-
-/* ── Shared eyebrow (amber pill) ────────────────────────────────── */
-.eyebrow {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: var(--color-amber, #c9963a);
-  border: 1px solid rgba(201, 150, 58, 0.28);
-  background: rgba(201, 150, 58, 0.07);
-  padding: 5px 14px;
-  border-radius: 50px;
-}
-
-/* ── 1. Hero ────────────────────────────────────────────────────── */
-.hero {
-  background: var(--color-espresso, #1a0e07);
-  padding: 188px 28px 140px;
-  text-align: center;
+  padding: 0 40px;
   position: relative;
 }
 
-.heroInner {
-  max-width: 820px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 26px;
+/* ── 1. Hero Banner Section ─────────────────────────────────────── */
+.heroSection {
+  position: relative;
+  height: 520px; /* Full-bleed banner height */
+  width: 100%;
+  margin-bottom: 140px; /* Give room for overlapping hero card */
+}
+
+.heroImageContainer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.heroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+  display: block;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.08); /* Minimal tint */
+}
+
+/* Floating White Overlay Card - Sits on the left overlapping the banner bottom */
+.heroCard {
+  position: absolute;
+  bottom: -90px;
+  left: 40px;
+  width: calc(100% - 80px);
+  max-width: 480px;
+  background: #ffffff;
+  padding: 44px 48px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f0ebe4;
+  z-index: 10;
+  text-align: left;
 }
 
 .heroEyebrow {
-  display: inline-block;
+  display: block;
+  font-family: var(--font-family-primary);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.16em;
-  color: var(--color-amber, #c9963a);
-  border: 1px solid rgba(201, 150, 58, 0.3);
-  background: rgba(201, 150, 58, 0.08);
-  padding: 5px 16px;
-  border-radius: 50px;
+  color: #8a7a70;
+  margin-bottom: 12px;
 }
 
 .heroTitle {
   font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
-  font-size: clamp(44px, 7vw, 80px);
-  font-weight: 700;
-  font-style: italic;
-  line-height: 1.08;
-  color: var(--color-warm-white, #f5ede0);
-  letter-spacing: -0.01em;
+  font-size: clamp(26px, 3.8vw, 36px);
+  font-weight: 400; /* Regular weight serif */
+  color: #1a0e07;
+  line-height: 1.25;
+  margin: 0 0 16px 0;
 }
 
 .heroSub {
-  font-size: 17px;
-  color: rgba(245, 237, 224, 0.62);
-  line-height: 1.7;
-  max-width: 520px;
-  font-weight: 300;
-}
-
-.heroWave {
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 100%;
-  line-height: 0;
-  pointer-events: none;
-}
-
-.heroWave svg {
-  width: 100%;
-  height: clamp(60px, 8vw, 100px);
-  display: block;
-}
-
-/* ── 2. Story Section ───────────────────────────────────────────── */
-.story {
-  background: var(--color-cream, #fdf8f0);
-  padding: 110px 0 90px;
-}
-
-.storyContent {
-  margin-bottom: 80px;
-}
-
-.storyLayoutContainer {
-  position: relative;
-}
-
-.storyLayoutContainer::after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-.storyImageFrame {
-  float: left;
-  width: 38%;
-  max-width: 440px;
-  margin: 12px 48px 24px 0;
-  border-radius: 22px;
-  overflow: hidden;
-  box-shadow: 0 24px 64px rgba(26, 14, 7, 0.13);
-  border: 1px solid rgba(201, 150, 58, 0.1);
-  aspect-ratio: 3 / 4;
-}
-
-.storyImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center top;
-  display: block;
-  transition: transform 0.75s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.storyImageFrame:hover .storyImg {
-  transform: scale(1.03);
-}
-
-.storyAccentLine {
-  width: 44px;
-  height: 3px;
-  background: var(--color-amber, #c9963a);
-  border-radius: 2px;
-}
-
-.storyHeading {
-  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
-  font-size: clamp(30px, 3.8vw, 48px);
-  font-weight: 700;
-  font-style: italic;
-  line-height: 1.12;
-  color: var(--color-warm-text, #2a1a0e);
-  letter-spacing: -0.01em;
-}
-
-.storyBody {
-  margin-top: 22px;
-  margin-bottom: 32px;
-}
-
-.storyBody p {
-  font-size: 15px;
-  color: var(--color-warm-mid, #6b4e30);
-  line-height: 1.8;
-  margin-bottom: 18px;
-}
-
-.storyLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--color-orange, #e84d00);
-  border-bottom: 1px solid rgba(232, 77, 0, 0.28);
-  padding-bottom: 2px;
-  text-decoration: none;
-  width: fit-content;
-  letter-spacing: 0.02em;
-  margin-top: 6px;
-  transition: gap 0.2s ease, border-color 0.2s ease;
-}
-
-.storyLink:hover {
-  gap: 13px;
-  border-color: var(--color-orange, #e84d00);
-}
-
-/* ── Photo Gallery ──────────────────────────────────────────────── */
-.gallery {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.galleryItem {
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid rgba(201, 150, 58, 0.1);
-  box-shadow: 0 4px 16px rgba(26, 14, 7, 0.06);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.galleryItem:hover {
-  transform: translateY(-5px) scale(1.01);
-  box-shadow: 0 12px 32px rgba(26, 14, 7, 0.1);
-}
-
-.galleryImg {
-  width: 100%;
-  height: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  display: block;
-}
-
-/* ── 3. Stats ───────────────────────────────────────────────────── */
-.stats {
-  background: var(--color-cream, #fdf8f0);
-  border-top: 1px solid rgba(201, 150, 58, 0.12);
-  border-bottom: 1px solid rgba(201, 150, 58, 0.12);
-  padding: 72px 0;
-}
-
-.statsGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-}
-
-.statItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  text-align: center;
-}
-
-.statValue {
-  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
-  font-size: clamp(38px, 4.5vw, 60px);
-  font-weight: 700;
-  color: var(--color-warm-text, #2a1a0e);
-  line-height: 1;
-}
-
-.statLabel {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--color-warm-mid, #6b4e30);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-}
-
-/* ── 4. Philosophy Pillars ──────────────────────────────────────── */
-.pillars {
-  background: var(--color-parchment, #ede5d0);
-  padding: 110px 0;
-}
-
-.sectionHeader {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-  margin-bottom: 72px;
-}
-
-.sectionTitle {
-  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
-  font-size: clamp(30px, 4vw, 52px);
-  font-weight: 700;
-  font-style: italic;
-  color: var(--color-warm-text, #2a1a0e);
-  letter-spacing: -0.01em;
-  line-height: 1.12;
-}
-
-.pillarsGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-.pillarCard {
-  background: #fff;
-  border: 1px solid rgba(201, 150, 58, 0.13);
-  border-radius: 22px;
-  padding: 44px 36px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  box-shadow: 0 4px 24px rgba(26, 14, 7, 0.05);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.pillarCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 16px 48px rgba(26, 14, 7, 0.1);
-}
-
-.pillarIcon {
-  color: var(--color-amber, #c9963a);
-  margin-bottom: 4px;
-}
-
-.pillarNum {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--color-amber, #c9963a);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.pillarTitle {
-  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
-  font-size: 21px;
-  font-weight: 700;
-  color: var(--color-warm-text, #2a1a0e);
-  line-height: 1.25;
-}
-
-.pillarDesc {
+  font-family: var(--font-family-primary);
   font-size: 14px;
-  color: var(--color-warm-mid, #6b4e30);
-  line-height: 1.75;
+  color: #666666;
+  line-height: 1.6;
+  font-weight: 400;
+  margin: 0;
 }
 
-/* ── 5. Roasting Process ────────────────────────────────────────── */
-.process {
-  background: var(--color-espresso, #1a0e07);
-  padding: 0 0 110px;
-  position: relative;
-}
-
-.processWaveTop {
-  line-height: 0;
-  pointer-events: none;
-}
-
-.processWaveTop svg {
-  width: 100%;
-  height: clamp(50px, 7vw, 80px);
-  display: block;
-}
-
-.sectionHeaderLight {
+/* ── 2. Quote Section ───────────────────────────────────────────── */
+.quoteSection {
+  background: #ffffff;
+  padding: 100px 20px 80px;
   text-align: center;
+}
+
+.quoteContainer {
+  max-width: 900px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
-  margin-bottom: 72px;
-  padding-top: 80px;
-}
-
-.eyebrowLight {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: var(--color-amber, #c9963a);
-  border: 1px solid rgba(201, 150, 58, 0.3);
-  background: rgba(201, 150, 58, 0.07);
-  padding: 5px 14px;
-  border-radius: 50px;
-}
-
-.sectionTitleLight {
-  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
-  font-size: clamp(30px, 4vw, 52px);
-  font-weight: 700;
-  font-style: italic;
-  color: var(--color-warm-white, #f5ede0);
-  letter-spacing: -0.01em;
-  line-height: 1.12;
-}
-
-.stepsGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 }
 
-.stepCard {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(201, 150, 58, 0.12);
-  border-radius: 18px;
-  padding: 32px 28px;
+.quoteText {
+  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
+  font-size: clamp(20px, 3vw, 29px);
+  font-weight: 400;
+  font-style: italic;
+  color: #1a0e07;
+  line-height: 1.5;
+  margin: 0;
+  text-align: center;
+  max-width: 820px;
+}
+
+.quoteRule {
+  width: 60px;
+  height: 1px;
+  background-color: #1a0e07;
+  margin: 12px 0;
+  opacity: 0.6;
+}
+
+.established {
+  font-family: var(--font-family-primary);
+  font-size: 10px;
+  font-weight: 700;
+  color: #8a7a70;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* ── 3. Vertical Stories & Images Feed ─────────────────────────── */
+.feedSection {
+  background: #fdfcf7;
+  padding: 60px 0 120px;
+}
+
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 120px; /* Big gaps between rows to give print editorial breathing room */
+}
+
+/* Standard row: Image left, details right */
+.feedRow {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 60px;
+  align-items: center;
+}
+
+/* Reverse row: Details left, Image right */
+.feedRowReverse {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 60px;
+  align-items: center;
+}
+
+/* Double image row: two tall images side-by-side */
+.feedDoubleImageRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.feedColImage {
+  width: 100%;
+}
+
+.doubleImageCol {
+  width: 100%;
+}
+
+.feedColContent {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  transition: background 0.2s ease;
+  padding: 20px 0;
 }
 
-.stepCard:hover {
-  background: rgba(255, 255, 255, 0.07);
+.imageFrame {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid #eaeaea;
+  position: relative;
+  background-color: #eae5d8;
 }
 
-.stepTop {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid rgba(201, 150, 58, 0.14);
-  padding-bottom: 18px;
+/* Standard row aspect ratio: auto landscape to show full photo without cropping */
+.feedColImage .imageFrame {
+  aspect-ratio: auto;
 }
 
-.stepNum {
+/* Double row aspect ratio: 4 / 5 portrait */
+.doubleImageCol .imageFrame {
+  aspect-ratio: 4 / 5;
+}
+
+.feedImg {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.doubleImageCol .feedImg {
+  height: 100%;
+  object-fit: cover;
+}
+
+.imageFrame:hover .feedImg {
+  transform: scale(1.04);
+}
+
+.feedLabel {
+  display: block;
+  font-family: var(--font-family-primary);
+  font-size: 10px;
+  font-weight: 700;
+  color: #8a7a70;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.feedHeading {
   font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
-  font-size: 38px;
-  font-weight: 800;
-  color: rgba(201, 150, 58, 0.18);
-  line-height: 1;
+  font-size: clamp(24px, 3.2vw, 36px);
+  font-weight: 400; /* Regular weight Playfair Display */
+  color: #1a0e07;
+  line-height: 1.25;
+  margin: 0;
 }
 
-.stepIcon {
-  color: var(--color-amber, #c9963a);
-}
-
-.stepTitle {
-  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--color-amber, #c9963a);
-  line-height: 1.3;
-}
-
-.stepText {
-  font-size: 13px;
-  color: rgba(245, 237, 224, 0.62);
+.feedText {
+  font-family: var(--font-family-primary);
+  font-size: 14px;
+  color: #666666;
   line-height: 1.75;
+  margin: 0;
 }
 
-/* ── Responsive ─────────────────────────────────────────────────── */
-@media (max-width: 992px) {
-  .storyImageFrame {
-    float: none;
-    width: 100%;
-    max-width: 500px;
-    margin: 0 auto 32px;
-    aspect-ratio: 3 / 4;
-  }
+/* ── 4. CTA Black Banner Section ───────────────────────────────── */
+.ctaBannerSection {
+  background-color: #111111; /* Deep rich black */
+  padding: 60px 20px;
+  text-align: center;
+}
 
-  .pillarsGrid {
+.ctaContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 60px; /* Big gaps between link CTAs */
+}
+
+.ctaLink {
+  font-family: var(--font-family-primary);
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  padding-bottom: 4px;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+
+.ctaLink:hover {
+  color: #c9963a; /* Warm gold highlight */
+  border-color: #c9963a;
+}
+
+/* ── Responsive breakpoints ─────────────────────────────────────── */
+@media (max-width: 992px) {
+  .container {
+    padding: 0 20px;
+  }
+  
+  .heroSection {
+    height: 400px;
+    margin-bottom: 100px;
+  }
+  
+  .heroCard {
+    left: 20px;
+    width: calc(100% - 40px);
+    padding: 32px;
+    bottom: -60px;
+  }
+  
+  .feed {
+    gap: 80px;
+  }
+  
+  .feedRow,
+  .feedRowReverse {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .feedRowReverse {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  
+  .feedDoubleImageRow {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .heroSection {
+    height: 300px;
+    margin-bottom: 120px;
+  }
+  
+  .heroCard {
+    padding: 24px;
+    bottom: -90px;
+  }
+  
+  .quoteSection {
+    padding: 60px 16px 40px;
+  }
+  
+  .feedSection {
+    padding: 40px 0 80px;
+  }
+  
+  .feedDoubleImageRow {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-
-  .stepsGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
-  }
-
-  .statsGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 32px 20px;
-  }
-}
-
-@media (max-width: 640px) {
-  .hero {
-    padding: 148px 20px 112px;
-  }
-
-  .story {
-    padding: 72px 0 60px;
-  }
-
-  .gallery {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-
-  .statsGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 28px 16px;
-  }
-
-  .stepsGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .sectionHeaderLight {
-    padding-top: 56px;
-  }
-
-  .pillarCard {
-    padding: 32px 24px;
-  }
-
-  .container {
-    padding: 0 20px;
+  
+  .ctaContainer {
+    flex-direction: column;
+    gap: 24px;
   }
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, use } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Footer from './Footer';
 import Navbar from './Navbar';
@@ -35,34 +35,26 @@ interface CoffeeBagProps {
 }
 
 function CoffeeBag({ coffeeName, origin, bagColor, illustration, emoji, locale = 'en' }: CoffeeBagProps) {
-  // Let's create an ID-safe identifier for gradients since multiple bags are rendered in a grid!
   const safeId = coffeeName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
 
   return (
     <svg viewBox="0 0 200 260" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', margin: '0 auto' }}>
       <defs>
-        {/* Soft 3D drop shadow underneath the entire bag */}
         <filter id={`bagShadow-${safeId}`} x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="-2" dy="6" stdDeviation="5" floodColor="#000000" floodOpacity="0.16" />
         </filter>
-        
-        {/* Shading for the side panel (Gusset) */}
         <linearGradient id={`gussetGrad-${safeId}`} x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="rgba(0, 0, 0, 0.45)" />
           <stop offset="35%" stopColor="rgba(0, 0, 0, 0.12)" />
           <stop offset="70%" stopColor="rgba(255, 255, 255, 0.08)" />
           <stop offset="100%" stopColor="rgba(0, 0, 0, 0.35)" />
         </linearGradient>
-
-        {/* Shading for the front panel (soft gradient from left to right) */}
         <linearGradient id={`frontShade-${safeId}`} x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="rgba(0, 0, 0, 0.08)" />
           <stop offset="15%" stopColor="rgba(255, 255, 255, 0.22)" />
           <stop offset="90%" stopColor="rgba(255, 255, 255, 0.0)" />
           <stop offset="100%" stopColor="rgba(0, 0, 0, 0.06)" />
         </linearGradient>
-
-        {/* Gold metallic gradient for the crest */}
         <linearGradient id={`goldGrad-${safeId}`} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#d4af37" />
           <stop offset="30%" stopColor="#f3e5ab" />
@@ -73,71 +65,55 @@ function CoffeeBag({ coffeeName, origin, bagColor, illustration, emoji, locale =
       </defs>
 
       <g filter={`url(#bagShadow-${safeId})`}>
-        
-        {/* 1. LEFT GUSSET SIDE PANEL */}
         <path d="M35,35 L65,24 L65,236 L35,248 Z" fill={bagColor} />
         <path d="M35,35 L65,24 L65,236 L35,248 Z" fill={`url(#gussetGrad-${safeId})`} />
-        
-        {/* Vertical branding text on the side gusset */}
         <g transform="translate(47, 135) rotate(-90)">
           <text textAnchor="middle" fill="rgba(255, 255, 255, 0.3)" fontSize="8.5" fontWeight="800" letterSpacing="2.5">
             COFFEE ESTO
           </text>
         </g>
 
-        {/* 2. FRONT PAPER PANEL */}
         <path d="M65,24 L165,29 L165,231 L65,236 Z" fill="#faf9f3" />
         <path d="M65,24 L165,29 L165,231 L65,236 Z" fill={`url(#frontShade-${safeId})`} />
 
-        {/* 3. TOP CRIMPED FLAP */}
         <path d="M35,20 L65,10 L165,15 L135,25 Z" fill={bagColor} opacity="0.9" />
         <path d="M35,20 L65,10 L165,15 M35,23 L65,13 L165,18 M35,26 L65,16 L165,21" stroke="rgba(0,0,0,0.18)" strokeWidth="0.8" />
 
-        {/* 4. FRONT LABEL DETAILS (slanted perspective shear matrix) */}
         <g transform="matrix(1 0.047 -0.047 1 0 0)">
-          
-          {/* Gold Rounded Crest at top */}
           <path d="M102,28 H128 V64 C128,72 102,72 102,64 Z" fill={`url(#goldGrad-${safeId})`} />
-          
-          {/* Circular Ring in Crest */}
           <circle cx="115" cy="45" r="8.5" fill="none" stroke="#2a170c" strokeWidth="0.8" />
           <circle cx="115" cy="45" r="6.5" fill="none" stroke="#2a170c" strokeWidth="0.5" strokeDasharray="1.5 1" />
-          
-          {/* Coffee Bean inside crest */}
           <path d="M115,41 C112.5,43 112.5,47 115,49 C117.5,47 117.5,43 115,41 Z" fill="#2a170c" />
           <path d="M113.8,44 C114.5,44.5 115.5,45.5 116.2,46" stroke="#faf9f3" strokeWidth="0.4" fill="none" />
 
-          {/* Typography */}
           <text x="115" y="82" textAnchor="middle" fill="#c9963a" fontSize="6.5" fontWeight="800" letterSpacing="0.8">ESTO ROASTERY</text>
           <text x="115" y="93" textAnchor="middle" fill="#2a170c" fontSize="9.5" fontWeight="900" letterSpacing="0.2" fontFamily="var(--font-family-display, 'Playfair Display', Georgia, serif)">THE BEAN</text>
 
-          {/* Custom Origin Illustration translated & scaled in center */}
           <g transform="translate(15, 22) scale(0.85)" stroke="#423229" strokeWidth="1.2" fill="none">
             {illustration}
           </g>
 
-          {/* Sketched coffee beans at baseline */}
           <g transform="translate(101, 168)" fill="#423229" stroke="none">
             <ellipse cx="6" cy="4" rx="3.5" ry="2.2" transform="rotate(25 6 4)" />
             <ellipse cx="14" cy="2" rx="3" ry="1.8" transform="rotate(-35 14 2)" />
             <ellipse cx="-4" cy="3" rx="3.2" ry="2" transform="rotate(60 -4 3)" />
           </g>
 
-          {/* Net weight label */}
           <text x="115" y="190" textAnchor="middle" fill="rgba(66, 50, 41, 0.45)" fontSize="5.5" fontWeight="700" letterSpacing="0.5">
             {locale === 'tr' ? 'TAZE KAVRULMUŞ • 250G' : 'FRESHLY ROASTED • 250G'}
           </text>
-
         </g>
-
       </g>
     </svg>
   );
 }
 
-const PRODUCT_STYLES: Record<string, { bagColor: string; textColor: string; accentColor: string; illustration: React.ReactNode; emoji: string }> = {
+const PRODUCT_STYLES: Record<string, { bagColor: string; themeBg: string; sensoryBg: string; sensoryName: string; textColor: string; accentColor: string; illustration: React.ReactNode; emoji: string }> = {
   guatemala: {
     bagColor: '#523e3e',
+    themeBg: '#edf2f7',
+    sensoryBg: 'radial-gradient(circle, rgba(230,215,200,0.7) 0%, rgba(255,255,255,0) 70%)',
+    sensoryName: 'Warm Cocoa',
     textColor: '#ffffff',
     accentColor: '#ebdada',
     emoji: '🌋',
@@ -159,6 +135,9 @@ const PRODUCT_STYLES: Record<string, { bagColor: string; textColor: string; acce
   },
   ethiopia: {
     bagColor: '#74a57f',
+    themeBg: '#fbf1c9',
+    sensoryBg: 'radial-gradient(circle, rgba(247,231,168,0.7) 0%, rgba(255,255,255,0) 70%)',
+    sensoryName: 'Bright Yellow',
     textColor: '#ffffff',
     accentColor: '#c7edd0',
     emoji: '🍋',
@@ -179,6 +158,9 @@ const PRODUCT_STYLES: Record<string, { bagColor: string; textColor: string; acce
   },
   nicaragua: {
     bagColor: '#f4a261',
+    themeBg: '#fdf0e2',
+    sensoryBg: 'radial-gradient(circle, rgba(250,220,185,0.7) 0%, rgba(255,255,255,0) 70%)',
+    sensoryName: 'Warm Amber',
     textColor: '#2c2626',
     accentColor: '#ffe2cd',
     emoji: '🍯',
@@ -199,6 +181,9 @@ const PRODUCT_STYLES: Record<string, { bagColor: string; textColor: string; acce
   },
   sumatra: {
     bagColor: '#3d4b5c',
+    themeBg: '#e3ebf2',
+    sensoryBg: 'radial-gradient(circle, rgba(202,219,232,0.7) 0%, rgba(255,255,255,0) 70%)',
+    sensoryName: 'Deep Moss',
     textColor: '#ffffff',
     accentColor: '#cbd6e2',
     emoji: '🌲',
@@ -218,6 +203,9 @@ const PRODUCT_STYLES: Record<string, { bagColor: string; textColor: string; acce
   },
   colombia: {
     bagColor: '#b23b3b',
+    themeBg: '#fbecee',
+    sensoryBg: 'radial-gradient(circle, rgba(248,212,217,0.7) 0%, rgba(255,255,255,0) 70%)',
+    sensoryName: 'Ruby Red',
     textColor: '#ffffff',
     accentColor: '#fcd3d3',
     emoji: '🍒',
@@ -241,6 +229,9 @@ const PRODUCT_STYLES: Record<string, { bagColor: string; textColor: string; acce
   },
   papua: {
     bagColor: '#206a5d',
+    themeBg: '#e1f0ec',
+    sensoryBg: 'radial-gradient(circle, rgba(198,231,223,0.7) 0%, rgba(255,255,255,0) 70%)',
+    sensoryName: 'Crisp Jade',
     textColor: '#ffffff',
     accentColor: '#c5ebd6',
     emoji: '🕊️',
@@ -258,7 +249,13 @@ const PRODUCT_STYLES: Record<string, { bagColor: string; textColor: string; acce
 };
 
 const DEFAULT_STYLE = {
-  bagColor: '#6c5ce7', textColor: '#ffffff', accentColor: '#e0dbff', emoji: '☕️',
+  bagColor: '#6c5ce7',
+  themeBg: '#e1e9f0',
+  sensoryBg: 'radial-gradient(circle, rgba(225,233,240,0.7) 0%, rgba(255,255,255,0) 70%)',
+  sensoryName: 'Balanced Tone',
+  textColor: '#ffffff',
+  accentColor: '#e0dbff',
+  emoji: '☕️',
   illustration: (<g opacity="0.8"><circle cx="100" cy="120" r="18" fill="none" stroke="#ffffff" strokeWidth="1.5" /><path d="M90,115H110" stroke="#ffffff" strokeWidth="1.5" /></g>)
 };
 
@@ -274,6 +271,9 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
   const [qty, setQty] = useState(1);
   const [inView, setInView] = useState(false);
   const [tiltStyle, setTiltStyle] = useState<React.CSSProperties>({});
+  const [size, setSize] = useState('250g');
+  const [grindType, setGrindType] = useState('whole');
+  const [purchaseType, setPurchaseType] = useState<'oneTime' | 'subscribe'>('oneTime');
   const detailRef = useRef<HTMLDivElement | null>(null);
 
   const translations = {
@@ -296,7 +296,7 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
       acidity: 'Acidity',
       sweetness: 'Sweetness',
       body: 'Body',
-      addToCart: 'Add to Cart • ₺{total}',
+      addToCart: 'Add to Cart',
       outOfStock: 'Out of Stock',
       onlyXLeft: 'Only {n} left in stock',
       categorySingleOrigin: 'Single Origin',
@@ -322,7 +322,7 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
       acidity: 'Asidite',
       sweetness: 'Tatlılık',
       body: 'Gövde',
-      addToCart: 'Sepete Ekle • ₺{total}',
+      addToCart: 'Sepete Ekle',
       outOfStock: 'Stokta Yok',
       onlyXLeft: 'Stokta sadece {n} adet kaldı',
       categorySingleOrigin: 'Tek Köken',
@@ -342,7 +342,6 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
     return label;
   };
 
-  // Fetch from database
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -406,24 +405,23 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
   }
 
   const style = PRODUCT_STYLES[coffee.id] || DEFAULT_STYLE;
-  const acidity   = coffee.roastLevel < 45 ? 5 : coffee.roastLevel < 65 ? 3 : 1;
-  const sweetness = coffee.roastLevel < 45 ? 3 : coffee.roastLevel < 65 ? 5 : 3;
-  const body      = coffee.roastLevel < 45 ? 2 : coffee.roastLevel < 65 ? 4 : 5;
 
   return (
     <div className={styles.pageWrapper}>
       <Navbar locale={locale} />
       <div className={styles.navOffset} aria-hidden="true" />
 
+      {/* ── 1. Hero Checkout Container Section ── */}
       <section
         ref={detailRef}
         className={`${styles.detailSection} ${inView ? styles.inView : ''}`}
+        style={{ '--product-theme-bg': style.themeBg } as React.CSSProperties}
         aria-label={`Coffee details for ${coffee.name}`}
       >
         <div className={styles.container}>
           <div className={styles.splitLayout}>
 
-            {/* ── Left: Visual Panel ── */}
+            {/* Visual Media Column */}
             <div className={styles.visualCol}>
               {coffee.imageUrl ? (
                 <div className={styles.mediaCol}>
@@ -441,7 +439,6 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
                   )}
                 </div>
               ) : (
-                /* Fallback: 3D parallax SVG bag */
                 <div
                   className={styles.perspectiveContainer}
                   onMouseMove={handleMouseMove}
@@ -449,7 +446,7 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
                 >
                   <div className={styles.tiltCard} style={{ ...tiltStyle, backgroundColor: 'transparent', boxShadow: 'none' }}>
                     <div className={styles.cardVector}>
-                      <CoffeeBag 
+                      <CoffeeBag
                         coffeeName={coffee.name}
                         origin={coffee.origin}
                         bagColor={style.bagColor}
@@ -463,129 +460,155 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
               )}
             </div>
 
-            {/* ── Right: Details ── */}
+            {/* Details & Purchase Logic Column */}
             <div className={styles.detailsCol}>
               <div className={styles.categoryBreadcrumb}>
                 <Link href={`${linkPrefix}/coffee`}>{t.breadcrumbCatalog}</Link> / <span style={{ textTransform: 'capitalize' }}>{getCategoryLabel(coffee.category.replace('-', ' '))}</span>
               </div>
 
               <h1 className={styles.productName}>{coffee.name}</h1>
+              <div className={styles.subtitleNotes}>
+                {coffee.varietal || 'Single Origin Blend'} • {coffee.altitude || '1500m'}
+              </div>
+
               <div className={styles.priceRow}>
-                <span className={styles.priceVal}>₺{coffee.price}</span>
-                <span className={styles.bagWeight}>{t.wholeBean}</span>
+                <span className={styles.priceVal}>
+                  ₺{purchaseType === 'subscribe' ? Math.round(coffee.price * qty * 0.85) : coffee.price * qty}
+                </span>
               </div>
 
-              <p className={styles.descriptionText}>{coffee.description}</p>
-
-              <div className={styles.notesContainer}>
-                <h3 className={styles.sectionTitle}>{t.tastingNotes}</h3>
-                <div className={styles.notesGroup}>
-                  {coffee.tastingNotes.split(',').map(n => (
-                    <span key={n.trim()} className={styles.noteTag}>{n.trim()}</span>
-                  ))}
-                </div>
-              </div>
-
-              <div className={styles.specsGrid}>
-                <div className={styles.specItem}><span className={styles.specLabel}>{t.origin}</span><span className={styles.specValue}>{coffee.origin}</span></div>
-                <div className={styles.specItem}><span className={styles.specLabel}>{t.altitude}</span><span className={styles.specValue}>{coffee.altitude || 'N/A'}</span></div>
-                <div className={styles.specItem}><span className={styles.specLabel}>{t.varietal}</span><span className={styles.specValue}>{coffee.varietal || 'N/A'}</span></div>
-              </div>
-
-              <div className={styles.roastSection}>
-                <div className={styles.roastLabelRow}>
-                  <span className={styles.roastLabel}>{t.roastLevel}</span>
-                  <span className={styles.roastValue}>{coffee.roastLevel}%</span>
-                </div>
-                <div className={styles.sliderTrack}>
-                  <div className={styles.sliderProgress} style={{ width: `${coffee.roastLevel}%` }} />
-                </div>
-                <div className={styles.sliderMarkers}><span>{t.light}</span><span>{t.medium}</span><span>{t.dark}</span></div>
-              </div>
-
-              <div className={styles.sensoryBlock}>
-                <h3 className={styles.sectionTitle}>{t.sensoryProfile}</h3>
-                {[[t.acidity, acidity], [t.sweetness, sweetness], [t.body, body]].map(([label, val]) => (
-                  <div key={label as string} className={styles.radarRow}>
-                    <span className={styles.radarLabel}>{label}</span>
-                    <div className={styles.radarNodes}>
-                      {[1,2,3,4,5].map(n => (
-                        <span key={n} className={`${styles.radarNode} ${n <= (val as number) ? styles.radarNodeActive : ''}`} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className={styles.purchaseControls}>
+              <div className={styles.quantitySection}>
+                <label className={styles.quantityLabel}>Quantity</label>
                 <div className={styles.qtyBox}>
                   <button onClick={decrement} className={styles.qtyBtn} disabled={qty <= 1} aria-label="Decrease quantity">–</button>
                   <span className={styles.qtyVal}>{qty}</span>
                   <button onClick={increment} className={styles.qtyBtn} disabled={qty >= coffee.stock} aria-label="Increase quantity">+</button>
                 </div>
-                <button
-                  onClick={() => addToCart({
-                    id: coffee.id,
-                    name: coffee.name,
-                    price: coffee.price,
-                    stock: coffee.stock,
-                    emoji: style.emoji,
-                    bagColor: style.bagColor,
-                    notes: coffee.tastingNotes.split(',').map(n => n.trim()),
-                    imageUrl: coffee.imageUrl,
-                  }, qty)}
-                  className={styles.addToCartBtn}
-                  disabled={coffee.stock === 0}
-                >
-                  {coffee.stock === 0 ? t.outOfStock : t.addToCart.replace('{total}', (coffee.price * qty).toString())}
-                </button>
-                {coffee.stock > 0 && coffee.stock <= 5 && (
-                  <span className={`${styles.stockNote} ${styles.stockNoteLow}`}>
-                    {t.onlyXLeft.replace('{n}', coffee.stock.toString())}
-                  </span>
-                )}
               </div>
 
-              {/* Brew Guides Companion CTA */}
-              <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px dashed var(--color-parchment)' }}>
-                <Link 
-                  href={`${linkPrefix}/brew`}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '10px',
-                    width: '100%',
-                    padding: '14px',
-                    borderRadius: 'var(--radius-lg)',
-                    border: '1px solid var(--color-orange)',
-                    color: 'var(--color-orange)',
-                    fontWeight: '700',
-                    fontSize: '14px',
-                    transition: 'all var(--motion-duration-fast) ease',
-                    textAlign: 'center',
-                    background: 'transparent',
-                    textDecoration: 'none'
-                  }}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.background = 'var(--color-orange)';
-                    e.currentTarget.style.color = 'var(--color-text-primary)';
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = 'var(--color-orange)';
-                  }}
-                >
-                  {t.brewGuideCTA}
-                </Link>
+              <div className={styles.selectControl}>
+                <label className={styles.selectLabel}>Size</label>
+                <select value={size} onChange={(e) => setSize(e.target.value)} className={styles.selectInput}>
+                  <option value="250g">250g</option>
+                  <option value="500g">500g</option>
+                  <option value="1kg">1kg</option>
+                </select>
               </div>
+
+              <div className={styles.selectControl}>
+                <label className={styles.selectLabel}>Grind Type</label>
+                <select value={grindType} onChange={(e) => setGrindType(e.target.value)} className={styles.selectInput}>
+                  <option value="whole">Whole Bean</option>
+                  <option value="medium">Medium Grind</option>
+                  <option value="fine">Fine Grind</option>
+                </select>
+              </div>
+
+              <div style={{ marginTop: '8px' }}>
+                <div className={styles.purchaseOptions}>
+                  <div
+                    className={`${styles.purchaseOption} ${purchaseType === 'oneTime' ? styles.active : ''}`}
+                    onClick={() => setPurchaseType('oneTime')}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span className={styles.purchaseOptionRadio} />
+                      <span className={styles.purchaseOptionName}>One-time</span>
+                    </div>
+                    <span className={styles.purchaseOptionPrice}>Extra Fresh</span>
+                  </div>
+                  <div
+                    className={`${styles.purchaseOption} ${purchaseType === 'subscribe' ? styles.active : ''}`}
+                    onClick={() => setPurchaseType('subscribe')}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span className={styles.purchaseOptionRadio} />
+                      <span className={styles.purchaseOptionName}>Subscribe & Save</span>
+                    </div>
+                    <span className={styles.purchaseOptionPrice}>Save 15%</span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => addToCart({
+                  id: coffee.id,
+                  name: coffee.name,
+                  price: purchaseType === 'subscribe' ? Math.round(coffee.price * 0.85) : coffee.price,
+                  stock: coffee.stock,
+                  emoji: style.emoji,
+                  bagColor: style.bagColor,
+                  notes: coffee.tastingNotes.split(',').map(n => n.trim()),
+                  imageUrl: coffee.imageUrl,
+                }, qty)}
+                className={styles.addToCartBtn}
+                disabled={coffee.stock === 0}
+              >
+                {coffee.stock === 0 ? t.outOfStock : t.addToCart}
+              </button>
+
+              {coffee.stock > 0 && coffee.stock <= 5 && (
+                <span className={`${styles.stockNote} ${styles.stockNoteLow}`} style={{ marginTop: '8px', display: 'block' }}>
+                  {t.onlyXLeft.replace('{n}', coffee.stock.toString())}
+                </span>
+              )}
             </div>
 
           </div>
         </div>
       </section>
 
-      <Footer waveColor="#faf8f6" locale={locale} />
+      {/* ── Product Reviews Section ── */}
+      <section className={styles.reviewsSection}>
+        <div className={styles.container}>
+          <h2 className={styles.reviewsMainTitle}>Product Reviews</h2>
+
+          {/* Reviews Summary Dashboard */}
+          <div className={styles.reviewsDashboard}>
+            <div className={styles.dashboardScore}>
+              <span className={styles.scoreNumber}>5.00 / 5</span>
+              <div className={styles.scoreStars}>★★★★★</div>
+              <span className={styles.scoreCount}>Based on 1 review</span>
+            </div>
+
+            <div className={styles.dashboardBars}>
+              {[5, 4, 3, 2, 1].map((stars) => (
+                <div key={stars} className={styles.barRow}>
+                  <span className={styles.barLabel}>★ {stars}</span>
+                  <div className={styles.barTrack}>
+                    <div className={styles.barFill} style={{ width: stars === 5 ? '100%' : '0%' }} />
+                  </div>
+                  <span className={styles.barCount}>({stars === 5 ? 1 : 0})</span>
+                </div>
+              ))}
+            </div>
+
+            <div className={styles.dashboardActions}>
+              <button className={styles.secondarySharpBtn}>Write a review</button>
+              <button className={styles.secondarySharpBtn}>Ask a question</button>
+            </div>
+          </div>
+
+          {/* Individual Reviews Feed */}
+          <div className={styles.reviewsFeed}>
+            <div className={styles.reviewCard}>
+              <div className={styles.reviewHeader}>
+                <div className={styles.reviewerBadge}>TW</div>
+                <div>
+                  <h4 className={styles.reviewerName}>Review</h4>
+                  <div className={styles.reviewMeta}>Delivered by Coffee • 1 year ago</div>
+                </div>
+              </div>
+              <div className={styles.reviewRating}>★★★★★</div>
+              <h5 className={styles.reviewTitle}>Total Treat</h5>
+              <p className={styles.reviewBody}>
+                An absolutely beautiful roast profile. Clean, incredibly bright development notes that make morning pourovers a true ritual.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Footer waveColor="#ffffff" locale={locale} />
     </div>
   );
 }

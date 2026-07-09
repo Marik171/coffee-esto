@@ -23,9 +23,9 @@ interface ProductData {
   isActive: boolean;
 }
 
-/* ── Inline SVG Professional Icons ── */
+/* ── Inline SVG Professional Minimalist Icons ── */
 const IconEspresso = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
     <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
     <path d="M6 2v2M10 2v2M14 2v2" />
@@ -33,109 +33,109 @@ const IconEspresso = () => (
 );
 
 const IconFilter = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M18 3H6L4 10h16Z" />
     <path d="M12 10v7" />
     <path d="M8 21h8" />
-    <path d="M12 10l-4 7h8Z" opacity="0.3" fill="currentColor" />
+    <path d="M12 10l-4 7h8Z" fill="currentColor" fillOpacity="0.08" />
   </svg>
 );
 
 const IconPress = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M5 21h14" />
     <path d="M17 6V20a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V6" />
     <path d="M12 2v4" />
     <path d="M8 2h8" />
-    <path d="M7 11h10M7 15h10" opacity="0.6" />
+    <path d="M7 11h10M7 15h10" strokeOpacity="0.5" />
   </svg>
 );
 
 const IconAeropress = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <rect x="7" y="2" width="10" height="16" rx="1" />
     <path d="M6 18h12M8 22h8" />
-    <path d="M10 6h4M10 10h4M10 14h4" opacity="0.5" />
+    <path d="M10 6h4M10 10h4M10 14h4" strokeOpacity="0.4" />
   </svg>
 );
 
 const IconTurkish = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M5 21h10M7 21v-7a3 3 0 0 1 3-3h1a3 3 0 0 1 3 3v7" />
     <path d="M14 11l8-4" />
-    <path d="M10 11V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v6" opacity="0.4" />
+    <path d="M10 11V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v6" strokeOpacity="0.3" />
   </svg>
 );
 
 const IconFruity = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <circle cx="12" cy="12" r="10" />
-    <path d="M12 2v20M2 12h20" opacity="0.4" />
-    <path d="M12 12l7-7M12 12l-7 7M12 12l7 7M12 12L5 5" opacity="0.4" />
+    <path d="M12 2v20M2 12h20" strokeOpacity="0.3" />
+    <path d="M12 12l7-7M12 12l-7 7M12 12l7 7M12 12L5 5" strokeOpacity="0.3" />
   </svg>
 );
 
 const IconBalanced = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <rect x="3" y="3" width="18" height="18" rx="2" />
-    <path d="M3 9h18M3 15h18M9 3v18M15 3v18" opacity="0.4" />
+    <path d="M3 9h18M3 15h18M9 3v18M15 3v18" strokeOpacity="0.3" />
   </svg>
 );
 
 const IconBold = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M12 2L3 17h18Z" />
-    <path d="M12 7l-6 10h12" opacity="0.5" />
+    <path d="M12 7l-6 10h12" strokeOpacity="0.4" />
     <path d="M12 17v5" />
   </svg>
 );
 
 const IconLight = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <circle cx="12" cy="12" r="5" />
     <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
   </svg>
 );
 
 const IconMedium = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <circle cx="12" cy="12" r="9" />
     <path d="M12 3v18" />
-    <path d="M12 3a9 9 0 0 1 0 18Z" fill="currentColor" opacity="0.25" />
+    <path d="M12 3a9 9 0 0 1 0 18Z" fill="currentColor" fillOpacity="0.12" />
   </svg>
 );
 
 const IconDark = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <circle cx="12" cy="12" r="9" fill="currentColor" opacity="0.4" />
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="9" fill="currentColor" fillOpacity="0.35" />
     <path d="M12 3v18" />
   </svg>
 );
 
 const IconAny = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <circle cx="12" cy="12" r="10" strokeDasharray="4 3" />
     <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" />
   </svg>
 );
 
 const IconSlow = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
     <path d="M12 6v6l4 2" />
-    <path d="M12 2a10 10 0 0 1 0 20" opacity="0.15" />
+    <path d="M12 2a10 10 0 0 1 0 20" strokeOpacity="0.15" />
   </svg>
 );
 
 const IconCompanion = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M17 18a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10Z" />
-    <path d="M5 8h14M8 12h8" opacity="0.5" />
+    <path d="M5 8h14M8 12h8" strokeOpacity="0.4" />
   </svg>
 );
 
 const IconJumpstart = () => (
-  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8Z" />
   </svg>
 );
@@ -159,7 +159,7 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
   const [loading, setLoading] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
 
-  // Translations
+  // Synced Internal Translation Tables
   const t = {
     en: {
       title: 'Find Your Perfect Roast',
@@ -267,7 +267,7 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
           title: 'Hangi kavrum derecesini tercih edersiniz?',
           options: [
             { value: 'light', label: 'Açık Kavrum (Light)', desc: 'Kahvenin özgün meyvemsi asiditesini korur.', icon: <IconLight /> },
-            { value: 'medium', label: 'Orta Kavrum (Medium)', desc: 'Dengeli tatlılık, gövde ve asidite sunar.', icon: <IconMedium /> },
+            { value: 'medium', label: 'Orta Kavrum (Medium)', desc: 'Dengeli tatlılık, gövde og asidite sunar.', icon: <IconMedium /> },
             { value: 'dark', label: 'Koyu Kavrum (Dark)', desc: 'Yoğun gövde, düşük asidite ve kakao tonları.', icon: <IconDark /> },
             { value: 'any', label: 'Fark Etmez', desc: 'Lezzet profilime uyan herhangi birini göster.', icon: <IconAny /> }
           ]
@@ -278,7 +278,7 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
           options: [
             { value: 'slow', label: 'Yavaş Bir Ritüel', desc: 'Hassas tadım notalarını keşfetmeyi seviyorum.', icon: <IconSlow /> },
             { value: 'steady', label: 'Günlük Eşlikçi', desc: 'Günü kurtaracak yumuşak, güvenilir bir tada ihtiyacım var.', icon: <IconCompanion /> },
-            { value: 'kick', label: 'Sabah Enerjisi', desc: 'Güne başlamak için sert, gövdeli ve uyarıcı bir fincan.', icon: <IconJumpstart /> }
+            { value: 'kick', label: 'Sabah Enerjisi', desc: 'Günü başlamak için sert, gövdeli ve uyarıcı bir fincan.', icon: <IconJumpstart /> }
           ]
         }
       ]
@@ -287,7 +287,6 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
 
   const activeT = locale === 'tr' ? t.tr : t.en;
 
-  // Load product prices and stock from the endpoint
   useEffect(() => {
     fetch('/api/products')
       .then((res) => res.json())
@@ -299,7 +298,7 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
       .catch((err) => {
         console.error('Failed to sync products in background:', err);
       });
-  }, []);
+  }, [locale]);
 
   const handleSelectOption = (questionId: string, val: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: val }));
@@ -322,7 +321,6 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
     setCurrentStep(0);
   };
 
-  // Recommendation Matcher Algorithm
   const getRecommendedCoffee = () => {
     const scores: Record<string, number> = {
       'velora-signature': 0,
@@ -338,7 +336,6 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
     const roast = answers.roastPreference;
     const vibe = answers.coffeeVibe;
 
-    // 1. Brew Method Weights
     if (brew === 'espresso' || brew === 'turkish') {
       scores['brazil-cerrado'] += 3;
       scores.guatemala += 2;
@@ -357,7 +354,6 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
       scores['velora-signature'] += 1;
     }
 
-    // 2. Taste Profile Weights
     if (taste === 'fruity') {
       scores['velora-signature'] += 4;
       scores.ethiopia += 4;
@@ -371,7 +367,6 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
       scores.guatemala += 1;
     }
 
-    // 3. Roast Intensity Weights
     if (roast === 'light') {
       scores['velora-signature'] += 4;
       scores.ethiopia += 3;
@@ -382,13 +377,11 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
     } else if (roast === 'dark') {
       scores['brazil-cerrado'] += 5;
     } else {
-      // Any
       Object.keys(scores).forEach((key) => {
         scores[key] += 1;
       });
     }
 
-    // 4. Coffee Vibe/Philosopy Weights
     if (vibe === 'slow') {
       scores.ethiopia += 3;
       scores['velora-signature'] += 3;
@@ -401,8 +394,7 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
       scores.guatemala += 2;
     }
 
-    // Find the highest scoring coffee
-    let bestId = 'colombia'; // Safe default
+    let bestId = 'colombia';
     let highestScore = -1;
 
     Object.entries(scores).forEach(([id, val]) => {
@@ -421,7 +413,6 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
 
     const style = PRODUCT_STYLES[coffee.id] || DEFAULT_STYLE;
 
-    // Simulate addition feedback duration
     setTimeout(() => {
       addToCart({
         id: coffee.id,
@@ -440,8 +431,8 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
   if (loading) {
     return (
       <div className={styles.container}>
-        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--color-warm-mid)' }}>
-          <p>{activeT.calculating}</p>
+        <div style={{ textAlign: 'center', padding: '80px 0', color: '#767676' }}>
+          <p className={styles.loadingText}>{activeT.calculating}</p>
         </div>
       </div>
     );
@@ -454,8 +445,8 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
 
   return (
     <div className={styles.page}>
-      
-      {/* ── Hero ──────────────────────────────────────────────── */}
+
+      {/* ── HERO SECTION ── */}
       <section className={styles.hero} aria-labelledby="quiz-hero-title">
         <div className={styles.heroInner}>
           <span className={styles.heroEyebrow}>{locale === 'tr' ? 'KAVRUM BULUCU' : 'COFFEE FINDER'}</span>
@@ -470,7 +461,7 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
       <div className={styles.container}>
         <div className={styles.inner}>
 
-          {/* Step Indicator */}
+          {/* Minimal Step Indicator Timeline */}
           {!isCompleted && (
             <nav
               className={styles.stepRail}
@@ -490,144 +481,151 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
             </nav>
           )}
 
-        {/* Steps and animations */}
-        <AnimatePresence mode="wait">
-          {!isCompleted && currentQuestion && (
-            <motion.div
-              key={currentQuestion.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.25 }}
-            >
-              <h2 className={styles.questionTitle}>{currentQuestion.title}</h2>
-              <div className={styles.optionsGrid}>
-                {currentQuestion.options.map((opt) => {
-                  const isSelected = answers[currentQuestion.id] === opt.value;
-                  return (
-                    <div
-                      key={opt.value}
-                      className={`${styles.optionCard} ${isSelected ? styles.optionCardSelected : ''}`}
-                      onClick={() => handleSelectOption(currentQuestion.id, opt.value)}
-                    >
-                      <span className={styles.optionIcon}>{opt.icon}</span>
-                      <span className={styles.optionLabel}>{opt.label}</span>
-                      <p className={styles.optionDesc}>{opt.desc}</p>
+          {/* Dynamic Interactive Workflows */}
+          <AnimatePresence mode="wait">
+            {!isCompleted && currentQuestion && (
+              <motion.div
+                key={currentQuestion.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.3, cubicBezier: [0.16, 1, 0.3, 1] }}
+              >
+                <h2 className={styles.questionTitle}>{currentQuestion.title}</h2>
+                <div className={styles.optionsGrid}>
+                  {currentQuestion.options.map((opt) => {
+                    const isSelected = answers[currentQuestion.id] === opt.value;
+                    return (
+                      <div
+                        key={opt.value}
+                        className={`${styles.optionCard} ${isSelected ? styles.optionCardSelected : ''}`}
+                        onClick={() => handleSelectOption(currentQuestion.id, opt.value)}
+                        role="radio"
+                        aria-checked={isSelected}
+                        tabIndex={0}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSelectOption(currentQuestion.id, opt.value)}
+                      >
+                        <span className={styles.optionIcon}>{opt.icon}</span>
+                        <span className={styles.optionLabel}>{opt.label}</span>
+                        <p className={styles.optionDesc}>{opt.desc}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className={styles.footerButtons}>
+                  <button
+                    onClick={handlePrev}
+                    className={styles.btnPrev}
+                    disabled={currentStep === 0}
+                  >
+                    {activeT.prev}
+                  </button>
+
+                  <button
+                    onClick={handleNext}
+                    className={styles.btnNext}
+                    disabled={isNextDisabled}
+                  >
+                    {activeT.next}
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {isCompleted && recommendedCoffee && (
+              <motion.div
+                key="result"
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                className={styles.resultCard}
+              >
+                {/* Left Column: 3D SVG Coffee Bag Showcase */}
+                <div className={styles.bagContainer}>
+                  <CoffeeBag
+                    coffeeName={recommendedCoffee.name}
+                    origin={recommendedCoffee.origin}
+                    bagColor={PRODUCT_STYLES[recommendedCoffee.id]?.bagColor || DEFAULT_STYLE.bagColor}
+                    illustration={PRODUCT_STYLES[recommendedCoffee.id]?.illustration || DEFAULT_STYLE.illustration}
+                    emoji={PRODUCT_STYLES[recommendedCoffee.id]?.emoji || DEFAULT_STYLE.emoji}
+                    locale={locale}
+                  />
+                </div>
+
+                {/* Right Column: Editorial Recommendation Details */}
+                <div className={styles.resultDetails}>
+                  <span className={styles.celebrationText}>{activeT.recommendation}</span>
+                  <h2 className={styles.matchName}>{recommendedCoffee.name}</h2>
+                  <p className={styles.matchDesc}>{recommendedCoffee.description}</p>
+
+                  <dl className={styles.specList}>
+                    <div className={styles.specRow}>
+                      <dt>{activeT.origin}</dt>
+                      <dd>{recommendedCoffee.origin}</dd>
                     </div>
-                  );
-                })}
-              </div>
+                    <div className={styles.specRow}>
+                      <dt>{activeT.altitude}</dt>
+                      <dd>{recommendedCoffee.altitude}</dd>
+                    </div>
+                    <div className={styles.specRow}>
+                      <dt>{activeT.varietal}</dt>
+                      <dd>{recommendedCoffee.varietal}</dd>
+                    </div>
+                    <div className={styles.specRow}>
+                      <dt>{activeT.tastingNotes}</dt>
+                      <dd className={styles.specNotes}>{recommendedCoffee.tastingNotes}</dd>
+                    </div>
+                  </dl>
 
-              <div className={styles.footerButtons}>
-                <button
-                  onClick={handlePrev}
-                  className={styles.btnPrev}
-                  disabled={currentStep === 0}
-                >
-                  {activeT.prev}
-                </button>
-
-                <button
-                  onClick={handleNext}
-                  className={styles.btnNext}
-                  disabled={isNextDisabled}
-                >
-                  {activeT.next}
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {isCompleted && recommendedCoffee && (
-            <motion.div
-              key="result"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-              className={styles.resultCard}
-            >
-              {/* 3D SVG Coffee Bag */}
-              <div className={styles.bagContainer}>
-                <CoffeeBag
-                  coffeeName={recommendedCoffee.name}
-                  origin={recommendedCoffee.origin}
-                  bagColor={PRODUCT_STYLES[recommendedCoffee.id]?.bagColor || DEFAULT_STYLE.bagColor}
-                  illustration={PRODUCT_STYLES[recommendedCoffee.id]?.illustration || DEFAULT_STYLE.illustration}
-                  emoji={PRODUCT_STYLES[recommendedCoffee.id]?.emoji || DEFAULT_STYLE.emoji}
-                  locale={locale}
-                />
-              </div>
-
-              {/* Recommendation Details */}
-              <div className={styles.resultDetails}>
-                <span className={styles.celebrationText}>{activeT.recommendation}</span>
-                <h2 className={styles.matchName}>{recommendedCoffee.name}</h2>
-
-                <p className={styles.matchDesc}>{recommendedCoffee.description}</p>
-
-                <dl className={styles.specList}>
-                  <div className={styles.specRow}>
-                    <dt>{activeT.origin}</dt>
-                    <dd>{recommendedCoffee.origin}</dd>
+                  {/* Minimal Cobalt Blue Profile Slider Dial */}
+                  <div className={styles.roastDial}>
+                    <span className={styles.roastDialLabel}>{activeT.roastLevel}</span>
+                    <div className={styles.roastDialTrack}>
+                      <span
+                        className={styles.roastDialMarker}
+                        style={{
+                          left: `${recommendedCoffee.roastLevel}%`,
+                          backgroundColor: '#0051a8'
+                        }}
+                      />
+                    </div>
+                    <div className={styles.roastDialScale}>
+                      <span>{activeT.roastScale[0]}</span>
+                      <span>{activeT.roastScale[1]}</span>
+                      <span>{activeT.roastScale[2]}</span>
+                    </div>
                   </div>
-                  <div className={styles.specRow}>
-                    <dt>{activeT.altitude}</dt>
-                    <dd>{recommendedCoffee.altitude}</dd>
-                  </div>
-                  <div className={styles.specRow}>
-                    <dt>{activeT.varietal}</dt>
-                    <dd>{recommendedCoffee.varietal}</dd>
-                  </div>
-                  <div className={styles.specRow}>
-                    <dt>{activeT.tastingNotes}</dt>
-                    <dd className={styles.specNotes}>{recommendedCoffee.tastingNotes}</dd>
-                  </div>
-                </dl>
 
-                <div className={styles.roastDial}>
-                  <span className={styles.roastDialLabel}>{activeT.roastLevel}</span>
-                  <div className={styles.roastDialTrack}>
-                    <span
-                      className={styles.roastDialMarker}
-                      style={{ left: `${recommendedCoffee.roastLevel}%` }}
-                    />
-                  </div>
-                  <div className={styles.roastDialScale}>
-                    <span>{activeT.roastScale[0]}</span>
-                    <span>{activeT.roastScale[1]}</span>
-                    <span>{activeT.roastScale[2]}</span>
+                  <div className={styles.priceTag}>₺{recommendedCoffee.price}</div>
+
+                  <div className={styles.actionsRow}>
+                    <button
+                      onClick={() => handleAddToCart(recommendedCoffee)}
+                      disabled={recommendedCoffee.stock === 0 || addingToCart}
+                      className={styles.btnAddToCart}
+                    >
+                      {recommendedCoffee.stock === 0
+                        ? activeT.outOfStock
+                        : addingToCart
+                          ? activeT.added
+                          : activeT.addToCart.replace('{price}', recommendedCoffee.price.toString())}
+                    </button>
+
+                    <button
+                      onClick={handleRetake}
+                      className={styles.btnRetake}
+                    >
+                      {activeT.retake}
+                    </button>
                   </div>
                 </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-                <div className={styles.priceTag}>₺{recommendedCoffee.price}</div>
-
-                <div className={styles.actionsRow}>
-                  <button
-                    onClick={() => handleAddToCart(recommendedCoffee)}
-                    disabled={recommendedCoffee.stock === 0 || addingToCart}
-                    className={styles.btnAddToCart}
-                  >
-                    {recommendedCoffee.stock === 0
-                      ? activeT.outOfStock
-                      : addingToCart
-                        ? activeT.added
-                        : activeT.addToCart.replace('{price}', recommendedCoffee.price.toString())}
-                  </button>
-
-                  <button
-                    onClick={handleRetake}
-                    className={styles.btnRetake}
-                  >
-                    {activeT.retake}
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
+        </div>
       </div>
     </div>
-  </div>
   );
 }
