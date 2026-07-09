@@ -4,7 +4,6 @@ import './globals.css';
 
 import { CartProvider } from '../context/CartContext';
 import CartDrawer from '../components/CartDrawer';
-import BottomNav from '../components/BottomNav';
 import ErrorBoundary from '../components/ErrorBoundary';
 import LanguageSync from '../components/LanguageSync';
 
@@ -57,9 +56,6 @@ export default function RootLayout({
           </ErrorBoundary>
           <ErrorBoundary fallback={null}>
             <CartDrawer />
-          </ErrorBoundary>
-          <ErrorBoundary fallback={null}>
-            <BottomNav />
           </ErrorBoundary>
         </CartProvider>
       </body>
