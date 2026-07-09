@@ -243,6 +243,7 @@ export default function NewArrivals({ locale = 'en' }: { locale?: string }) {
               price={product.price}
               imageUrl={product.imageUrl}
               bgColor={product.bgColor}
+              tastingNotes={product.tastingNotes}
               locale={locale}
             />
           ))}
