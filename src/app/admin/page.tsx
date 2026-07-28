@@ -39,12 +39,39 @@ function fmtStatus(type: 'order' | 'payment' | 'fulfillment', value: string): st
 }
 
 /* ── Component ─────────────────────────────────────────────────── */
+interface BlogPost {
+  id: string;
+  titleEn: string;
+  titleTr: string;
+  contentEn: string;
+  contentTr: string;
+  category: string;
+  imageUrl: string;
+  createdAt: string;
+}
+
 export default function AdminDashboardPage() {
   const router = useRouter();
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
+  const blogImageInputRef = useRef<HTMLInputElement>(null);
+  const contentTrRef = useRef<HTMLDivElement>(null);
+  const contentEnRef = useRef<HTMLDivElement>(null);
 
-  const [activeTab, setActiveTab] = useState<'orders' | 'inventory' | 'categories' | 'customers'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'inventory' | 'categories' | 'customers' | 'blog'>('orders');
+
+  // Blog CMS
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [selectedBlogPost, setSelectedBlogPost] = useState<BlogPost | null>(null);
+  const [isAddingBlogPost, setIsAddingBlogPost] = useState(false);
+  const [blogForm, setBlogForm] = useState<Partial<BlogPost>>({
+    titleEn: '', titleTr: '', contentEn: '', contentTr: '', category: 'news', imageUrl: ''
+  });
+  const [blogImagePreview, setBlogImagePreview] = useState('');
+  const [uploadingBlogImage, setUploadingBlogImage] = useState(false);
+  const [activeFormats, setActiveFormats] = useState<{ [key: string]: boolean }>({
+    bold: false, italic: false, underline: false, strikeThrough: false, h2: false, h3: false, blockquote: false, ul: false, ol: false
+  });
 
   // Orders
   const [orders, setOrders] = useState<Order[]>([]);
@@ -113,11 +140,163 @@ export default function AdminDashboardPage() {
     finally { setIsLoading(false); }
   };
 
+  const fetchBlogPosts = async () => {
+    setIsLoading(true); setErrorMsg('');
+    try {
+      const res = await fetch('/api/admin/blog');
+      const d = await res.json();
+      if (d.success) setBlogPosts(d.data);
+      else setErrorMsg(d.error);
+    } catch { setErrorMsg('Network error loading blog posts.'); }
+    finally { setIsLoading(false); }
+  };
+
+  const openAddBlogPost = () => {
+    setSelectedBlogPost(null);
+    setBlogForm({
+      titleEn: '', titleTr: '', contentEn: '', contentTr: '', category: 'news', imageUrl: ''
+    });
+    setBlogImagePreview('');
+    setIsAddingBlogPost(true);
+  };
+
+  const openEditBlogPost = (post: BlogPost) => {
+    setSelectedBlogPost(post);
+    setBlogForm(post);
+    setBlogImagePreview(post.imageUrl || '');
+    setIsAddingBlogPost(true);
+  };
+
+  const handleBlogImageFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingBlogImage(true);
+    setErrorMsg('');
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/upload', { method: 'POST', body: fd });
+      const d = await res.json();
+      if (!d.success) throw new Error(d.error);
+      setBlogImagePreview(d.data.url);
+      setBlogForm(prev => ({ ...prev, imageUrl: d.data.url }));
+    } catch (err: unknown) {
+      setErrorMsg(`Upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setUploadingBlogImage(false);
+    }
+  };
+
+  const updateActiveFormats = () => {
+    try {
+      setActiveFormats({
+        bold: document.queryCommandState('bold'),
+        italic: document.queryCommandState('italic'),
+        underline: document.queryCommandState('underline'),
+        strikeThrough: document.queryCommandState('strikeThrough'),
+        h2: document.queryCommandValue('formatBlock') === 'h2',
+        h3: document.queryCommandValue('formatBlock') === 'h3',
+        blockquote: document.queryCommandValue('formatBlock') === 'blockquote',
+        ul: document.queryCommandState('insertUnorderedList'),
+        ol: document.queryCommandState('insertOrderedList'),
+      });
+    } catch {
+      // Ignored
+    }
+  };
+
+  const handleEditorInput = (lang: 'en' | 'tr') => {
+    const ref = lang === 'tr' ? contentTrRef : contentEnRef;
+    if (ref.current) {
+      const html = ref.current.innerHTML;
+      setBlogForm(prev => ({
+        ...prev,
+        [lang === 'tr' ? 'contentTr' : 'contentEn']: html
+      }));
+      updateActiveFormats();
+    }
+  };
+
+  const execEditorCommand = (lang: 'en' | 'tr', cmd: string, val: string = '') => {
+    const el = lang === 'tr' ? contentTrRef.current : contentEnRef.current;
+    if (el) {
+      el.focus();
+      document.execCommand(cmd, false, val);
+      handleEditorInput(lang);
+      updateActiveFormats();
+    }
+  };
+
+  const insertLink = (lang: 'en' | 'tr') => {
+    const url = window.prompt(lang === 'tr' ? 'Bağlantı adresi girin (URL):' : 'Enter link URL:');
+    if (!url) return;
+    execEditorCommand(lang, 'createLink', url);
+  };
+
+  useEffect(() => {
+    if (isAddingBlogPost) {
+      if (contentTrRef.current) {
+        contentTrRef.current.innerHTML = blogForm.contentTr || '';
+      }
+      if (contentEnRef.current) {
+        contentEnRef.current.innerHTML = blogForm.contentEn || '';
+      }
+      updateActiveFormats();
+    }
+  }, [isAddingBlogPost, selectedBlogPost]);
+
+  const handleSaveBlogPost = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setActionLoading(true); setErrorMsg('');
+    const isEdit = !!selectedBlogPost;
+    const url = '/api/admin/blog';
+    const method = isEdit ? 'PUT' : 'POST';
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(isEdit ? { id: selectedBlogPost.id, ...blogForm } : blogForm),
+      });
+      const json = await res.json();
+      if (!json.success) {
+        setErrorMsg(json.error || 'Failed to save blog post.');
+        return;
+      }
+      setIsAddingBlogPost(false);
+      setSelectedBlogPost(null);
+      fetchBlogPosts();
+    } catch {
+      setErrorMsg('Failed to connect to server.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteBlogPost = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this blog post?')) return;
+    setActionLoading(true); setErrorMsg('');
+    try {
+      const res = await fetch(`/api/admin/blog?id=${id}`, { method: 'DELETE' });
+      const json = await res.json();
+      if (!json.success) {
+        setErrorMsg(json.error || 'Failed to delete blog post.');
+        return;
+      }
+      fetchBlogPosts();
+    } catch {
+      setErrorMsg('Failed to delete blog post due to server error.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   useEffect(() => {
     requestAnimationFrame(() => {
       if (activeTab === 'orders' || activeTab === 'customers') fetchOrders();
       else if (activeTab === 'inventory') { fetchProducts(); fetchCategories(); }
       else if (activeTab === 'categories') fetchCategories();
+      else if (activeTab === 'blog') fetchBlogPosts();
     });
   }, [activeTab]);
 
@@ -128,12 +307,14 @@ export default function AdminDashboardPage() {
   };
 
   /* ── Tab reset helper ──────────────────────────────────────── */
-  const switchTab = (tab: 'orders' | 'inventory' | 'categories' | 'customers') => {
+  const switchTab = (tab: 'orders' | 'inventory' | 'categories' | 'customers' | 'blog') => {
     setActiveTab(tab);
     setSelectedOrder(null);
     setSelectedProduct(null);
     setIsAddingProduct(false);
     setShowCatModal(false);
+    setSelectedBlogPost(null);
+    setIsAddingBlogPost(false);
     setErrorMsg('');
   };
 
@@ -354,9 +535,9 @@ export default function AdminDashboardPage() {
       {/* ── Sidebar ── */}
       <aside className={styles.sidebar}>
         <div className={styles.brand}>
-          <span className={styles.logoTop}>GRAIN</span>
-          <span className={styles.logoMiddle}>AND</span>
-          <span className={styles.logoBottom}>GRIND</span>
+          <span className={styles.logoTop}>COFFEE</span>
+          <span className={styles.logoMiddle}>ESTO</span>
+          <span className={styles.logoBottom}>ROASTERY</span>
           <span className={styles.adminTag}>COMMERCE CORE</span>
         </div>
         <nav className={styles.sidebarNav}>
@@ -371,6 +552,9 @@ export default function AdminDashboardPage() {
           </button>
           <button onClick={() => switchTab('customers')} className={`${styles.navItem} ${activeTab === 'customers' ? styles.navItemActive : ''}`}>
             👤 Customers
+          </button>
+          <button onClick={() => switchTab('blog')} className={`${styles.navItem} ${activeTab === 'blog' ? styles.navItemActive : ''}`}>
+            📰 Blog CMS
           </button>
           <Link href="/coffee" className={styles.navItem}>☕️ View Storefront</Link>
           <Link href="/" className={styles.navItem}>🏠 Homepage</Link>
@@ -622,6 +806,57 @@ export default function AdminDashboardPage() {
                 </div>
               ) : (
                 <div className={styles.emptyRegistry}><span className={styles.emptyIcon}>🏷️</span><h3>No Categories</h3></div>
+              )}
+            </section>
+          </>
+        )}
+        {/* ───── Tab: Blog CMS ───── */}
+        {activeTab === 'blog' && (
+          <>
+            <header className={styles.header}>
+              <h1 className={styles.pageTitle}>Blog & Magazine CMS</h1>
+              <div className={styles.headerActions}>
+                <button onClick={openAddBlogPost} className={styles.addBtn}>➕ Add Blog Post</button>
+                <button onClick={fetchBlogPosts} className={styles.refreshBtn}>🔄 Refresh</button>
+              </div>
+            </header>
+            {errorMsg && <div className={styles.errorBanner} role="alert"><span>⚠️ {errorMsg}</span></div>}
+            
+            <section className={styles.tableCard}>
+              {isLoading ? (
+                <div className={styles.loadingBox}><span className={styles.loadingSpinner}>📰</span><p>Loading blog posts...</p></div>
+              ) : blogPosts.length > 0 ? (
+                <div className={styles.tableWrapper}>
+                  <table className={styles.ordersTable}>
+                    <thead>
+                      <tr>
+                        <th>Title (TR)</th>
+                        <th>Title (EN)</th>
+                        <th>Category</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {blogPosts.map(post => (
+                        <tr key={post.id} className={styles.orderRow} onClick={() => openEditBlogPost(post)}>
+                          <td style={{ fontWeight: 600 }}>{post.titleTr}</td>
+                          <td>{post.titleEn}</td>
+                          <td style={{ textTransform: 'capitalize' }}>{post.category}</td>
+                          <td>{new Date(post.createdAt).toLocaleDateString()}</td>
+                          <td>
+                            <div className={styles.actionCell} onClick={e => e.stopPropagation()}>
+                              <button onClick={() => openEditBlogPost(post)} className={styles.editIconBtn}>✏️ Edit</button>
+                              <button onClick={() => handleDeleteBlogPost(post.id)} className={styles.deleteIconBtn}>🗑️ Delete</button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className={styles.emptyRegistry}><span className={styles.emptyIcon}>📰</span><h3>No Blog Posts Yet</h3></div>
               )}
             </section>
           </>
@@ -916,6 +1151,156 @@ export default function AdminDashboardPage() {
               </div>
               <button type="submit" className={styles.opActionBtn} disabled={actionLoading}>
                 {actionLoading ? 'Creating...' : '🏷️ Create Category'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* Modal: Add/Edit Blog Post                                   */}
+      {/* ═══════════════════════════════════════════════════════════ */}
+      {isAddingBlogPost && activeTab === 'blog' && (
+        <div className={styles.modalBackdrop} onClick={() => setIsAddingBlogPost(false)}>
+          <div className={styles.wideModal} onClick={e => e.stopPropagation()} role="dialog" aria-labelledby="blog-modal-title">
+            <div className={styles.modalHeader}>
+              <h2 id="blog-modal-title" className={styles.modalTitle}>
+                {selectedBlogPost ? 'Editorial Blog Post — Editor' : 'New Editorial Blog Post — Editor'}
+              </h2>
+              <button onClick={() => setIsAddingBlogPost(false)} className={styles.closeBtn}>✕</button>
+            </div>
+            {errorMsg && <div className={styles.errorBanner}><span>⚠️ {errorMsg}</span></div>}
+            
+            <form onSubmit={handleSaveBlogPost} className={styles.modalForm}>
+              
+              {/* Category selector row */}
+              <div className={styles.inputBox}>
+                <label htmlFor="blog-cat">Publication Category</label>
+                <select id="blog-cat" value={blogForm.category || 'news'} onChange={e => setBlogForm(prev => ({ ...prev, category: e.target.value }))} className={styles.editorField}>
+                  <option value="news">Sektör Haberleri / Industry News</option>
+                  <option value="updates">Bizden Gelişmeler / Roastery Updates</option>
+                  <option value="introduction">Yeni Kahveler / New Arrivals</option>
+                  <option value="guides">Demleme Rehberleri / Brew Guides</option>
+                  <option value="reviews">Ekipman İncelemeleri / Equipment Reviews</option>
+                  <option value="techniques">Kavurma Teknikleri / Roasting Techniques</option>
+                  <option value="barista">Barista İpuçları / Barista Tips</option>
+                  <option value="horeca">Horeca / Horeca & Business</option>
+                  <option value="culture">Kahve Kültürü / Coffee Culture</option>
+                </select>
+              </div>
+
+              {/* ── Side-by-side Bilingual Editorial Workspace ── */}
+              <div className={styles.editorSplit}>
+                
+                {/* Turkish Panel */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <h3 className={styles.blockTitle}>Türkçe İçerik (Turkish Content)</h3>
+                  
+                  <div className={styles.inputBox}>
+                    <label htmlFor="blog-title-tr">Başlık / Turkish Title</label>
+                    <input id="blog-title-tr" type="text" required value={blogForm.titleTr || ''} onChange={e => setBlogForm(prev => ({ ...prev, titleTr: e.target.value }))} placeholder="Örn: Kahve Kavurma Sanatı" className={styles.editorField} />
+                  </div>
+                  
+                  <div className={styles.inputBox}>
+                    <label>Metin Biçimlendirme / Format Content</label>
+                    <div className={styles.editorToolbar}>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('tr', 'bold'); }} className={`${styles.toolbarBtn} ${activeFormats.bold ? styles.toolbarBtnActive : ''}`} title="Bold Text"><b>B</b></button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('tr', 'italic'); }} className={`${styles.toolbarBtn} ${activeFormats.italic ? styles.toolbarBtnActive : ''}`} title="Italic Text"><i>I</i></button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('tr', 'underline'); }} className={`${styles.toolbarBtn} ${activeFormats.underline ? styles.toolbarBtnActive : ''}`} title="Underline Text"><u>U</u></button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('tr', 'strikeThrough'); }} className={`${styles.toolbarBtn} ${activeFormats.strikeThrough ? styles.toolbarBtnActive : ''}`} title="Strikethrough"><s>S</s></button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('tr', 'formatBlock', '<h2>'); }} className={`${styles.toolbarBtn} ${activeFormats.h2 ? styles.toolbarBtnActive : ''}`} title="Heading H2">H2</button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('tr', 'formatBlock', '<h3>'); }} className={`${styles.toolbarBtn} ${activeFormats.h3 ? styles.toolbarBtnActive : ''}`} title="Heading H3">H3</button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('tr', 'formatBlock', '<blockquote>'); }} className={`${styles.toolbarBtn} ${activeFormats.blockquote ? styles.toolbarBtnActive : ''}`} title="Quote Block">“ Quote</button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('tr', 'insertUnorderedList'); }} className={`${styles.toolbarBtn} ${activeFormats.ul ? styles.toolbarBtnActive : ''}`} title="Bullet List">List •</button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('tr', 'insertOrderedList'); }} className={`${styles.toolbarBtn} ${activeFormats.ol ? styles.toolbarBtnActive : ''}`} title="Numbered List">List 1.</button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); insertLink('tr'); }} className={styles.toolbarBtn} title="Insert Link">🔗 Link</button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('tr', 'justifyCenter'); }} className={styles.toolbarBtn} title="Center Align">Center</button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('tr', 'justifyFull'); }} className={styles.toolbarBtn} title="Justified Text">Justify</button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('tr', 'insertHorizontalRule'); }} className={styles.toolbarBtn} title="Horizontal Divider Line">--- Line</button>
+                    </div>
+                    <div
+                      id="blog-content-tr"
+                      contentEditable={true}
+                      ref={contentTrRef}
+                      onInput={() => handleEditorInput('tr')}
+                      onMouseUp={updateActiveFormats}
+                      onKeyUp={updateActiveFormats}
+                      onBlur={updateActiveFormats}
+                      className={styles.visualEditor}
+                    />
+                  </div>
+                </div>
+
+                {/* English Panel */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <h3 className={styles.blockTitle}>English Content</h3>
+                  
+                  <div className={styles.inputBox}>
+                    <label htmlFor="blog-title-en">Title / English Title</label>
+                    <input id="blog-title-en" type="text" required value={blogForm.titleEn || ''} onChange={e => setBlogForm(prev => ({ ...prev, titleEn: e.target.value }))} placeholder="e.g. The Art of Coffee Roasting" className={styles.editorField} />
+                  </div>
+                  
+                  <div className={styles.inputBox}>
+                    <label>Format Content / Text Styles</label>
+                    <div className={styles.editorToolbar}>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('en', 'bold'); }} className={`${styles.toolbarBtn} ${activeFormats.bold ? styles.toolbarBtnActive : ''}`} title="Bold Text"><b>B</b></button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('en', 'italic'); }} className={`${styles.toolbarBtn} ${activeFormats.italic ? styles.toolbarBtnActive : ''}`} title="Italic Text"><i>I</i></button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('en', 'underline'); }} className={`${styles.toolbarBtn} ${activeFormats.underline ? styles.toolbarBtnActive : ''}`} title="Underline Text"><u>U</u></button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('en', 'strikeThrough'); }} className={`${styles.toolbarBtn} ${activeFormats.strikeThrough ? styles.toolbarBtnActive : ''}`} title="Strikethrough"><s>S</s></button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('en', 'formatBlock', '<h2>'); }} className={`${styles.toolbarBtn} ${activeFormats.h2 ? styles.toolbarBtnActive : ''}`} title="Heading H2">H2</button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('en', 'formatBlock', '<h3>'); }} className={`${styles.toolbarBtn} ${activeFormats.h3 ? styles.toolbarBtnActive : ''}`} title="Heading H3">H3</button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('en', 'formatBlock', '<blockquote>'); }} className={`${styles.toolbarBtn} ${activeFormats.blockquote ? styles.toolbarBtnActive : ''}`} title="Quote Block">“ Quote</button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('en', 'insertUnorderedList'); }} className={`${styles.toolbarBtn} ${activeFormats.ul ? styles.toolbarBtnActive : ''}`} title="Bullet List">List •</button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('en', 'insertOrderedList'); }} className={`${styles.toolbarBtn} ${activeFormats.ol ? styles.toolbarBtnActive : ''}`} title="Numbered List">List 1.</button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); insertLink('en'); }} className={styles.toolbarBtn} title="Insert Link">🔗 Link</button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('en', 'justifyCenter'); }} className={styles.toolbarBtn} title="Center Align">Center</button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('en', 'justifyFull'); }} className={styles.toolbarBtn} title="Justified Text">Justify</button>
+                      <button type="button" onMouseDown={e => { e.preventDefault(); execEditorCommand('en', 'insertHorizontalRule'); }} className={styles.toolbarBtn} title="Horizontal Divider Line">--- Line</button>
+                    </div>
+                    <div
+                      id="blog-content-en"
+                      contentEditable={true}
+                      ref={contentEnRef}
+                      onInput={() => handleEditorInput('en')}
+                      onMouseUp={updateActiveFormats}
+                      onKeyUp={updateActiveFormats}
+                      onBlur={updateActiveFormats}
+                      className={styles.visualEditor}
+                    />
+                  </div>
+                </div>
+
+              </div>
+
+              {/* ── Image Upload Workspace Zone ── */}
+              <div className={styles.mediaBlock} style={{ marginTop: 12 }}>
+                <label className={styles.mediaLabel}>Cover Image (Kapak Görseli)</label>
+                {blogImagePreview && (
+                  <div className={styles.mediaPreview} style={{ marginBottom: 12 }}>
+                    <img src={blogImagePreview} alt="Blog Cover Preview" className={styles.mediaPreviewImg} style={{ maxHeight: '200px', objectFit: 'contain' }} />
+                    <button type="button" className={styles.clearMediaBtn} onClick={() => { setBlogImagePreview(''); setBlogForm(p => ({ ...p, imageUrl: '' })); }}>✕ Remove</button>
+                  </div>
+                )}
+                <div
+                  className={styles.uploadZone}
+                  onClick={() => blogImageInputRef.current?.click()}
+                  onDragOver={e => e.preventDefault()}
+                  onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleBlogImageFile({ target: { files: [f] } } as any); }}
+                >
+                  <input ref={blogImageInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className={styles.hiddenInput} onChange={handleBlogImageFile} />
+                  {uploadingBlogImage
+                    ? <span className={styles.uploadingText}>⏳ Uploading cover image...</span>
+                    : <><span className={styles.uploadIcon}>🖼️</span><span className={styles.uploadText}>Drop image here or <u>click to browse</u></span><span className={styles.uploadHint}>JPG, PNG, WebP — max 20 MB</span></>
+                  }
+                </div>
+                <div className={styles.inputBox} style={{ marginTop: 10 }}>
+                  <label htmlFor="blog-image">Or paste Image URL directly</label>
+                  <input id="blog-image" type="text" value={blogForm.imageUrl || ''} onChange={e => { setBlogForm(prev => ({ ...prev, imageUrl: e.target.value })); setBlogImagePreview(e.target.value); }} placeholder="/images/blog/roaster.png or other URL" className={styles.editorField} />
+                </div>
+              </div>
+
+              <button type="submit" className={styles.opActionBtn} style={{ marginTop: 16 }} disabled={actionLoading}>
+                {actionLoading ? 'Publishing...' : '📰 Publish Editorial Post'}
               </button>
             </form>
           </div>

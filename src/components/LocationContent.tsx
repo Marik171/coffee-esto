@@ -9,27 +9,27 @@ import styles from '../app/location/location.module.css';
 
 /* ── Inline SVG icons ───────────────────────────────────────── */
 const IconPin = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 13 8 13s8-7.75 8-13a8 8 0 0 0-8-8z"/>
     <circle cx="12" cy="10" r="3"/>
   </svg>
 );
 
 const IconPhone = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
   </svg>
 );
 
 const IconClock = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <circle cx="12" cy="12" r="10"/>
     <polyline points="12 6 12 12 16 14"/>
   </svg>
 );
 
 const IconMail = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <rect width="20" height="16" x="2" y="4" rx="2"/>
     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
   </svg>
@@ -95,7 +95,8 @@ export default function LocationContent({ locale = 'en' }: LocationContentProps)
   const [currentDay, setCurrentDay] = useState(-1);
 
   useEffect(() => {
-    const day = new Date().getDay();
+    const today = new Date();
+    const day = today.getDay();
     requestAnimationFrame(() => {
       setCurrentDay(day);
     });
@@ -103,29 +104,33 @@ export default function LocationContent({ locale = 'en' }: LocationContentProps)
 
   const translations = {
     en: {
-      eyebrow: 'Kartal · İstanbul',
-      heroTitle: 'Come Visit\nOur Roastery',
-      heroSub: 'We roast every batch to order from our İstanbul roastery. Come by, smell the roast, and take home something fresh.',
+      eyebrow: 'KARTAL • İSTANBUL',
+      heroTitle: 'Step Into\nOur Roastery',
+      heroSub: 'Every single batch of specialty beans is freshly roasted at our Kartal space. Drop by to smell the crackle of coffee roasting and bring home a freshly sealed pack.',
       directionsBtn: 'Get Directions',
-      findUs: 'Find Us',
+      findUs: 'VISIT US',
       addressLabel: 'Address',
       addressValue: 'Topselvi Mh, Kartal\nİstanbul, Turkey',
       phoneLabel: 'Phone',
       emailLabel: 'Email',
-      hoursLabel: 'Hours',
+      hoursLabel: 'Opening Hours',
       hoursValue: 'Daily, 10:00 AM – 10:00 PM',
       mapsLinkText: 'Open in Google Maps',
       mapsTitle: 'The Coffee Esto Roastery on Google Maps',
-      openingTimes: 'Opening Times',
-      whenOpen: "When We're Open",
-      walkinsWelcome: 'We roast fresh every morning. Walk-ins always welcome — no reservation needed.',
+      openingTimes: 'HOURS',
+      whenOpen: "Opening Schedule",
+      walkinsWelcome: 'We roast fresh coffee beans every single morning. Walk-ins are always welcome — pull up a stool at the bar!',
       today: 'Today',
-      gettingHere: 'Getting Here',
-      howToFindUs: 'How to Find Us',
-      whileHere: "While You're Here",
-      whileHereSub: 'Pick up a fresh bag, try a pour-over at the bar, or talk to our roaster — John is almost always around.',
-      browseBtn: 'Browse Our Coffees',
-      trackBtn: 'Track an Order',
+      gettingHere: 'DIRECTIONS',
+      howToFindUs: 'Getting to the Roastery',
+      whileHere: "While You're Visiting",
+      whileHereSub: 'Try a clean V60 brew at our slow-bar, chat with our master roasters, and pick up a wholesale pack of freshly roasted origins.',
+      browseBtn: 'Shop Fresh Beans',
+      trackBtn: 'Track Order',
+      openBadge: 'WE ARE OPEN NOW',
+      closedBadge: 'WE ARE CURRENTLY CLOSED',
+      galleryTitle: 'Our Space in Photos',
+      gallerySub: 'A sneak peek inside our roasting workshop and espresso slow bar in Kartal.',
       days: {
         Monday: 'Monday',
         Tuesday: 'Tuesday',
@@ -137,36 +142,40 @@ export default function LocationContent({ locale = 'en' }: LocationContentProps)
       },
       timeStr: '10:00 AM – 10:00 PM',
       transport: [
-        { icon: <IconTrain />, name: 'Metro / Marmaray', detail: 'Kartal station — M4 line & Marmaray, 5 min walk' },
-        { icon: <IconBus />,   name: 'Bus', detail: 'Lines 15B, 14Ç, E11 — stop at Kartal Meydanı' },
-        { icon: <IconAnchor />,name: 'Ferry', detail: 'Kartal ferry pier — İDO to Adalar & Bostancı, 10 min walk' },
-        { icon: <IconParking />,name: 'Parking', detail: 'Street parking on Topselvi Caddesi, paid municipal lot nearby' },
+        { icon: <IconTrain />, name: 'Metro / Marmaray', detail: 'Kartal Metro Station (M4 line) & Marmaray Station are 5 mins walking distance.' },
+        { icon: <IconBus />,   name: 'Bus Services', detail: 'Take lines 15B, 14Ç, or E11 and get off at the Kartal Meydanı stop.' },
+        { icon: <IconAnchor />,name: 'Ferry Terminal', detail: 'Kartal Ferry Pier (IDO Adalar & Bostancı lines) is a 10 min scenic walk.' },
+        { icon: <IconParking />,name: 'Street Parking', detail: 'Street parking is available on Topselvi Caddesi, alongside nearby municipal lots.' },
       ]
     },
     tr: {
-      eyebrow: 'Kartal · İstanbul',
-      heroTitle: 'Kavurmahanemizi\nZiyaret Edin',
-      heroSub: 'Her partiyi İstanbul\'daki kavurmahanemizde sipariş üzerine kavuruyoruz. Uğrayın, taze kavrum kahve kokusunu içinize çekin ve evinize taze bir şeyler götürün.',
+      eyebrow: 'KARTAL • İSTANBUL',
+      heroTitle: 'Kavurmahanemizi\nKeşfedin',
+      heroSub: 'Tüm özel çekirdekleri Kartal\'daki kavurmahanemizde taze olarak kavuruyoruz. Uğrayıp taze kahve kokusunu solumak ve evinize taze bir paket götürmek için bize katılın.',
       directionsBtn: 'Yol Tarifi Al',
-      findUs: 'Bizi Bulun',
+      findUs: 'BİZE ULAŞIN',
       addressLabel: 'Adres',
       addressValue: 'Topselvi Mh, Kartal\nİstanbul, Türkiye',
       phoneLabel: 'Telefon',
       emailLabel: 'E-posta',
-      hoursLabel: 'Saatler',
+      hoursLabel: 'Çalışma Saatleri',
       hoursValue: 'Her Gün, 10:00 – 22:00',
       mapsLinkText: 'Google Haritalar\'da Aç',
       mapsTitle: 'Google Haritalar\'da Coffee Esto Roastery',
-      openingTimes: 'Açılış Saatleri',
+      openingTimes: 'SAATLER',
       whenOpen: 'Açık Olduğumuz Saatler',
-      walkinsWelcome: 'Her sabah taze kahve kavuruyoruz. Randevusuz misafirlerimizi her zaman bekleriz.',
+      walkinsWelcome: 'Her sabah taze kahve çekirdekleri kavuruyoruz. Randevusuz misafirlerimizi barımıza her zaman bekleriz!',
       today: 'Bugün',
-      gettingHere: 'Ulaşım',
-      howToFindUs: 'Bize Nasıl Ulaşırsınız',
+      gettingHere: 'ULAŞIM',
+      howToFindUs: 'Kavurmahaneye Ulaşım',
       whileHere: 'Buradayken',
-      whileHereSub: 'Taze bir paket kahve alın, barda bir V60 demleme deneyin veya kavurucumuzla sohbet edin — John neredeyse her zaman buralardadır.',
-      browseBtn: 'Kahvelerimizi İnceleyin',
+      whileHereSub: 'Slow-barımızda taze bir V60 demleme deneyin, kavurucularımızla sohbet edin veya taze paketlenmiş yöresel kahvelerimizden satın alın.',
+      browseBtn: 'Kahveleri İncele',
       trackBtn: 'Sipariş Takibi',
+      openBadge: 'ŞU AN AÇIĞIZ',
+      closedBadge: 'ŞU AN KAPALIYIZ',
+      galleryTitle: 'Atölyemizden Kareler',
+      gallerySub: 'Kartal\'daki kahve kavurma atölyemiz ve espresso barımızın içinden görüntüler.',
       days: {
         Monday: 'Pazartesi',
         Tuesday: 'Salı',
@@ -178,10 +187,10 @@ export default function LocationContent({ locale = 'en' }: LocationContentProps)
       },
       timeStr: '10:00 – 22:00',
       transport: [
-        { icon: <IconTrain />, name: 'Metro / Marmaray', detail: 'Kartal istasyonu — M4 metro hattı & Marmaray, 5 dk yürüme mesafesinde' },
-        { icon: <IconBus />,   name: 'Otobüs', detail: '15B, 14Ç, E11 hatları — Kartal Meydanı durağında iniş' },
-        { icon: <IconAnchor />,name: 'Vapur / Deniz Otobüsü', detail: 'Kartal vapur iskelesi — Adalar & Bostancı İDO iskelesi, 10 dk yürüme mesafesinde' },
-        { icon: <IconParking />,name: 'Otopark', detail: 'Topselvi Caddesi üzerinde yol kenarı otopark, yakınlarda İSPARK otoparkı mevcuttur' },
+        { icon: <IconTrain />, name: 'Metro / Marmaray', detail: 'Kartal istasyonu — M4 metro hattı & Marmaray, 5 dk yürüme mesafesinde.' },
+        { icon: <IconBus />,   name: 'Otobüs', detail: '15B, 14Ç, E11 hatları — Kartal Meydanı durağında iniş.' },
+        { icon: <IconAnchor />,name: 'Vapur / Deniz Otobüsü', detail: 'Kartal vapur iskelesi — Adalar & Bostancı İDO iskelesi, 10 dk yürüme mesafesinde.' },
+        { icon: <IconParking />,name: 'Otopark', detail: 'Topselvi Caddesi üzerinde yol kenarı otopark ve yakındaki İSPARK otoparkı mevcuttur.' },
       ]
     }
   };
@@ -199,21 +208,24 @@ export default function LocationContent({ locale = 'en' }: LocationContentProps)
     { day: t.days.Sunday,    time: t.timeStr, index: 0 },
   ];
 
+  // Roastery photos gallery array
+  const galleryImages = [
+    '/images/about_us/PHOTO-2026-07-06-14-48-13 2.jpg',
+    '/images/about_us/PHOTO-2026-07-06-14-48-14.jpg',
+    '/images/about_us/PHOTO-2026-07-06-14-48-15 2.jpg',
+    '/images/about_us/PHOTO-2026-07-06-14-48-15 4.jpg',
+    '/images/about_us/PHOTO-2026-07-06-14-48-13 4.jpg'
+  ];
+
   return (
-    <div className={styles.page}>
+    <div className={styles.pageWrapper}>
       <Navbar locale={locale} />
-
-      {/* ── Hero ──────────────────────────────────────────────── */}
-      <section className={styles.hero} aria-labelledby="location-hero-title">
-        {/* Floating Coffee Beans */}
-        <img src="/images/beans.webp" className="heroBean heroBean1" alt="" />
-        <img src="/images/beans.webp" className="heroBean heroBean2" alt="" />
-        <img src="/images/beans.webp" className="heroBean heroBean3" alt="" />
-        <img src="/images/beans.webp" className="heroBean heroBean4" alt="" />
-        <img src="/images/beans.webp" className="heroBean heroBean5" alt="" />
-        <img src="/images/beans.webp" className="heroBean heroBean6" alt="" />
-        <img src="/images/beans.webp" className="heroBean heroBean7" alt="" />
-
+      <div className={styles.navOffset} aria-hidden="true" />
+      
+      {/* ── 1. CINEMATIC HERO SECTION ── */}
+      <section className={styles.heroSection} aria-labelledby="location-hero-title">
+        <div className={styles.heroOverlay} />
+        
         <motion.div
           ref={heroRef}
           className={styles.heroInner}
@@ -221,13 +233,13 @@ export default function LocationContent({ locale = 'en' }: LocationContentProps)
           animate={heroInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
-          <span className={styles.heroEyebrow}>{t.eyebrow}</span>
           <h1 id="location-hero-title" className={styles.heroTitle}>
             {t.heroTitle.split('\n')[0]}<br />{t.heroTitle.split('\n')[1]}
           </h1>
           <p className={styles.heroSub}>
             {t.heroSub}
           </p>
+
           <a
             href="https://maps.app.goo.gl/ja48oQk66ieujCGc8"
             target="_blank"
@@ -238,19 +250,14 @@ export default function LocationContent({ locale = 'en' }: LocationContentProps)
             {t.directionsBtn}
           </a>
         </motion.div>
-
-        <div className={styles.heroWave} aria-hidden="true">
-          <svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,100 L1440,100 L1440,45 C1080,5 720,95 360,20 C180,-10 60,40 0,50 Z" fill="#fdf8f0" />
-          </svg>
-        </div>
       </section>
 
-      {/* ── Map + Contact ─────────────────────────────────────── */}
+      {/* ── 2. MAP & CONTACT INFO BLOCK ── */}
       <section className={styles.mapSection}>
         <div className={styles.container}>
           <div className={styles.mapGrid}>
-            {/* Map */}
+            
+            {/* Embedded Google Map */}
             <FadeUp className={styles.mapCol}>
               <div className={styles.mapFrame}>
                 <iframe
@@ -267,11 +274,11 @@ export default function LocationContent({ locale = 'en' }: LocationContentProps)
               </div>
             </FadeUp>
 
-            {/* Contact info */}
+            {/* Contact details card */}
             <FadeUp delay={0.12} className={styles.infoCol}>
               <div className={styles.infoCard}>
                 <div className={styles.infoAccentLine} />
-                <span className={styles.eyebrow}>{t.findUs}</span>
+                <span className={styles.infoEyebrowLabel}>{t.findUs}</span>
                 <h2 className={styles.infoHeading}>The Coffee Esto Roastery</h2>
 
                 <div className={styles.contactList}>
@@ -319,11 +326,11 @@ export default function LocationContent({ locale = 'en' }: LocationContentProps)
                   href="https://maps.app.goo.gl/ja48oQk66ieujCGc8"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={styles.directionsBtn}
+                  className={styles.directionsLinkBtn}
                 >
                   {t.mapsLinkText}
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2 2V8a2 2 0 0 1 2-2h6"/>
                     <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
                   </svg>
                 </a>
@@ -333,11 +340,30 @@ export default function LocationContent({ locale = 'en' }: LocationContentProps)
         </div>
       </section>
 
-      {/* ── Hours ─────────────────────────────────────────────── */}
+      {/* ── 3. ROASTERY PHOTO SHOWCASE GALLERY ── */}
+      <section className={styles.gallerySection}>
+        <div className={styles.container}>
+          <FadeUp className={styles.sectionHeader}>
+            <span className={styles.openingTimes}>{t.eyebrow}</span>
+            <h2 className={styles.sectionTitle}>{t.galleryTitle}</h2>
+            <p className={styles.sectionSub}>{t.gallerySub}</p>
+          </FadeUp>
+
+          <FadeUp delay={0.15} className={styles.galleryScroller}>
+            {galleryImages.map((imgSrc, idx) => (
+              <div key={idx} className={styles.galleryCard}>
+                <img src={imgSrc} alt={`Roastery Space ${idx + 1}`} className={styles.galleryImage} />
+              </div>
+            ))}
+          </FadeUp>
+        </div>
+      </section>
+
+      {/* ── 4. OPENING TIMES TABLE ── */}
       <section className={styles.hoursSection} aria-labelledby="hours-title">
         <div className={styles.container}>
           <FadeUp className={styles.sectionHeader}>
-            <span className={styles.eyebrow}>{t.openingTimes}</span>
+            <span className={styles.openingTimes}>{t.openingTimes}</span>
             <h2 id="hours-title" className={styles.sectionTitle}>{t.whenOpen}</h2>
             <p className={styles.sectionSub}>{t.walkinsWelcome}</p>
           </FadeUp>
@@ -360,18 +386,12 @@ export default function LocationContent({ locale = 'en' }: LocationContentProps)
         </div>
       </section>
 
-      {/* ── Getting Here ──────────────────────────────────────── */}
-      <section className={styles.transport} aria-labelledby="transport-title">
-        <div className={styles.transportWaveTop} aria-hidden="true">
-          <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,0 L1440,0 L1440,50 C1080,90 720,10 360,70 C180,100 60,50 0,40 Z" fill="#fdf8f0" />
-          </svg>
-        </div>
-
+      {/* ── 5. TRANSIT & TRANSPORTATION INFO ── */}
+      <section className={styles.transportSection} aria-labelledby="transport-title">
         <div className={styles.container}>
-          <FadeUp className={styles.sectionHeaderLight}>
-            <span className={styles.eyebrowLight}>{t.gettingHere}</span>
-            <h2 id="transport-title" className={styles.sectionTitleLight}>{t.howToFindUs}</h2>
+          <FadeUp className={styles.sectionHeader}>
+            <span className={styles.openingTimes}>{t.gettingHere}</span>
+            <h2 id="transport-title" className={styles.sectionTitle}>{t.howToFindUs}</h2>
           </FadeUp>
 
           <div className={styles.transportGrid}>
@@ -386,15 +406,18 @@ export default function LocationContent({ locale = 'en' }: LocationContentProps)
         </div>
       </section>
 
-      {/* ── CTA ───────────────────────────────────────────────── */}
-      <section className={styles.cta}>
+      {/* ── 6. DYNAMIC EDITORIAL CTA BANNER ── */}
+      <section className={styles.ctaSection}>
         <div className={styles.container}>
-          <FadeUp className={styles.ctaInner}>
-            <h2 className={styles.ctaTitle}>{t.whileHere}</h2>
-            <p className={styles.ctaSub}>{t.whileHereSub}</p>
-            <div className={styles.ctaButtons}>
-              <Link href={`${linkPrefix}/coffee`} className={styles.ctaPrimary}>{t.browseBtn}</Link>
-              <Link href={`${linkPrefix}/orders/track`} className={styles.ctaSecondary}>{t.trackBtn}</Link>
+          <FadeUp className={styles.ctaInnerCard}>
+            <div className={styles.ctaBgDecor} />
+            <div className={styles.ctaContent}>
+              <h2 className={styles.ctaTitle}>{t.whileHere}</h2>
+              <p className={styles.ctaSub}>{t.whileHereSub}</p>
+              <div className={styles.ctaButtonsRow}>
+                <Link href={`${linkPrefix}/coffee`} className={styles.ctaPrimaryBtn}>{t.browseBtn}</Link>
+                <Link href={`${linkPrefix}/orders/track`} className={styles.ctaSecondaryBtn}>{t.trackBtn}</Link>
+              </div>
             </div>
           </FadeUp>
         </div>

@@ -264,17 +264,111 @@ interface CoffeeDetailContentProps {
   locale?: string;
 }
 
+interface CustomerData {
+  id: string;
+  email: string;
+  name: string;
+  phone: string;
+  isSubscriber: boolean;
+}
+
+interface ReviewData {
+  id: string;
+  rating: number;
+  title: string;
+  body: string;
+  createdAt: string;
+  displayName: string;
+  initials: string;
+}
+
+interface ReviewStats {
+  total: number;
+  avgRating: number;
+  distribution: Record<number, number>;
+}
+
 export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: CoffeeDetailContentProps) {
-  const { addToCart } = useCart();
+  const { addToCart, refreshUserStatus } = useCart();
   const [coffee, setCoffee] = useState<CoffeeProduct | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [qty, setQty] = useState(1);
   const [inView, setInView] = useState(false);
   const [tiltStyle, setTiltStyle] = useState<React.CSSProperties>({});
   const [size, setSize] = useState('250g');
-  const [grindType, setGrindType] = useState('whole');
-  const [purchaseType, setPurchaseType] = useState<'oneTime' | 'subscribe'>('oneTime');
+  const [grindType, setGrindType] = useState(locale === 'tr' ? 'Çekirdek (Öğütülmemiş)' : 'Whole Bean');
+  const [customer, setCustomer] = useState<CustomerData | null>(null);
   const detailRef = useRef<HTMLDivElement | null>(null);
+
+  // ── Reviews state ──────────────────────────────────────────────
+  const [reviews, setReviews] = useState<ReviewData[]>([]);
+  const [reviewStats, setReviewStats] = useState<ReviewStats>({ total: 0, avgRating: 0, distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } });
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewForm, setReviewForm] = useState({ rating: 0, title: '', body: '' });
+  const [reviewHoverRating, setReviewHoverRating] = useState(0);
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewError, setReviewError] = useState('');
+  const [reviewSuccess, setReviewSuccess] = useState(false);
+
+  const getGrindOptions = (category: string, lang: string) => {
+    const isTr = lang === 'tr';
+    switch (category) {
+      case 'turkish':
+        return isTr
+          ? ['Çekirdek (Öğütülmemiş)', 'Türk Kahvesi']
+          : ['Whole Bean', 'Turkish Coffee'];
+      case 'single-origin':
+      case 'limited-edition':
+        return isTr
+          ? [
+              'Çekirdek (Öğütülmemiş)',
+              'Türk Kahvesi',
+              'Espresso Makinesi',
+              'Moka Pot',
+              'V60',
+              'Chemex',
+              'Filtre Kahve Makinesi',
+              'French Press'
+            ]
+          : [
+              'Whole Bean',
+              'Turkish Coffee',
+              'Espresso Machine',
+              'Moka Pot',
+              'V60',
+              'Chemex',
+              'Filter Coffee Machine',
+              'French Press'
+            ];
+      case 'filter':
+        return isTr
+          ? [
+              'Çekirdek (Öğütülmemiş)',
+              'Moka Pot',
+              'V60',
+              'Chemex',
+              'Filtre Kahve Makinesi',
+              'French Press'
+            ]
+          : [
+              'Whole Bean',
+              'Moka Pot',
+              'V60',
+              'Chemex',
+              'Filter Coffee Machine',
+              'French Press'
+            ];
+      case 'espresso':
+        return isTr
+          ? ['Çekirdek (Öğütülmemiş)', 'Espresso Makinesi', 'Moka Pot']
+          : ['Whole Bean', 'Espresso Machine', 'Moka Pot'];
+      default:
+        return isTr
+          ? ['Çekirdek (Öğütülmemiş)', 'Filtre Kahve Makinesi']
+          : ['Whole Bean', 'Filter Coffee Machine'];
+    }
+  };
 
   const translations = {
     en: {
@@ -362,6 +456,95 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
     fetchProduct();
   }, [coffeeId]);
 
+  const fetchReviews = async (productId: string) => {
+    try {
+      setReviewsLoading(true);
+      const res = await fetch(`/api/reviews?productId=${encodeURIComponent(productId)}`);
+      const json = await res.json();
+      if (res.ok && json.success) {
+        setReviews(json.data.reviews);
+        setReviewStats(json.data.stats);
+      }
+    } catch (err) {
+      console.error('Failed to load reviews:', err);
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
+  // Fetch reviews once product id is known
+  useEffect(() => {
+    if (coffeeId) fetchReviews(coffeeId);
+  }, [coffeeId]);
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewForm.rating) {
+      setReviewError(locale === 'tr' ? 'Lütfen bir puan seçin.' : 'Please select a star rating.');
+      return;
+    }
+    if (reviewForm.body.trim().length < 5) {
+      setReviewError(locale === 'tr' ? 'Yorum en az 5 karakter olmalıdır.' : 'Review must be at least 5 characters.');
+      return;
+    }
+    try {
+      setReviewSubmitting(true);
+      setReviewError('');
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: coffeeId,
+          rating: reviewForm.rating,
+          title: reviewForm.title.trim(),
+          body: reviewForm.body.trim(),
+        }),
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        setReviewSuccess(true);
+        setReviewForm({ rating: 0, title: '', body: '' });
+        await fetchReviews(coffeeId);
+        setTimeout(() => {
+          setShowReviewModal(false);
+          setReviewSuccess(false);
+        }, 1800);
+      } else {
+        setReviewError(json.error || (locale === 'tr' ? 'Yorum gönderilemedi.' : 'Failed to submit review.'));
+      }
+    } catch {
+      setReviewError(locale === 'tr' ? 'Bir hata oluştu. Lütfen tekrar deneyin.' : 'An error occurred. Please try again.');
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/account/me');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success) {
+            setCustomer(json.data);
+          }
+        }
+      } catch (err) {
+        // ignore
+      }
+    };
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    if (coffee) {
+      const options = getGrindOptions(coffee.category, locale);
+      if (options.length > 0) {
+        setGrindType(options[0]);
+      }
+    }
+  }, [coffee, locale]);
+
   const increment = () => setQty(p => Math.min(coffee?.stock ?? p, p + 1));
   const decrement = () => setQty(p => Math.max(1, p - 1));
 
@@ -405,6 +588,10 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
   }
 
   const style = PRODUCT_STYLES[coffee.id] || DEFAULT_STYLE;
+
+  const isCoffeeProduct = ['single-origin', 'limited-edition', 'signature-blend', 'filter', 'espresso', 'turkish'].includes(coffee.category);
+  const showDiscount = isCoffeeProduct && customer?.isSubscriber;
+  const discountedPrice = showDiscount ? Math.round(coffee.price * 0.90) : coffee.price;
 
   return (
     <div className={styles.pageWrapper}>
@@ -473,8 +660,24 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
 
               <div className={styles.priceRow}>
                 <span className={styles.priceVal}>
-                  ₺{purchaseType === 'subscribe' ? Math.round(coffee.price * qty * 0.85) : coffee.price * qty}
+                  {showDiscount ? (
+                    <>
+                      <span style={{ textDecoration: 'line-through', marginRight: '8px', color: '#999', fontSize: '0.8em' }}>
+                        ₺{coffee.price * qty}
+                      </span>
+                      <span style={{ color: '#0051a8' }}>
+                        ₺{discountedPrice * qty}
+                      </span>
+                    </>
+                  ) : (
+                    `₺${coffee.price * qty}`
+                  )}
                 </span>
+                {showDiscount && (
+                  <span className={styles.discountBadge}>
+                    {locale === 'tr' ? '%10 Abone İndirimi' : '10% Subscriber Discount'}
+                  </span>
+                )}
               </div>
 
               <div className={styles.quantitySection}>
@@ -496,55 +699,92 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
               </div>
 
               <div className={styles.selectControl}>
-                <label className={styles.selectLabel}>Grind Type</label>
+                <label className={styles.selectLabel}>{locale === 'tr' ? 'Öğütme Seçeneği' : 'Grind Type'}</label>
                 <select value={grindType} onChange={(e) => setGrindType(e.target.value)} className={styles.selectInput}>
-                  <option value="whole">Whole Bean</option>
-                  <option value="medium">Medium Grind</option>
-                  <option value="fine">Fine Grind</option>
+                  {getGrindOptions(coffee.category, locale).map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
                 </select>
-              </div>
-
-              <div style={{ marginTop: '8px' }}>
-                <div className={styles.purchaseOptions}>
-                  <div
-                    className={`${styles.purchaseOption} ${purchaseType === 'oneTime' ? styles.active : ''}`}
-                    onClick={() => setPurchaseType('oneTime')}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <span className={styles.purchaseOptionRadio} />
-                      <span className={styles.purchaseOptionName}>One-time</span>
-                    </div>
-                    <span className={styles.purchaseOptionPrice}>Extra Fresh</span>
-                  </div>
-                  <div
-                    className={`${styles.purchaseOption} ${purchaseType === 'subscribe' ? styles.active : ''}`}
-                    onClick={() => setPurchaseType('subscribe')}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <span className={styles.purchaseOptionRadio} />
-                      <span className={styles.purchaseOptionName}>Subscribe & Save</span>
-                    </div>
-                    <span className={styles.purchaseOptionPrice}>Save 15%</span>
-                  </div>
-                </div>
               </div>
 
               <button
                 onClick={() => addToCart({
-                  id: coffee.id,
+                  id: `${coffee.id}-${size}-${grindType}`,
                   name: coffee.name,
-                  price: purchaseType === 'subscribe' ? Math.round(coffee.price * 0.85) : coffee.price,
+                  price: coffee.price,
+                  category: coffee.category,
                   stock: coffee.stock,
                   emoji: style.emoji,
                   bagColor: style.bagColor,
-                  notes: coffee.tastingNotes.split(',').map(n => n.trim()),
+                  notes: [
+                    ...coffee.tastingNotes.split(',').map(n => n.trim()),
+                    `${locale === 'tr' ? 'Boyut' : 'Size'}: ${size}`,
+                    `${locale === 'tr' ? 'Öğütme' : 'Grind'}: ${grindType}`
+                  ],
                   imageUrl: coffee.imageUrl,
+                  size,
+                  grindType,
                 }, qty)}
                 className={styles.addToCartBtn}
                 disabled={coffee.stock === 0}
               >
                 {coffee.stock === 0 ? t.outOfStock : t.addToCart}
               </button>
+
+              {customer && !customer.isSubscriber && isCoffeeProduct && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      const res = await fetch('/api/account/me', {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ isSubscriber: true })
+                      });
+                      if (res.ok) {
+                        const json = await res.json();
+                        if (json.success) {
+                          setCustomer(json.data);
+                          refreshUserStatus();
+                        }
+                      }
+                    } catch (err) {
+                      console.error('Failed to subscribe:', err);
+                    }
+                  }}
+                  className={styles.subscribeBtn}
+                >
+                  {locale === 'tr'
+                    ? 'Coffee Esto Abonesi Ol — Kahvelerde %10 İndirim Kazan'
+                    : 'Become a Coffee Esto Subscriber — Save 10% on Coffees'}
+                </button>
+              )}
+
+              {!customer && isCoffeeProduct && (
+                <div className={styles.guestPromoBanner}>
+                  <span>
+                    {locale === 'tr' ? (
+                      <>
+                        Üyelere özel %10 indirimden faydalanmak için{' '}
+                        <Link href={`${linkPrefix}/account`} style={{ textDecoration: 'underline', fontWeight: '600', color: 'inherit' }}>
+                          giriş yapın
+                        </Link>{' '}
+                        veya hesap oluşturun!
+                      </>
+                    ) : (
+                      <>
+                        Please{' '}
+                        <Link href={`${linkPrefix}/account`} style={{ textDecoration: 'underline', fontWeight: '600', color: 'inherit' }}>
+                          sign in
+                        </Link>{' '}
+                        or create an account to get a 10% subscriber discount!
+                      </>
+                    )}
+                  </span>
+                </div>
+              )}
 
               {coffee.stock > 0 && coffee.stock <= 5 && (
                 <span className={`${styles.stockNote} ${styles.stockNoteLow}`} style={{ marginTop: '8px', display: 'block' }}>
@@ -560,53 +800,249 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
       {/* ── Product Reviews Section ── */}
       <section className={styles.reviewsSection}>
         <div className={styles.container}>
-          <h2 className={styles.reviewsMainTitle}>Product Reviews</h2>
+          <h2 className={styles.reviewsMainTitle}>
+            {locale === 'tr' ? 'Ürün Değerlendirmeleri' : 'Product Reviews'}
+          </h2>
 
           {/* Reviews Summary Dashboard */}
           <div className={styles.reviewsDashboard}>
             <div className={styles.dashboardScore}>
-              <span className={styles.scoreNumber}>5.00 / 5</span>
-              <div className={styles.scoreStars}>★★★★★</div>
-              <span className={styles.scoreCount}>Based on 1 review</span>
+              <span className={styles.scoreNumber}>
+                {reviewStats.total > 0 ? `${reviewStats.avgRating.toFixed(1)} / 5` : '—'}
+              </span>
+              <div className={styles.scoreStars}>
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <span key={s} style={{ color: s <= Math.round(reviewStats.avgRating) ? '#1a1a1a' : '#cccccc' }}>★</span>
+                ))}
+              </div>
+              <span className={styles.scoreCount}>
+                {reviewStats.total === 0
+                  ? (locale === 'tr' ? 'Henüz değerlendirme yok' : 'No reviews yet')
+                  : locale === 'tr'
+                    ? `${reviewStats.total} değerlendirmeye dayalı`
+                    : `Based on ${reviewStats.total} review${reviewStats.total !== 1 ? 's' : ''}`
+                }
+              </span>
             </div>
 
             <div className={styles.dashboardBars}>
-              {[5, 4, 3, 2, 1].map((stars) => (
-                <div key={stars} className={styles.barRow}>
-                  <span className={styles.barLabel}>★ {stars}</span>
-                  <div className={styles.barTrack}>
-                    <div className={styles.barFill} style={{ width: stars === 5 ? '100%' : '0%' }} />
+              {[5, 4, 3, 2, 1].map((stars) => {
+                const count = reviewStats.distribution[stars] ?? 0;
+                const pct = reviewStats.total > 0 ? Math.round((count / reviewStats.total) * 100) : 0;
+                return (
+                  <div key={stars} className={styles.barRow}>
+                    <span className={styles.barLabel}>★ {stars}</span>
+                    <div className={styles.barTrack}>
+                      <div className={styles.barFill} style={{ width: `${pct}%` }} />
+                    </div>
+                    <span className={styles.barCount}>({count})</span>
                   </div>
-                  <span className={styles.barCount}>({stars === 5 ? 1 : 0})</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className={styles.dashboardActions}>
-              <button className={styles.secondarySharpBtn}>Write a review</button>
-              <button className={styles.secondarySharpBtn}>Ask a question</button>
+              {customer ? (
+                <button
+                  className={styles.secondarySharpBtn}
+                  onClick={() => { setShowReviewModal(true); setReviewError(''); setReviewSuccess(false); }}
+                >
+                  {locale === 'tr' ? 'Değerlendirme Yaz' : 'Write a Review'}
+                </button>
+              ) : (
+                <Link href={`${linkPrefix}/account`} className={styles.secondarySharpBtn} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>
+                  {locale === 'tr' ? 'Değerlendirmek için Giriş Yap' : 'Sign In to Review'}
+                </Link>
+              )}
             </div>
           </div>
 
           {/* Individual Reviews Feed */}
           <div className={styles.reviewsFeed}>
-            <div className={styles.reviewCard}>
-              <div className={styles.reviewHeader}>
-                <div className={styles.reviewerBadge}>TW</div>
-                <div>
-                  <h4 className={styles.reviewerName}>Review</h4>
-                  <div className={styles.reviewMeta}>Delivered by Coffee • 1 year ago</div>
-                </div>
-              </div>
-              <div className={styles.reviewRating}>★★★★★</div>
-              <h5 className={styles.reviewTitle}>Total Treat</h5>
-              <p className={styles.reviewBody}>
-                An absolutely beautiful roast profile. Clean, incredibly bright development notes that make morning pourovers a true ritual.
+            {reviewsLoading ? (
+              <p style={{ textAlign: 'center', color: '#888', fontSize: '13px', padding: '24px 0' }}>
+                {locale === 'tr' ? 'Değerlendirmeler yükleniyor…' : 'Loading reviews…'}
               </p>
-            </div>
+            ) : reviews.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px 0', color: '#999' }}>
+                <p style={{ fontSize: '32px', marginBottom: '12px' }}>☕️</p>
+                <p style={{ fontSize: '14px' }}>
+                  {locale === 'tr'
+                    ? 'Henüz değerlendirme yok. Bu kahveyi ilk değerlendiren siz olun!'
+                    : 'No reviews yet. Be the first to review this coffee!'}
+                </p>
+                {customer && (
+                  <button
+                    className={styles.secondarySharpBtn}
+                    style={{ marginTop: '16px', padding: '0 24px' }}
+                    onClick={() => { setShowReviewModal(true); setReviewError(''); setReviewSuccess(false); }}
+                  >
+                    {locale === 'tr' ? 'Değerlendirme Yaz' : 'Write a Review'}
+                  </button>
+                )}
+              </div>
+            ) : (
+              reviews.map((review) => (
+                <div key={review.id} className={styles.reviewCard} style={{ borderBottom: '1px solid #eeeeee' }}>
+                  <div className={styles.reviewHeader}>
+                    <div className={styles.reviewerBadge}>{review.initials}</div>
+                    <div>
+                      <h4 className={styles.reviewerName}>{review.displayName}</h4>
+                      <div className={styles.reviewMeta}>
+                        {new Date(review.createdAt).toLocaleDateString(
+                          locale === 'tr' ? 'tr-TR' : 'en-US',
+                          { year: 'numeric', month: 'long', day: 'numeric' }
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.reviewRating}>
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <span key={s} style={{ color: s <= review.rating ? '#1a1a1a' : '#dddddd', fontSize: '14px' }}>★</span>
+                    ))}
+                  </div>
+                  {review.title && <h5 className={styles.reviewTitle}>{review.title}</h5>}
+                  <p className={styles.reviewBody}>{review.body}</p>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>
+
+      {/* ── Write Review Modal ── */}
+      {showReviewModal && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)',
+            zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '20px',
+          }}
+          onClick={(e) => { if (e.target === e.currentTarget) setShowReviewModal(false); }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="review-modal-title"
+        >
+          <div style={{
+            background: '#fff', width: '100%', maxWidth: '520px',
+            padding: '36px', position: 'relative',
+          }}>
+            <button
+              onClick={() => setShowReviewModal(false)}
+              aria-label="Close review modal"
+              style={{
+                position: 'absolute', top: '16px', right: '20px',
+                background: 'none', border: 'none', fontSize: '22px',
+                cursor: 'pointer', color: '#555', lineHeight: 1,
+              }}
+            >×</button>
+
+            <h3 id="review-modal-title" style={{ fontSize: '18px', fontWeight: 600, marginBottom: '4px' }}>
+              {locale === 'tr' ? 'Değerlendirme Yaz' : 'Write a Review'}
+            </h3>
+            <p style={{ fontSize: '12px', color: '#888', marginBottom: '24px' }}>
+              {coffee?.name}
+            </p>
+
+            {reviewSuccess ? (
+              <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                <p style={{ fontSize: '36px' }}>✅</p>
+                <p style={{ fontWeight: 600, marginTop: '12px' }}>
+                  {locale === 'tr' ? 'Değerlendirmeniz kaydedildi!' : 'Review submitted successfully!'}
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleReviewSubmit}>
+                {/* Star picker */}
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>
+                  {locale === 'tr' ? 'Puan' : 'Rating'}
+                </label>
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '20px' }}>
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      id={`review-star-${s}`}
+                      onClick={() => setReviewForm((f) => ({ ...f, rating: s }))}
+                      onMouseEnter={() => setReviewHoverRating(s)}
+                      onMouseLeave={() => setReviewHoverRating(0)}
+                      aria-label={`${s} star${s !== 1 ? 's' : ''}`}
+                      style={{
+                        background: 'none', border: 'none', fontSize: '32px',
+                        cursor: 'pointer', padding: '0 2px',
+                        color: s <= (reviewHoverRating || reviewForm.rating) ? '#1a1a1a' : '#dddddd',
+                        transition: 'color 0.1s',
+                      }}
+                    >★</button>
+                  ))}
+                </div>
+
+                {/* Title */}
+                <label htmlFor="review-title" style={{ display: 'block', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px' }}>
+                  {locale === 'tr' ? 'Başlık (isteğe bağlı)' : 'Title (optional)'}
+                </label>
+                <input
+                  id="review-title"
+                  type="text"
+                  maxLength={120}
+                  value={reviewForm.title}
+                  onChange={(e) => setReviewForm((f) => ({ ...f, title: e.target.value }))}
+                  placeholder={locale === 'tr' ? 'Kısa bir başlık yazın…' : 'Give your review a headline…'}
+                  style={{
+                    width: '100%', height: '40px', padding: '0 12px',
+                    border: '1px solid rgba(0,0,0,0.15)', marginBottom: '16px',
+                    fontSize: '13px', boxSizing: 'border-box', outline: 'none',
+                  }}
+                />
+
+                {/* Body */}
+                <label htmlFor="review-body" style={{ display: 'block', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px' }}>
+                  {locale === 'tr' ? 'Yorum' : 'Review'} *
+                </label>
+                <textarea
+                  id="review-body"
+                  maxLength={1000}
+                  rows={4}
+                  value={reviewForm.body}
+                  onChange={(e) => setReviewForm((f) => ({ ...f, body: e.target.value }))}
+                  placeholder={locale === 'tr' ? 'Bu kahve hakkında düşüncelerinizi paylaşın…' : 'Share your thoughts about this coffee…'}
+                  style={{
+                    width: '100%', padding: '10px 12px', resize: 'vertical',
+                    border: '1px solid rgba(0,0,0,0.15)', marginBottom: '4px',
+                    fontSize: '13px', fontFamily: 'inherit', boxSizing: 'border-box',
+                    outline: 'none', lineHeight: 1.6,
+                  }}
+                />
+                <p style={{ fontSize: '11px', color: '#aaa', textAlign: 'right', marginBottom: '16px' }}>
+                  {reviewForm.body.length}/1000
+                </p>
+
+                {reviewError && (
+                  <p style={{ color: '#c0392b', fontSize: '12px', marginBottom: '12px' }}>{reviewError}</p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={reviewSubmitting}
+                  style={{
+                    width: '100%', height: '44px',
+                    background: reviewSubmitting ? '#888' : '#1a1a1a',
+                    color: '#fff', border: 'none',
+                    fontWeight: 600, fontSize: '12px',
+                    textTransform: 'uppercase', letterSpacing: '0.1em',
+                    cursor: reviewSubmitting ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {reviewSubmitting
+                    ? (locale === 'tr' ? 'Gönderiliyor…' : 'Submitting…')
+                    : (locale === 'tr' ? 'Değerlendirmeyi Gönder' : 'Submit Review')
+                  }
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
 
       <Footer waveColor="#ffffff" locale={locale} />
     </div>

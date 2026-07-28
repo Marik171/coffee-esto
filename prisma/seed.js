@@ -4,10 +4,16 @@ const prisma = new PrismaClient();
 
 const defaultCategories = [
   { slug: 'single-origin', label: 'Single Origin' },
-  { slug: 'espresso',      label: 'Espresso' },
-  { slug: 'filter',        label: 'Filter Coffee' },
+  { slug: 'espresso',      label: 'Espresso Blend' },
+  { slug: 'filter',        label: 'Filter Blend' },
   { slug: 'turkish',       label: 'Turkish Coffee' },
-  { slug: 'limited-edition', label: 'Limited Edition' },
+  { slug: 'signature-blend', label: 'Signature Blend' },
+  { slug: 'espresso-machines', label: 'Espresso Machines' },
+  { slug: 'coffee-grinders', label: 'Coffee Grinders' },
+  { slug: 'filter-brewing-equipment', label: 'Filter Brewing Equipment' },
+  { slug: 'small-bar-equipment', label: 'Small Bar Equipment' },
+  { slug: 'barista-accessories', label: 'Barista Accessories' },
+  { slug: 'cleaning-products', label: 'Cleaning Products' },
 ];
 
 const newProducts = [
@@ -65,7 +71,7 @@ const newProducts = [
   {
     id: 'velora-signature',
     name: 'Velora Signature Espresso',
-    category: 'limited-edition',
+    category: 'signature-blend',
     origin: 'Single Estate Micro-Lot',
     altitude: '1800m - 2100m',
     varietal: 'Heirloom Typica',
@@ -269,6 +275,14 @@ const newProducts = [
 ];
 
 async function main() {
+  console.log('Cleaning up old categories...');
+  const newCatSlugs = defaultCategories.map(c => c.slug);
+  await prisma.category.deleteMany({
+    where: {
+      slug: { notIn: newCatSlugs }
+    }
+  });
+
   console.log('Seeding categories...');
   for (const cat of defaultCategories) {
     await prisma.category.upsert({
@@ -296,8 +310,41 @@ async function main() {
   });
   console.log(`Cleaned up ${deleted.count} old products.`);
 
+  console.log('Seeding blog posts...');
+  await prisma.blogPost.deleteMany({});
+  for (const post of initialBlogPosts) {
+    await prisma.blogPost.create({ data: post });
+  }
+
   console.log('Database seeded successfully!');
 }
+
+const initialBlogPosts = [
+  {
+    titleEn: 'The Art of Small-Batch Roasting',
+    titleTr: 'Küçük Ölçekli Kahve Kavurma Sanatı',
+    contentEn: 'Roasting coffee is a bridge between science and intuition. At The Coffee Esto Roastery, we analyze variables like drum temperature, airflow, and roasting speed to craft the perfect heat curve for every single origin. Each batch is roasted in small quantities to maintain uniform heat transfer, ensuring that the subtle floral notes, chocolate richness, and sweet caramel accents of the beans are fully drawn out without bitterness. Regular cupping sessions verify that each package represents our meticulous quality standards.',
+    contentTr: 'Kahve kavurmak, bilim ve sezgi arasında bir köprüdür. The Coffee Esto Roastery\'de, her bir tek yöre kahve için en uygun sıcaklık eğrisini tasarlamak üzere tambur sıcaklığı, hava akışı ve kavurma hızı gibi değişkenleri analiz ediyoruz. Homojen ısı transferini korumak için her parti küçük miktarlarda kavrulur. Bu sayede çekirdeklerin hafif çiçeksi notaları, çikolata zenginliği ve tatlı karamel aromaları acılık oluşturmadan tamamen ortaya çıkarılır. Düzenli tadım (cupping) seanslarımız, her paketin titiz kalite standartlarımızı temsil ettiğini doğrular.',
+    category: 'techniques',
+    imageUrl: '/images/blog/roaster.png',
+  },
+  {
+    titleEn: 'Guide to Perfect V60 Pour Over',
+    titleTr: 'Adım Adım Kusursuz V60 Demleme Rehberi',
+    contentEn: 'To brew a clean, aromatic cup of V60 filter coffee, begin by preheating your dripper and rinsing the paper filter with hot water to remove any paper taste. Weigh 15 grams of freshly ground coffee (medium-fine grind) and use 250 grams of water heated to 92-94°C. Start with a 45-second bloom using 50g of water to release trapped gases. Slowly pour the remaining water in gentle circular motions, keeping the water level stable. Total brew time should be between 2:30 and 3:00 minutes. Enjoy the vibrant fruit acidity and clean cup profile!',
+    contentTr: 'Berrak ve aromatik bir V60 filtre kahve demlemek için, damlatıcıyı önceden ısıtarak ve kâğıt filtreyi sıcak suyla durulayarak başlayın. 15 gram taze öğütülmüş kahve (orta-ince öğütüm) tartın ve 92-94°C sıcaklıktaki 250 gram su kullanın. Sıkışmış gazları salmak için 50g su ile 45 saniyelik bir ön demleme (çiçeklenme) başlatın. Kalan suyu, su seviyesini dengede tutarak dairesel hareketlerle yavaşça dökün. Toplam demleme süresi 2:30 ile 3:00 dakika arasında olmalıdır. Canlı meyve asiditesinin ve temiz fincan profilinin tadını çıkarın!',
+    category: 'guides',
+    imageUrl: '/images/blog/beans.png',
+  },
+  {
+    titleEn: 'Sourcing Micro-Lots Directly from Origin',
+    titleTr: 'Mikro Lot Kahveleri Doğrudan Çiftlikten Tedarik Etmek',
+    contentEn: 'Our mission is to establish sustainable relationships with smallholder farmers across South America and Africa. By sourcing direct-trade micro-lots, we bypass corporate brokers and pay premiums directly to the growers. This ensures full crop traceability, guarantees fair pay, and supports local community infrastructure. When you drink a cup of Coffee Esto, you are tasting a unique harvest cultivated with extraordinary effort and care, roasted to perfection in our İstanbul roastery.',
+    contentTr: 'Misyonumuz, Güney Amerika ve Afrika genelindeki küçük ölçekli çiftçilerle sürdürülebilir ilişkiler kurmaktır. Doğrudan ticaret mikro lotları tedarik ederek, kurumsal aracıları devre dışı bırakıyor ve primleri doğrudan üreticilere ödüyoruz. Bu, tam ürün izlenebilirliği sağlar, adil ödemeyi garanti eder ve yerel topluluk altyapısını destekler. Bir fincan Coffee Esto içtiğinizde, İstanbul\'daki kavurmahanemizde mükemmel bir şekilde kavrulmuş, olağanüstü emek ve özenle yetiştirilmiş benzersiz bir hasadı tadıyorsunuz.',
+    category: 'culture',
+    imageUrl: '/images/blog/fields.png',
+  }
+];
 
 main()
   .catch((e) => {

@@ -47,7 +47,7 @@ export default function Footer({ locale = 'en' }: FooterProps) {
 
   const translations = {
     en: {
-      brandStatement: 'Independent specialty coffee roasters. Direct-trade micro-lots roasted with precision and care in small batches.',
+      brandStatement: 'Independent specialty coffee roastery. Direct-trade micro-lots roasted with precision and care in small batches.',
       sitemap: 'Sitemap',
       hours: 'Hours',
       delivery: 'Delivery',

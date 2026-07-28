@@ -5,13 +5,16 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 export interface CartItem {
   id: string;
   name: string;
-  price: number;
+  price: number; // Always holds the original base price
   quantity: number;
   stock: number;
   bagColor: string;
   notes: string[];
   emoji: string;
   imageUrl?: string;
+  size?: string;
+  grindType?: string;
+  category?: string;
 }
 
 interface CartContextType {
@@ -24,16 +27,39 @@ interface CartContextType {
   clearCart: () => void;
   cartCount: number;
   cartTotal: number;
+  isSubscriber: boolean;
+  refreshUserStatus: () => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
+
+const coffeeCategories = ['single-origin', 'signature-blend', 'limited-edition', 'filter', 'espresso', 'turkish'];
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isSubscriber, setIsSubscriber] = useState(false);
 
-  // Load cart from localStorage on mount
+  const fetchUserStatus = async () => {
+    try {
+      const res = await fetch('/api/account/me');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.data) {
+          setIsSubscriber(json.data.isSubscriber || false);
+        } else {
+          setIsSubscriber(false);
+        }
+      } else {
+        setIsSubscriber(false);
+      }
+    } catch {
+      setIsSubscriber(false);
+    }
+  };
+
+  // Load cart from localStorage and fetch subscriber status on mount
   useEffect(() => {
     try {
       const storedCart = localStorage.getItem('coffee_esto_roastery_cart');
@@ -54,6 +80,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setIsInitialized(true);
       });
     }
+
+    fetchUserStatus();
   }, []);
 
   // Save cart to localStorage whenever it changes
@@ -100,9 +128,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCartItems([]);
   };
 
-  // Derive cartCount and cartTotal
+  const refreshUserStatus = async () => {
+    await fetchUserStatus();
+  };
+
+  // Derive cartCount and cartTotal with dynamic subscriber pricing
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-  const cartTotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const cartTotal = cartItems.reduce((acc, item) => {
+    const isCoffee = item.category && coffeeCategories.includes(item.category);
+    const effectivePrice = (isSubscriber && isCoffee) ? Math.round(item.price * 0.90) : item.price;
+    return acc + effectivePrice * item.quantity;
+  }, 0);
 
   return (
     <CartContext.Provider
@@ -116,6 +152,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         clearCart,
         cartCount,
         cartTotal,
+        isSubscriber,
+        refreshUserStatus,
       }}
     >
       {children}

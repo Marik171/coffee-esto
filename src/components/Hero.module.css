@@ -7,43 +7,22 @@
   font-family: var(--font-family-primary);
   user-select: none;
   background-color: #0c0c0c;
-}
-
-/* Slider / Carousel Container */
-.slidesWrapper {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.slidesContainer {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  transition: transform var(--motion-duration-slow) cubic-bezier(0.65, 0, 0.35, 1);
-}
-
-.slide {
-  width: 100vw;
-  height: 100%;
-  flex-shrink: 0;
-  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  padding: 0 10%;
+  padding: 110px 10% 0 10%;
 }
 
-/* Background Image styling */
-.backgroundImage {
+/* Background Video styling - aligned to start below the desktop navbar (110px) */
+.backgroundVideo {
   position: absolute;
-  top: 0;
+  top: 110px;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 110px);
   object-fit: cover;
+  object-position: center top; /* Align top of video to prevent cutting off top details like crowns */
   z-index: 1;
   pointer-events: none;
   opacity: 0.8;
@@ -52,10 +31,10 @@
 /* Dark gradient overlay for text readability */
 .overlay {
   position: absolute;
-  top: 0;
+  top: 110px; /* Match the video offset */
   left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 110px);
   background: linear-gradient(
     to right,
     rgba(12, 12, 12, 0.75) 0%,
@@ -74,7 +53,7 @@
   color: #ffffff;
   max-width: 650px;
   padding: 0;
-  margin-top: 40px; /* Offset for top header overlay space */
+  margin-top: 0; /* Reset margins since flexbox handles positioning */
 }
 
 .accentText {
@@ -139,96 +118,11 @@
   color: #000000;
 }
 
-/* Arrow Navigation Buttons (Vertically Centered at Edges) */
-.arrowBtnLeft,
-.arrowBtnRight {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: none;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 10;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-}
-
-.arrowBtnLeft {
-  left: 40px;
-}
-
-.arrowBtnRight {
-  right: 40px;
-}
-
-.arrowBtnLeft svg,
-.arrowBtnRight svg {
-  transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.arrowBtnLeft:hover svg {
-  transform: translateX(-3px);
-}
-
-.arrowBtnRight:hover svg {
-  transform: translateX(3px);
-}
-
-.arrowBtnLeft:hover {
-  background-color: #ffffff;
-  color: #000000;
-  transform: translateY(-50%) scale(1.05);
-}
-
-.arrowBtnRight:hover {
-  background-color: #ffffff;
-  color: #000000;
-  transform: translateY(-50%) scale(1.05);
-}
-
-.arrowBtnLeft:active,
-.arrowBtnRight:active {
-  transform: translateY(-50%) scale(0.95);
-}
-
-/* Play/Pause Autoplay button (Bottom Right) */
-.playPauseBtn {
-  position: absolute;
-  bottom: 40px;
-  right: 40px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.15);
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 10;
-  border: none;
-  opacity: 0.7;
-  transition: opacity 0.2s ease, background-color 0.2s ease;
-}
-
-.playPauseBtn:hover {
-  opacity: 1;
-  background-color: rgba(255, 255, 255, 0.3);
-}
-
 /* Scroll to top button */
 .scrollTopBtn {
   position: fixed;
   bottom: 40px;
-  right: 90px; /* Offset from playPauseBtn */
+  right: 40px;
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -263,32 +157,43 @@
 
 /* Responsive Styles */
 @media (max-width: 992px) {
-  .slide {
-    padding: 0 8%;
+  .heroContainer {
+    padding: 100px 8% 0 8%; /* Adjust padding for mobile header (100px) */
   }
 
-  .arrowBtnLeft {
-    left: 20px;
+  .backgroundVideo {
+    top: 100px;
+    height: calc(100% - 100px);
   }
 
-  .arrowBtnRight {
-    right: 20px;
-  }
-
-  .playPauseBtn {
-    bottom: 24px;
-    right: 20px;
+  .overlay {
+    top: 100px;
+    height: calc(100% - 100px);
   }
 
   .scrollTopBtn {
     bottom: 24px;
-    right: 64px;
+    right: 24px;
   }
 }
 
 @media (max-width: 576px) {
+  .heroContainer {
+    padding: 100px 6% 0 6%;
+  }
+
+  .backgroundVideo {
+    top: 100px;
+    height: calc(100% - 100px);
+  }
+
+  .overlay {
+    top: 100px;
+    height: calc(100% - 100px);
+  }
+
   .contentOverlay {
-    margin-top: 60px;
+    margin-top: 20px;
   }
 
   .title {
@@ -300,13 +205,7 @@
     margin-bottom: 24px;
   }
 
-  .arrowBtnLeft,
-  .arrowBtnRight {
-    display: none; /* Hide arrow navigation on small mobile */
-  }
-
   .scrollTopBtn {
-    right: 20px; /* Take playPause position if arrows hidden, or hide */
     display: none;
   }
 }

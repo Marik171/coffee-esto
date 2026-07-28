@@ -79,61 +79,63 @@ export default function ContactContent({ locale = 'en' }: ContactContentProps) {
   return (
     <div className={styles.page}>
       <Navbar locale={locale} />
+      <div className={styles.navOffset} />
 
-      {/* ── 1. Page Header Block ──────────────────────────────── */}
-      <section className={styles.headerSection}>
+      {/* ── 1. Page Hero Section ──────────────────────────────── */}
+      <section className={styles.heroSection}>
+        <div className={styles.heroOverlay} />
+        
+        <div className={styles.heroInner}>
+          <span className={styles.heroLabel}>{locale === 'tr' ? 'BİZE ULAŞIN' : 'GET IN TOUCH'}</span>
+          <h1 className={styles.heroTitle}>{t.title}</h1>
+          <p className={styles.heroSubtitle}>{t.intro}</p>
+        </div>
+      </section>
+
+      {/* ── 2. Details Grid Section ───────────────────────────── */}
+      <section className={styles.detailsSection}>
         <div className={styles.container}>
-          <div className={styles.headerGrid}>
+          <div className={styles.infoCols}>
             
-            {/* Left Title */}
-            <div className={styles.titleCol}>
-              <h1 className={styles.mainTitle}>{t.title}</h1>
+            {/* Col 1: Address */}
+            <div className={styles.infoBlock}>
+              <h3 className={styles.blockTitle}>{t.officeTitle}</h3>
+              <p className={styles.blockText}>
+                {t.officeVal.split('\n').map((line, i) => (
+                  <React.Fragment key={i}>
+                    {line}
+                    {i < t.officeVal.split('\n').length - 1 && <br />}
+                  </React.Fragment>
+                ))}
+              </p>
             </div>
 
-            {/* Right Information Columns */}
-            <div className={styles.infoCols}>
-              
-              {/* Col 1: Address */}
-              <div className={styles.infoBlock}>
-                <h3 className={styles.blockTitle}>{t.officeTitle}</h3>
-                <p className={styles.blockText}>
-                  {t.officeVal.split('\n').map((line, i) => (
-                    <React.Fragment key={i}>
-                      {line}
-                      {i < t.officeVal.split('\n').length - 1 && <br />}
-                    </React.Fragment>
-                  ))}
-                </p>
-              </div>
+            {/* Col 2: Direct Contact */}
+            <div className={styles.infoBlock}>
+              <h3 className={styles.blockTitle}>{t.touchTitle}</h3>
+              <p className={styles.blockText}>
+                <a href={`mailto:${t.emailVal}`} className={styles.textLink}>
+                  {t.emailVal}
+                </a>
+                <br />
+                <a href={`tel:${t.phoneVal.replace(/\s+/g, '')}`} className={styles.textLink}>
+                  {t.phoneVal}
+                </a>
+              </p>
+            </div>
 
-              {/* Col 2: Direct Contact */}
-              <div className={styles.infoBlock}>
-                <h3 className={styles.blockTitle}>{t.touchTitle}</h3>
-                <p className={styles.blockText}>
-                  <a href={`mailto:${t.emailVal}`} className={styles.textLink}>
-                    {t.emailVal}
-                  </a>
-                  <br />
-                  <a href={`tel:${t.phoneVal.replace(/\s+/g, '')}`} className={styles.textLink}>
-                    {t.phoneVal}
-                  </a>
-                </p>
-              </div>
-
-              {/* Col 3: Links */}
-              <div className={styles.infoBlock}>
-                <h3 className={styles.blockTitle}>{t.linksTitle}</h3>
-                <p className={styles.blockText}>
-                  <Link href={`${linkPrefix}/coffee`} className={styles.textLink}>
-                    {t.linkShop}
-                  </Link>
-                  <br />
-                  <Link href={`${linkPrefix}/wholesale`} className={styles.textLink}>
-                    {t.linkWholesale}
-                  </Link>
-                </p>
-              </div>
-
+            {/* Col 3: Links */}
+            <div className={styles.infoBlock}>
+              <h3 className={styles.blockTitle}>{t.linksTitle}</h3>
+              <p className={styles.blockText}>
+                <Link href={`${linkPrefix}/coffee`} className={styles.textLink}>
+                  {t.linkShop}
+                </Link>
+                <br />
+                <Link href={`${linkPrefix}/wholesale`} className={styles.textLink}>
+                  {t.linkWholesale}
+                </Link>
+              </p>
             </div>
 
           </div>

@@ -17,10 +17,12 @@ function useIsMobile(breakpoint = 640) {
   return isMobile;
 }
 
+const coffeeCategories = ['single-origin', 'signature-blend', 'limited-edition', 'filter', 'espresso', 'turkish'];
+
 export default function CartDrawer() {
   const router = useRouter();
   const pathname = usePathname();
-  const { cartItems, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, cartTotal } = useCart();
+  const { cartItems, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, cartTotal, isSubscriber } = useCart();
   const isMobile = useIsMobile();
 
   const isTr = !pathname.startsWith('/en');
@@ -183,7 +185,18 @@ export default function CartDrawer() {
                       <div className={styles.itemInfo}>
                         <h3 className={styles.itemName}>{item.name}</h3>
                         <span className={styles.itemPrice}>
-                          {isTr ? `${item.price} TL` : `₺${item.price}`}
+                          {isSubscriber && item.category && coffeeCategories.includes(item.category) ? (
+                            <>
+                              <span style={{ textDecoration: 'line-through', opacity: 0.5, marginRight: '8px' }}>
+                                {isTr ? `${item.price} TL` : `₺${item.price}`}
+                              </span>
+                              <span style={{ color: '#0044ff', fontWeight: 700 }}>
+                                {isTr ? `${Math.round(item.price * 0.90)} TL` : `₺${Math.round(item.price * 0.90)}`}
+                              </span>
+                            </>
+                          ) : (
+                            isTr ? `${item.price} TL` : `₺${item.price}`
+                          )}
                         </span>
                         
                         <div className={styles.itemMeta}>

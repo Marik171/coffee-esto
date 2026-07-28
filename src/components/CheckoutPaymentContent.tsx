@@ -15,7 +15,8 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
   const searchParams = useSearchParams();
   const isWholesale = searchParams.get('type') === 'wholesale';
 
-  const { cartItems, cartTotal, clearCart, updateQuantity } = useCart();
+  const { cartItems, cartTotal, clearCart, updateQuantity, isSubscriber } = useCart();
+  const coffeeCategories = ['single-origin', 'signature-blend', 'limited-edition', 'filter', 'espresso', 'turkish'];
   const [wholesaleItems, setWholesaleItems] = useState<any[]>([]);
   const [stockIssue, setStockIssue] = useState('');
   const [discountCode, setDiscountCode] = useState('');
@@ -65,7 +66,7 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       shipping: 'Shipping',
       shippingCalc: 'Enter shipping address',
       total: 'Total',
-      usd: 'USD',
+      usd: 'TRY',
       refundPolicy: 'Refund policy',
       privacyPolicy: 'Privacy policy',
       terms: 'Terms of service',
@@ -116,7 +117,7 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       shipping: 'Kargo',
       shippingCalc: 'Teslimat adresini girin',
       total: 'Toplam',
-      usd: 'USD',
+      usd: 'TL',
       refundPolicy: 'İade politikası',
       privacyPolicy: 'Gizlilik politikası',
       terms: 'Kullanım koşulları',
@@ -136,6 +137,15 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
     }
   }, [isWholesale]);
 
+  const getProductId = (id: string) => {
+    const parts = id.split('-');
+    const sizeIndex = parts.findIndex((p) => p === '250g' || p === '500g' || p === '1kg');
+    if (sizeIndex !== -1) {
+      return parts.slice(0, sizeIndex).join('-');
+    }
+    return id;
+  };
+
   useEffect(() => {
     if (isWholesale || cartItems.length === 0) return;
     let cancelled = false;
@@ -145,9 +155,29 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
         const d = await res.json();
         if (cancelled || !res.ok || !d.success) return;
         const stockById = new Map<string, number>(d.data.map((p: { id: string; stock: number }) => [p.id, p.stock]));
-        const overages = cartItems.filter((item) => item.quantity > (stockById.get(item.id) ?? 0));
+
+        // Sum requested quantities per base product ID in current cartItems
+        const requestedTotals = new Map<string, number>();
+        cartItems.forEach((item) => {
+          const baseId = getProductId(item.id);
+          requestedTotals.set(baseId, (requestedTotals.get(baseId) ?? 0) + item.quantity);
+        });
+
+        // Filter cartItems that exceed stock limit
+        const overages = cartItems.filter((item) => {
+          const baseId = getProductId(item.id);
+          const totalRequested = requestedTotals.get(baseId) ?? 0;
+          const availableStock = stockById.get(baseId) ?? 0;
+          return totalRequested > availableStock;
+        });
+
         if (overages.length > 0) {
-          overages.forEach((item) => updateQuantity(item.id, stockById.get(item.id) ?? 0));
+          overages.forEach((item) => {
+            const baseId = getProductId(item.id);
+            const availableStock = stockById.get(baseId) ?? 0;
+            // Cap quantity to available stock or 0
+            updateQuantity(item.id, Math.max(0, Math.min(item.quantity, availableStock)));
+          });
           setStockIssue(
             overages.length === 1
               ? `"${overages[0].name}" stock changed — quantity adjusted.`
@@ -230,6 +260,7 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
         body: JSON.stringify({
           items: itemsToRender.map((item) => ({ id: item.id, quantity: item.quantity })),
           isWholesale,
+          isSubscriber,
           shippingDetails: { email, fullName: `${firstName} ${lastName}`, address, city, zipCode, phone },
           cardDetails: { cardHolderName: cardName, cardNumber, expireMonth: parts[0], expireYear: parts[1], cvc: cardCvv },
         }),
@@ -560,7 +591,12 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
                   {item.grindType && <span className={styles.summaryItemDetail}>Grind Type: {item.grindType}</span>}
                 </div>
                 <span className={styles.summaryItemPrice}>
-                  ${(isWholesale ? item.wholesalePrice * item.quantity : item.price * item.quantity).toFixed(2)}
+                  {(() => {
+                    const priceToUse = isWholesale ? item.wholesalePrice : item.price;
+                    const isCoffee = item.category && coffeeCategories.includes(item.category);
+                    const effectivePrice = (!isWholesale && isSubscriber && isCoffee) ? Math.round(priceToUse * 0.90) : priceToUse;
+                    return `₺${(effectivePrice * item.quantity).toFixed(2)}`;
+                  })()}
                 </span>
               </div>
             ))}
@@ -574,19 +610,19 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
             <div className={styles.totalsBlock}>
               <div className={styles.totalRow}>
                 <span>{t.subtotal}</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>₺{subtotal.toFixed(2)}</span>
               </div>
               <div className={styles.totalRow}>
                 <span>{t.shipping}</span>
                 <span className={shippingFee === 0 && subtotal > 0 ? '' : styles.shippingCalcText}>
-                  {shippingFee === 0 && subtotal > 0 ? t.freeShipping : shippingFee > 0 ? `$${shippingFee.toFixed(2)}` : t.shippingCalc}
+                  {shippingFee === 0 && subtotal > 0 ? t.freeShipping : shippingFee > 0 ? `₺${shippingFee.toFixed(2)}` : t.shippingCalc}
                 </span>
               </div>
               <div className={styles.grandTotalRow}>
                 <span>{t.total}</span>
                 <span>
                   <small className={styles.currencyLabel}>{t.usd}&nbsp;</small>
-                  <strong>${grandTotal.toFixed(2)}</strong>
+                  <strong>₺{grandTotal.toFixed(2)}</strong>
                 </span>
               </div>
             </div>

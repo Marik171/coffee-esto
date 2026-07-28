@@ -144,41 +144,27 @@
   user-select: none;
 }
 
-.checkboxBox {
+.circularCheckbox {
   width: 16px;
   height: 16px;
   min-width: 16px;
   border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 0px;
-  /* Zero radius sharp check box boundary block */
+  border-radius: 50%;
   background: transparent;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-top: 2px;
   transition: all 0.15s ease;
+  user-select: none;
 }
 
-.checkboxInput:checked+.checkboxLabelStructure .checkboxBox {
+.checkboxInput:checked+.checkboxLabelStructure .circularCheckbox {
   background: #1a1a1a;
   border-color: #1a1a1a;
-}
-
-.checkboxBox::after {
-  content: '';
-  width: 5px;
-  height: 8px;
-  border: stroke #ffffff;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-  display: none;
-  margin-bottom: 2px;
-}
-
-.checkboxInput:checked+.checkboxLabelStructure .checkboxBox::after {
-  display: block;
-  border-right: 2px solid white;
-  border-bottom: 2px solid white;
 }
 
 .checkboxTextLabel {

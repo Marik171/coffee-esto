@@ -101,31 +101,23 @@ export default function AboutContent({ locale = 'en' }: AboutContentProps) {
   return (
     <div className={styles.page}>
       <Navbar locale={locale} />
+      <div className={styles.navOffset} />
 
       {/* ── 1. Full-width Hero Banner ─────────────────────────── */}
       <section className={styles.heroSection}>
-        <div className={styles.heroImageContainer}>
-          <img
-            src="/images/about/about-7.webp"
-            alt="The Coffee Esto Roastery Roasting Process"
-            className={styles.heroImage}
-          />
-          <div className={styles.heroOverlay} />
-        </div>
+        <div className={styles.heroOverlay} />
         
-        <div className={styles.container}>
-          <motion.div
-            ref={heroRef}
-            className={styles.heroCard}
-            initial={{ opacity: 0, y: 36 }}
-            animate={heroInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-          >
-            <span className={styles.heroEyebrow}>{t.heroEyebrow}</span>
-            <h1 className={styles.heroTitle}>{t.heroTitle}</h1>
-            <p className={styles.heroSub}>{t.heroSub}</p>
-          </motion.div>
-        </div>
+        <motion.div
+          ref={heroRef}
+          className={styles.heroInner}
+          initial={{ opacity: 0, y: 36 }}
+          animate={heroInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+        >
+          <span className={styles.heroEyebrow}>{t.heroEyebrow}</span>
+          <h1 className={styles.heroTitle}>{t.heroTitle}</h1>
+          <p className={styles.heroSub}>{t.heroSub}</p>
+        </motion.div>
       </section>
 
       {/* ── 2. Typographic Quote Block ───────────────────────── */}
@@ -139,78 +131,96 @@ export default function AboutContent({ locale = 'en' }: AboutContentProps) {
         </div>
       </section>
 
+      {/* ── 2.5 Horizontal Gallery Section ──────────────────── */}
+      <section className={styles.gallerySection}>
+        <div className={styles.container}>
+          <div className={styles.galleryGrid}>
+            <FadeUp className={styles.galleryItem} delay={0.05}>
+              <div className={styles.galleryImageFrame}>
+                <img src="/images/about/about-1.webp" alt="Select Green Beans Sourcing" className={styles.galleryImg} />
+              </div>
+            </FadeUp>
+            <FadeUp className={styles.galleryItem} delay={0.1}>
+              <div className={styles.galleryImageFrame}>
+                <img src="/images/about/about-5.webp" alt="Premium Cafe Space" className={styles.galleryImg} />
+              </div>
+            </FadeUp>
+            <FadeUp className={styles.galleryItem} delay={0.15}>
+              <div className={styles.galleryImageFrame}>
+                <img src="/images/about/about-2.webp" alt="Coffee Esto Roast Control" className={styles.galleryImg} />
+              </div>
+            </FadeUp>
+            <FadeUp className={styles.galleryItem} delay={0.2}>
+              <div className={styles.galleryImageFrame}>
+                <img src="/images/about/about-6.webp" alt="Espresso Extraction QC" className={styles.galleryImg} />
+              </div>
+            </FadeUp>
+          </div>
+        </div>
+      </section>
+
       {/* ── 3. Vertical Stories & Images Feed ─────────────────── */}
       <section className={styles.feedSection}>
         <div className={styles.container}>
           <div className={styles.feed}>
             
-            {/* Row 1: Our Story */}
+            {/* Block 1: Our Story */}
             <div className={styles.feedRow}>
               <FadeUp className={styles.feedColImage}>
                 <div className={styles.imageFrame}>
-                  <img src="/images/about/about-1.webp" alt="Coffee Esto Story" className={styles.feedImg} />
+                  <img src="/images/about/about-1.webp" alt={t.storyTitle} className={styles.feedImg} />
                 </div>
               </FadeUp>
               <FadeUp className={styles.feedColContent} delay={0.08}>
                 <span className={styles.feedLabel}>{t.storyLabel}</span>
                 <h2 className={styles.feedHeading}>{t.storyTitle}</h2>
+                <div className={styles.feedDivider} />
                 <p className={styles.feedText}>{t.storyText}</p>
               </FadeUp>
             </div>
 
-            {/* Row 2: Two Side-by-Side Images */}
-            <div className={styles.feedDoubleImageRow}>
-              <FadeUp className={styles.doubleImageCol}>
-                <div className={styles.imageFrame}>
-                  <img src="/images/about/about-5.webp" alt="Cafe Environment" className={styles.feedImg} />
-                </div>
-              </FadeUp>
-              <FadeUp className={styles.doubleImageCol} delay={0.08}>
-                <div className={styles.imageFrame}>
-                  <img src="/images/about/about-2.webp" alt="Roastery Team & Machine" className={styles.feedImg} />
-                </div>
-              </FadeUp>
-            </div>
-
-            {/* Row 3: What Matters to Us */}
-            <div className={styles.feedRow}>
-              <FadeUp className={styles.feedColImage}>
-                <div className={styles.imageFrame}>
-                  <img src="/images/about/about-6.webp" alt="Coffee Beans Sourcing" className={styles.feedImg} />
-                </div>
-              </FadeUp>
-              <FadeUp className={styles.feedColContent} delay={0.08}>
-                <span className={styles.feedLabel}>{t.mattersLabel}</span>
-                <h2 className={styles.feedHeading}>{t.mattersTitle}</h2>
-                <p className={styles.feedText}>{t.mattersText}</p>
-              </FadeUp>
-            </div>
-
-            {/* Row 4: Consultancy & Horeca */}
+            {/* Block 2: What Matters to Us */}
             <div className={styles.feedRowReverse}>
               <FadeUp className={styles.feedColContent}>
-                <span className={styles.feedLabel}>{t.horecaLabel}</span>
-                <h2 className={styles.feedHeading}>{t.horecaTitle}</h2>
-                <p className={styles.feedText}>{t.horecaText}</p>
+                <span className={styles.feedLabel}>{t.mattersLabel}</span>
+                <h2 className={styles.feedHeading}>{t.mattersTitle}</h2>
+                <div className={styles.feedDivider} />
+                <p className={styles.feedText}>{t.mattersText}</p>
               </FadeUp>
               <FadeUp className={styles.feedColImage} delay={0.08}>
                 <div className={styles.imageFrame}>
-                  <img src="/images/about/about-3.webp" alt="Barista Equipment solutions" className={styles.feedImg} />
+                  <img src="/images/about/about-6.webp" alt={t.mattersTitle} className={styles.feedImg} />
                 </div>
               </FadeUp>
             </div>
 
-            {/* Row 5: Precision Roast & Quality */}
+            {/* Block 3: Consultancy & Horeca */}
             <div className={styles.feedRow}>
               <FadeUp className={styles.feedColImage}>
                 <div className={styles.imageFrame}>
-                  <img src="/images/about/about-4.webp" alt="Espresso extraction quality control" className={styles.feedImg} />
+                  <img src="/images/about/about-3.webp" alt={t.horecaTitle} className={styles.feedImg} />
                 </div>
               </FadeUp>
               <FadeUp className={styles.feedColContent} delay={0.08}>
+                <span className={styles.feedLabel}>{t.horecaLabel}</span>
+                <h2 className={styles.feedHeading}>{t.horecaTitle}</h2>
+                <div className={styles.feedDivider} />
+                <p className={styles.feedText}>{t.horecaText}</p>
+              </FadeUp>
+            </div>
+
+            {/* Block 4: Precision Roast & Quality Control */}
+            <div className={styles.feedRowReverse}>
+              <FadeUp className={styles.feedColContent}>
                 <span className={styles.feedLabel}>{t.roastLabel}</span>
                 <h2 className={styles.feedHeading}>{t.roastTitle}</h2>
+                <div className={styles.feedDivider} />
                 <p className={styles.feedText}>{t.roastText}</p>
+              </FadeUp>
+              <FadeUp className={styles.feedColImage} delay={0.08}>
+                <div className={styles.imageFrame}>
+                  <img src="/images/about/about-4.webp" alt={t.roastTitle} className={styles.feedImg} />
+                </div>
               </FadeUp>
             </div>
 

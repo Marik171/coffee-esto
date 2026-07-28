@@ -12,9 +12,11 @@ interface CartContentProps {
   locale?: string;
 }
 
+const coffeeCategories = ['single-origin', 'signature-blend', 'limited-edition', 'filter', 'espresso', 'turkish'];
+
 export default function CartContent({ locale = 'en' }: CartContentProps) {
   const router = useRouter();
-  const { cartItems, updateQuantity, removeFromCart, cartTotal } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, cartTotal, isSubscriber } = useCart();
 
   const isTr = locale === 'tr';
   const linkPrefix = isTr ? '' : '/en';
@@ -157,7 +159,18 @@ export default function CartContent({ locale = 'en' }: CartContentProps) {
 
                       {/* PRICE Column */}
                       <td className={styles.tdPrice}>
-                        {isTr ? `${item.price} TL` : `₺${item.price}`}
+                        {isSubscriber && item.category && coffeeCategories.includes(item.category) ? (
+                          <>
+                            <span style={{ textDecoration: 'line-through', opacity: 0.5, marginRight: '8px' }}>
+                              {isTr ? `${item.price} TL` : `₺${item.price}`}
+                            </span>
+                            <span style={{ color: '#0044ff', fontWeight: 700 }}>
+                              {isTr ? `${Math.round(item.price * 0.90)} TL` : `₺${Math.round(item.price * 0.90)}`}
+                            </span>
+                          </>
+                        ) : (
+                          isTr ? `${item.price} TL` : `₺${item.price}`
+                        )}
                       </td>
 
                       {/* QUANTITY Column */}
@@ -186,7 +199,18 @@ export default function CartContent({ locale = 'en' }: CartContentProps) {
                       <td className={styles.tdTotal}>
                         <div className={styles.totalFlex}>
                           <span className={styles.totalVal}>
-                            {isTr ? `${item.price * item.quantity} TL` : `₺${item.price * item.quantity}`}
+                            {isSubscriber && item.category && coffeeCategories.includes(item.category) ? (
+                              <>
+                                <span style={{ textDecoration: 'line-through', opacity: 0.5, marginRight: '8px', fontSize: '12px' }}>
+                                  {isTr ? `${item.price * item.quantity} TL` : `₺${item.price * item.quantity}`}
+                                </span>
+                                <span style={{ color: '#0044ff', fontWeight: 700 }}>
+                                  {isTr ? `${Math.round(item.price * 0.90) * item.quantity} TL` : `₺${Math.round(item.price * 0.90) * item.quantity}`}
+                                </span>
+                              </>
+                            ) : (
+                              isTr ? `${item.price * item.quantity} TL` : `₺${item.price * item.quantity}`
+                            )}
                           </span>
                           <button className={styles.removeBtn} onClick={() => removeFromCart(item.id)}>
                             {t.removeBtn}

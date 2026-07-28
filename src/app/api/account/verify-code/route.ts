@@ -91,6 +91,7 @@ export async function POST(request: Request) {
         name: customer.name,
         phone: customer.phone,
         newsOptIn: customer.newsOptIn,
+        isSubscriber: customer.isSubscriber,
       },
       error: null,
     });

@@ -1,14 +1,12 @@
-/* ── Canvas Layout Styles ───────────────────────────────────── */
+/* ── Page Root Architecture Configuration ───────────────────── */
 .pageWrapper {
-  background-color: #ffffff;
+  background-color: #faf8f6;
+  /* Bright, warm background style base canvas */
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: space-between;
-  padding: 40px 20px;
-  box-sizing: border-box;
 }
 
 .accountSection {
@@ -16,173 +14,124 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  padding: 60px 20px;
 }
 
+/* Frameless flat presentation style configuration layout */
 .accountContainer {
   width: 100%;
-  max-width: 370px;
+  max-width: 440px;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  background: transparent;
+  /* Removes floating element panel box completely */
 }
 
-/* ── Typography Header ──────────────────────────────────────── */
+/* ── Minimal Header Typography Styles ───────────────────────── */
 .logo {
+  margin-bottom: 64px;
   text-align: center;
-  margin-top: 20px;
 }
 
 .logoText {
-  font-family: 'Times New Roman', Times, Baskerville, serif;
-  font-size: 34px;
-  font-weight: 400;
-  letter-spacing: 0.25em;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   color: #1a1a1a;
   margin: 0;
-  padding-left: 0.25em;
-  /* Perfectly balances tracking */
 }
 
 .logoSubtext {
   font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.28em;
-  color: #555555;
+  letter-spacing: 0.15em;
+  color: #888888;
   text-transform: uppercase;
-  margin: 10px 0 0 0;
-  padding-left: 0.28em;
+  margin: 4px 0 0 0;
+}
+
+/* ── Interactive Main Input Elements ────────────────────────── */
+.formSection {
+  width: 100%;
 }
 
 .heading {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 24px;
-  font-weight: 700;
-  color: #000000;
-  margin: 0 0 4px 0;
-  text-align: left;
+  font-family: 'Georgia', serif;
+  /* Signature editorial typeface anchor */
+  font-size: 32px;
+  font-weight: 400;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
 }
 
 .subheading {
-  font-size: 13.5px;
-  color: #666666;
-  margin: 0 0 24px 0;
-  text-align: left;
-}
-
-/* ── Custom Purple Shop App Button ──────────────────────────── */
-.shopButton {
-  background-color: #5a31f4;
-  /* Precise Shop App purple hex signature tint */
-  color: #ffffff;
-  border: none;
-  border-radius: 12px;
-  width: 100%;
-  height: 48px;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.15s ease;
-}
-
-.shopButton:hover {
-  opacity: 0.9;
-}
-
-.shopText {
-  font-style: italic;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-
-/* ── Form Element Components ────────────────────────────────── */
-.divider {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  margin: 20px 0;
-  color: #777777;
   font-size: 13px;
-}
-
-.dividerLine {
-  flex: 1;
-  height: 1px;
-  background-color: #e2e2e2;
-}
-
-.dividerText {
-  padding: 0 16px;
+  color: #666666;
+  margin: 0 0 40px 0;
+  line-height: 1.5;
 }
 
 .formElement {
   display: flex;
   flex-direction: column;
+  gap: 24px;
+  width: 100%;
 }
 
 .emailInputWrapper {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
   width: 100%;
-  margin-bottom: 16px;
 }
 
+.inputLabel {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #444444;
+  margin-bottom: 8px;
+}
+
+.lastUsedLabel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 9px;
+  font-weight: 600;
+  color: #888888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Flat, sharp structural input configuration styling blueprint */
 .emailInput {
   width: 100%;
-  height: 52px;
-  padding: 0 48px 0 16px;
-  border: 1.5px solid #1a1a1a;
-  border-radius: 14px;
-  /* Smooth matching rounded curves */
-  font-size: 15px;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0px;
+  /* Zero radius setting requirement fulfilled */
+  font-size: 14px;
   color: #1a1a1a;
-  background: #ffffff;
+  background-color: transparent;
   box-sizing: border-box;
+  transition: border-color 0.2s ease;
 }
 
 .emailInput:focus {
   outline: none;
+  border-color: #1a1a1a;
 }
 
-.submitButton {
-  position: absolute;
-  right: 18px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  font-size: 18px;
-  color: #1a1a1a;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ── Overlapping "Last used" Badge Pill ────────────────────── */
-.lastUsedLabel {
-  position: absolute;
-  bottom: -10px;
-  /* Aligns element precisely split on border line cut */
-  left: 50%;
-  transform: translateX(-50%);
-  background: #1a1a1a;
-  color: #ffffff;
-  font-size: 9.5px;
-  font-weight: 600;
-  padding: 3px 12px;
-  border-radius: 20px;
-  white-space: nowrap;
-  letter-spacing: 0.02em;
-}
-
-/* ── Circular Round Checkbox ────────────────────────────────── */
+/* ── Minimal Grid Custom Selector Switch Controls ────────────── */
 .checkboxWrapper {
   display: flex;
   justify-content: flex-start;
-  margin-top: 14px;
-  margin-bottom: 24px;
+  text-align: left;
 }
 
 .checkboxInput {
@@ -191,60 +140,108 @@
 
 .checkboxLabelStructure {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 12px;
   cursor: pointer;
+  user-select: none;
 }
 
 .circularCheckbox {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 50%;
-  /* Smooth uniform circular shape */
-  background-color: #333333;
-  /* Dark fill matching the visual token */
+  background: transparent;
   color: #ffffff;
   font-size: 10px;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 2px;
+  transition: all 0.15s ease;
   user-select: none;
 }
 
-.checkboxTextLabel {
-  font-size: 13.5px;
-  font-weight: 500;
-  color: #1a1a1a;
+.checkboxInput:checked+.checkboxLabelStructure .circularCheckbox {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
 }
 
-/* ── Bottom Footnotes & Disclaimers ─────────────────────────── */
-.termsText {
-  font-size: 11.5px;
-  color: #666666;
-  text-align: center;
+.checkboxTextLabel {
+  font-size: 12px;
+  color: #555555;
   line-height: 1.5;
-  margin: 0;
+}
+
+/* ── Decisive Action Interface Button Triggers ──────────────── */
+.submitButton {
+  width: 100%;
+  height: 46px;
+  background-color: #000000;
+  color: #ffffff;
+  border: none;
+  border-radius: 0px;
+  /* Zero radius flat control toggle mask layout */
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  margin-top: 8px;
+}
+
+.submitButton:hover {
+  opacity: 0.85;
+}
+
+.submitButton:disabled {
+  background-color: #999999;
+  cursor: not-allowed;
+}
+
+/* ── Typography Disclaimers & Sticky Footer Area ────────────── */
+.termsText {
+  font-size: 11px;
+  color: #888888;
+  margin-top: 24px;
+  line-height: 1.6;
 }
 
 .termsLink {
-  color: #666666;
+  color: #1a1a1a;
   text-decoration: underline;
+  font-weight: 500;
 }
 
 .footer {
+  padding: 40px 20px;
+  background: transparent;
   text-align: center;
-  width: 100%;
-  margin-top: 20px;
 }
 
 .footerLink {
-  font-size: 13px;
-  color: #333333;
+  font-size: 11px;
+  color: #888888;
   text-decoration: none;
-  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color 0.2s;
 }
 
 .footerLink:hover {
-  text-decoration: underline;
+  color: #1a1a1a;
+}
+
+/* Responsive Adaptive Field Breakpoints */
+@media (max-width: 576px) {
+  .accountSection {
+    padding: 40px 16px;
+  }
+
+  .heading {
+    font-size: 28px;
+  }
 }

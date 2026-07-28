@@ -6,7 +6,6 @@
   overflow-x: hidden;
   width: 100%;
 }
-
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -14,153 +13,210 @@
   position: relative;
 }
 
+.navOffset {
+  height: 110px;
+}
+
+@media (max-width: 992px) {
+  .navOffset {
+    height: 100px;
+  }
+}
+
 /* ── 1. Split Hero Section ──────────────────────────────────────── */
 .heroSection {
-  padding: 180px 0 80px;
-  border-bottom: 1px solid #eaeaea;
-}
-
-.heroGrid {
-  display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 60px;
+  position: relative;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55)), url('/images/heroes/wholesale-hero.png');
+  background-size: cover;
+  background-position: center 15%; /* Shuffled upward to prevent cutting off the crown/head */
+  background-attachment: fixed;
+  min-height: 600px;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  padding: 100px 24px;
+  color: #ffffff;
+  text-align: center;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.heroContent {
+.heroOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.5) 100%);
+  pointer-events: none;
+}
+
+.heroInner {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 18px;
-  text-align: left;
+  align-items: center;
+  gap: 20px;
 }
 
 .heroLabel {
-  display: block;
-  font-family: var(--font-family-primary);
+  display: inline-block;
   font-size: 11px;
   font-weight: 700;
+  letter-spacing: 0.25em;
+  color: #c9963a;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: #8a7a70;
+  border: 1px solid rgba(201, 150, 58, 0.4);
+  background: rgba(201, 150, 58, 0.08);
+  padding: 4px 16px;
+  border-radius: 20px;
 }
 
 .heroTitle {
-  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
-  font-size: clamp(34px, 5.5vw, 54px);
-  font-weight: 400; /* Regular weight serif */
-  color: #1a0e07;
+  font-family: var(--font-family-display, Georgia, serif);
+  font-size: clamp(36px, 5.5vw, 64px);
+  font-weight: 300;
   line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: #ffffff;
   margin: 0;
 }
 
 .heroSub {
-  font-family: var(--font-family-primary);
-  font-size: 15px;
-  color: #666666;
+  font-size: clamp(15px, 2vw, 17px);
+  color: rgba(255, 255, 255, 0.75);
   line-height: 1.65;
-  max-width: 580px;
+  max-width: 650px;
   margin: 0;
 }
 
-.heroImageFrame {
-  width: 100%;
-  aspect-ratio: 4 / 5; /* Tall portrait alignment */
-  overflow: hidden;
-  border: 1px solid #eaeaea;
-}
-
-.heroImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* ── 2. Alternating Feed Grid ───────────────────────────────────── */
+/* ── 2. Bento Grid Showcase ─────────────────────────────────────── */
 .feedSection {
   background: #fdfcf7;
   padding: 100px 0;
 }
 
-.feed {
-  display: flex;
-  flex-direction: column;
-  gap: 120px; /* Big gaps between rows to give print editorial breathing room */
-}
-
-/* Standard row: Image left, details right */
-.feedRow {
+.bentoGrid {
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 60px;
-  align-items: center;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
 }
 
-/* Reverse row: Details left, Image right */
-.feedRowReverse {
-  display: grid;
-  grid-template-columns: 0.8fr 1.2fr;
-  gap: 60px;
-  align-items: center;
-}
-
-.feedColImage {
-  width: 100%;
-}
-
-.feedColContent {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 20px 0;
-}
-
-.imageFrame {
-  width: 100%;
-  overflow: hidden;
-  border: 1px solid #eaeaea;
+.bentoCard {
   position: relative;
-  background-color: #eae5d8;
-  aspect-ratio: auto; /* natural size, no cropping */
+  height: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 40px;
+  overflow: hidden;
+  border: 1px solid rgba(26, 14, 7, 0.08);
+  box-shadow: 0 10px 30px rgba(26, 14, 7, 0.04);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
 }
 
-.feedImg {
+.bentoCard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 48px rgba(26, 14, 7, 0.12);
+  border-color: #c9963a; /* Elegant golden border indicator */
+}
+
+.cardWide {
+  grid-column: span 2;
+}
+
+.cardBg {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+  background-color: #eae5d8;
+}
+
+.cardImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.imageFrame:hover .feedImg {
-  transform: scale(1.04);
+.bentoCard:hover .cardImg {
+  transform: scale(1.06);
 }
 
-.feedLabel {
+.cardOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to top,
+    rgba(26, 14, 7, 0.95) 0%,
+    rgba(26, 14, 7, 0.7) 40%,
+    rgba(26, 14, 7, 0.2) 100%
+  );
+  z-index: 2;
+  transition: opacity 0.4s ease;
+}
+
+.bentoCard:hover .cardOverlay {
+  background: linear-gradient(
+    to top,
+    rgba(26, 14, 7, 0.98) 0%,
+    rgba(26, 14, 7, 0.75) 50%,
+    rgba(26, 14, 7, 0.3) 100%
+  );
+}
+
+.cardContent {
+  position: relative;
+  z-index: 3;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 100%;
+}
+
+.cardLabel {
   display: block;
   font-family: var(--font-family-primary);
   font-size: 10px;
   font-weight: 700;
-  color: #8a7a70;
-  letter-spacing: 0.16em;
+  color: #c9963a; /* Elegant gold label */
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
-.feedHeading {
+.cardHeading {
   font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
-  font-size: clamp(24px, 3.2vw, 36px);
-  font-weight: 400; /* Regular weight Playfair Display */
-  color: #1a0e07;
+  font-size: clamp(22px, 2.5vw, 32px);
+  font-weight: 400;
+  color: #ffffff;
   line-height: 1.25;
   margin: 0;
 }
 
-.feedText {
+.cardText {
   font-family: var(--font-family-primary);
-  font-size: 14px;
-  color: #666666;
-  line-height: 1.75;
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.7;
   margin: 0;
+  transition: color 0.3s ease;
+}
+
+.bentoCard:hover .cardText {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* ── 3. Quote Section ───────────────────────────────────────────── */
@@ -343,29 +399,30 @@
   .container {
     padding: 0 20px;
   }
-  
-  .heroGrid {
+
+  .bentoGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .cardWide {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .bentoGrid {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 20px;
   }
-  
-  .heroImageFrame {
-    aspect-ratio: 16 / 9;
+
+  .cardWide {
+    grid-column: span 1;
   }
-  
-  .feed {
-    gap: 80px;
-  }
-  
-  .feedRow,
-  .feedRowReverse {
-    grid-template-columns: 1fr;
-    gap: 30px;
-  }
-  
-  .feedRowReverse {
-    display: flex;
-    flex-direction: column-reverse;
+
+  .bentoCard {
+    height: 380px;
+    padding: 30px;
   }
 }
 

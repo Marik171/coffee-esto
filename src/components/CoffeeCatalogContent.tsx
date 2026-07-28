@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useCart } from '../context/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import Footer from './Footer';
 import Navbar from './Navbar';
@@ -282,9 +283,12 @@ interface CoffeeCatalogContentProps {
   locale?: string;
 }
 
+const coffeeCategories = ['single-origin', 'signature-blend', 'limited-edition', 'filter', 'espresso', 'turkish'];
+
 function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get('category'); // Read bento tags link queries
+  const { isSubscriber } = useCart();
 
   const [coffees, setCoffees] = useState<CoffeeProduct[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -400,13 +404,10 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
       coffee.tastingNotes.toLowerCase().includes(searchQuery.toLowerCase());
 
     if (activeFilter === 'all') return matchesSearch;
-    if (activeFilter === 'single-origin') return coffee.category === 'single-origin' && matchesSearch;
-    if (activeFilter === 'espresso') return coffee.category === 'espresso' && matchesSearch;
-
     if (activeFilter === 'light') return coffee.roastLevel < 45 && matchesSearch;
     if (activeFilter === 'medium-dark') return coffee.roastLevel >= 45 && matchesSearch;
 
-    return matchesSearch;
+    return coffee.category === activeFilter && matchesSearch;
   });
 
   const handleOpenDrawer = (coffee: CoffeeProduct) => {
@@ -439,6 +440,16 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
         className={`${styles.heroSection} ${styles.inView}`}
         aria-labelledby="catalog-hero-title"
       >
+        <video
+          src="/videos/catalog-hero.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className={styles.backgroundVideo}
+        />
+        <div className={styles.heroOverlay} />
+
         {/* Floating Coffee Beans */}
         <img src="/images/beans.webp" className="heroBean heroBean1" alt="" />
         <img src="/images/beans.webp" className="heroBean heroBean2" alt="" />
@@ -448,7 +459,7 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
         <img src="/images/beans.webp" className="heroBean heroBean6" alt="" />
         <img src="/images/beans.webp" className="heroBean heroBean7" alt="" />
 
-        <div className={styles.heroContainer}>
+        <div className={styles.heroInner}>
           <span className={styles.heroBadge}>{t.eyebrow}</span>
           <h1 id="catalog-hero-title" className={styles.heroTitle}>
             {t.title}
@@ -587,7 +598,18 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
                       <span className={styles.cardOrigin}>{coffee.origin}</span>
                       <h3 className={styles.cardName}>{coffee.name}</h3>
                       <span className={styles.cardPrice}>
-                        {locale === 'tr' ? `${coffee.price} TL` : `₺${coffee.price}`}
+                        {isSubscriber && coffeeCategories.includes(coffee.category) ? (
+                          <>
+                            <span style={{ textDecoration: 'line-through', opacity: 0.5, marginRight: '8px' }}>
+                              {locale === 'tr' ? `${coffee.price} TL` : `₺${coffee.price}`}
+                            </span>
+                            <span style={{ color: '#0044ff', fontWeight: 700 }}>
+                              {locale === 'tr' ? `${(coffee.price * 0.9).toFixed(2)} TL` : `₺${(coffee.price * 0.9).toFixed(2)}`}
+                            </span>
+                          </>
+                        ) : (
+                          locale === 'tr' ? `${coffee.price} TL` : `₺${coffee.price}`
+                        )}
                       </span>
 
                       <p className={styles.cardNotes}>
@@ -652,7 +674,20 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
               <div className={styles.drawerMainInfo}>
                 <span className={styles.drawerEmoji}>{getStyle(selectedCoffee.id).emoji}</span>
                 <h3 className={styles.drawerName}>{selectedCoffee.name}</h3>
-                <span className={styles.drawerPrice}>₺{selectedCoffee.price}</span>
+                <span className={styles.drawerPrice}>
+                  {isSubscriber && coffeeCategories.includes(selectedCoffee.category) ? (
+                    <>
+                      <span style={{ textDecoration: 'line-through', opacity: 0.5, marginRight: '10px' }}>
+                        ₺{selectedCoffee.price}
+                      </span>
+                      <span style={{ color: '#0044ff', fontWeight: 700 }}>
+                        ₺{(selectedCoffee.price * 0.9).toFixed(2)}
+                      </span>
+                    </>
+                  ) : (
+                    `₺${selectedCoffee.price}`
+                  )}
+                </span>
                 <p className={styles.drawerDesc}>{selectedCoffee.description}</p>
               </div>
 

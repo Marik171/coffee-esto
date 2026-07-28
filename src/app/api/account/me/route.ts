@@ -21,6 +21,7 @@ export async function GET(request: Request) {
         name: customer.name,
         phone: customer.phone,
         newsOptIn: customer.newsOptIn,
+        isSubscriber: customer.isSubscriber,
       },
       error: null,
     });
@@ -38,14 +39,15 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json();
-    const { email, name, phone, newsOptIn } = body as {
+    const { email, name, phone, newsOptIn, isSubscriber } = body as {
       email?: string;
       name?: string;
       phone?: string;
       newsOptIn?: boolean;
+      isSubscriber?: boolean;
     };
 
-    const data: { email?: string; name?: string; phone?: string; newsOptIn?: boolean } = {};
+    const data: { email?: string; name?: string; phone?: string; newsOptIn?: boolean; isSubscriber?: boolean } = {};
 
     if (email !== undefined) {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -61,6 +63,7 @@ export async function PATCH(request: Request) {
     if (name !== undefined) data.name = name.trim();
     if (phone !== undefined) data.phone = phone.trim();
     if (newsOptIn !== undefined) data.newsOptIn = newsOptIn;
+    if (isSubscriber !== undefined) data.isSubscriber = isSubscriber;
 
     const customer = await db.customer.update({ where: { id: customerId }, data });
 
@@ -72,6 +75,7 @@ export async function PATCH(request: Request) {
         name: customer.name,
         phone: customer.phone,
         newsOptIn: customer.newsOptIn,
+        isSubscriber: customer.isSubscriber,
       },
       error: null,
     });

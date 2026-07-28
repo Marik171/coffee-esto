@@ -75,11 +75,13 @@ model Customer {
   phone             String          @default("")
   newsOptIn         Boolean         @default(true)
   iyzicoCardUserKey String?
+  isSubscriber      Boolean         @default(false)
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   addresses         Address[]
   orders            Order[]
   paymentMethods    PaymentMethod[]
+  reviews           Review[]
 }
 
 model LoginCode {
@@ -126,5 +128,34 @@ model PaymentMethod {
   isDefault       Boolean  @default(false)
   createdAt       DateTime @default(now())
 
+  @@index([customerId])
+}
+
+model BlogPost {
+  id        String   @id @default(uuid())
+  titleEn   String   @default("")
+  titleTr   String   @default("")
+  contentEn String   @default("")
+  contentTr String   @default("")
+  category  String   // e.g. "news", "updates", "guides", "culture", etc.
+  imageUrl  String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Product reviews — one review per customer per product (upsert on re-submit).
+model Review {
+  id         String   @id @default(uuid())
+  productId  String
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  rating     Int      // 1–5
+  title      String   @default("")
+  body       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([productId, customerId])
+  @@index([productId])
   @@index([customerId])
 }

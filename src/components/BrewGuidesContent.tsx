@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import styles from './BrewGuidesContent.module.css';
+import { motion } from 'framer-motion';
 
 interface BrewStep {
   name: string;
@@ -44,72 +45,144 @@ export default function BrewGuidesContent({ locale = 'en' }: BrewGuidesContentPr
     en: [
       {
         id: 'v60', name: 'V60 Pour Over', tagline: 'Clarity & brightness',
-        icon: '/images/dripper.webp',
+        icon: '/images/quiz/v60_dripper.png',
         desc: 'A clean, highly aromatic cup that highlights the delicate tasting notes and acidity of single-origin coffees. The spiral ridges allow precise control over your extraction.',
         coffeeGrams: 15, waterGrams: 250, grind: 'Medium-Fine', temp: '93°C', time: '3:00',
         steps: [
-          { name: 'Bloom', instructions: 'Pour water evenly over the grounds (approx. 3x the coffee weight). Gently swirl the brewer. Wait 45 seconds for CO₂ to release — you\'ll see beautiful bubbling.', duration: 45 },
-          { name: 'First Pour', instructions: 'Pour slowly in tight concentric circles from center outward up to 60% of total volume. Keep a steady stream 5cm above the bed.', duration: 60 },
-          { name: 'Final Pour', instructions: 'Continue pouring in circles to reach your total target weight. Aim for the center to wash down any dry grounds on the walls.', duration: 60 },
-          { name: 'Draw Down', instructions: 'Let water drain completely through the coffee bed. The bed should be flat when done. Lift and tap once.', duration: 30 },
+          { name: 'Bloom', instructions: 'Pour 50g of water evenly over the grounds. Gently swirl the brewer. Wait 45 seconds for CO₂ to release.', duration: 45 },
+          { name: 'First Pour', instructions: 'Pour slowly in concentric circles up to 150g. Keep a steady stream 5cm above the bed.', duration: 60 },
+          { name: 'Final Pour', instructions: 'Continue pouring up to 250g. Aim for the center to wash down any dry grounds on the filter walls.', duration: 60 },
+          { name: 'Draw Down', instructions: 'Let water drain completely. The coffee bed should be flat when done. Give the carafe one final swirl.', duration: 15 },
+        ],
+      },
+      {
+        id: 'chemex', name: 'Chemex', tagline: 'Smooth & clean body',
+        icon: '/images/quiz/chemex.png',
+        desc: 'An elegant immersion-filtration method yielding an exceptionally clean and bright cup. The thick proprietary filters trap bitter oils and sediments.',
+        coffeeGrams: 30, waterGrams: 500, grind: 'Medium', temp: '92°C', time: '4:00',
+        steps: [
+          { name: 'Rinse Filter', instructions: 'Place the Chemex paper filter and rinse with hot water. Discard rinse water before adding coffee.', duration: 30 },
+          { name: 'Bloom', instructions: 'Add coffee grounds. Pour 90g of water to saturate. Swirl gently and wait 45 seconds.', duration: 45 },
+          { name: 'Main Pour', instructions: 'Slowly pour remaining water in circles up to 500g, keeping the level well below the top rim.', duration: 120 },
+          { name: 'Draw Down', instructions: 'Allow the water to drop completely through the bed. Remove filter and swirl the carafe to aerate.', duration: 45 },
+        ],
+      },
+      {
+        id: 'moka-pot', name: 'Moka Pot', tagline: 'Intense & bold character',
+        icon: '/images/quiz/moka_pot.png',
+        desc: 'A classic stovetop steam extraction yielding a strong, heavy-bodied cup close to espresso intensity. Highly rich and aromatic.',
+        coffeeGrams: 18, waterGrams: 150, grind: 'Fine', temp: '95°C', time: '5:00',
+        steps: [
+          { name: 'Preheat Water', instructions: 'Fill bottom chamber with hot water up to the safety valve. Preheating prevents coffee from tasting burnt.', duration: 60 },
+          { name: 'Fill Basket', instructions: 'Fill filter basket with fine coffee. Level the top without pressing or tamping. Insert into chamber.', duration: 45 },
+          { name: 'Stovetop Heat', instructions: 'Assemble pot tightly and place on low-medium heat. Keep the lid open to monitor the extraction.', duration: 150 },
+          { name: 'Cool Down', instructions: 'As soon as the coffee stream turns light yellow/blond, remove from heat. Run cold water over the bottom to stop brewing.', duration: 45 },
+        ],
+      },
+      {
+        id: 'espresso', name: 'Espresso Machine', tagline: 'Rich crema & heavy body',
+        icon: '/images/quiz/espresso_machine.png',
+        desc: 'High-pressure extraction yielding a highly concentrated shot of coffee topped with a rich, golden layer of crema.',
+        coffeeGrams: 18, waterGrams: 36, grind: 'Very Fine', temp: '92°C', time: '0:30',
+        steps: [
+          { name: 'Dosing & Tamping', instructions: 'Fill portafiltre with 18g coffee. Level and tamp flat with 15kg of vertical pressure.', duration: 15 },
+          { name: 'Pre-infusion', instructions: 'Flush group head. Insert portafilter and start pump. Wait for low-pressure pre-wetting.', duration: 5 },
+          { name: 'Extraction', instructions: 'Raise pressure to 9 bars. Extract 36g of liquid espresso. Flow should look like warm honey.', duration: 10 },
+        ],
+      },
+      {
+        id: 'turkish-cezve', name: 'Turkish Cezve', tagline: 'Traditional & thick foam',
+        icon: '/images/quiz/turkish_cezve.png',
+        desc: 'The oldest brewing method. Powder-fine coffee simmered slowly in a copper pot, serving a rich, velvety cup with thick foam.',
+        coffeeGrams: 8, waterGrams: 70, grind: 'Powder Fine', temp: '90°C', time: '2:30',
+        steps: [
+          { name: 'Mix Ingredients', instructions: 'Add 8g coffee, water, and sugar (optional) to cezve. Stir gently to dissolve coffee, then place on stove.', duration: 30 },
+          { name: 'Slow Heat', instructions: 'Heat slowly on lowest fire. Do not stir after this point. Watch for foam rising at edges.', duration: 90 },
+          { name: 'Share Foam', instructions: 'Just as foam rises, remove from heat. Spoon the top layer of foam into cup, return cezve to stove.', duration: 20 },
+          { name: 'Double Boil', instructions: 'Simmer for 10 more seconds to rise once more. Pour slowly into cup, allowing grounds to settle before drinking.', duration: 10 },
         ],
       },
       {
         id: 'frenchpress', name: 'French Press', tagline: 'Full body & rich oils',
         icon: '/images/french-press.webp',
-        desc: 'A classic immersion brew yielding a heavy, full-bodied cup with rich chocolate and earthy profiles. The metal filter preserves natural oils that paper filters strip away.',
+        desc: 'A classic immersion brew yielding a heavy, full-bodied cup with rich chocolate and earthy profiles. Preservation of natural oils.',
         coffeeGrams: 20, waterGrams: 320, grind: 'Coarse', temp: '95°C', time: '4:45',
         steps: [
-          { name: 'Infusion', instructions: 'Pour all hot water over the grounds in one steady pour. Give a quick stir, cover (plunger up — do not press yet), and steep.', duration: 240 },
-          { name: 'Break Crust', instructions: 'Remove the lid. Stir the top crust of grounds gently 3 times with a spoon to allow sediment to settle.', duration: 30 },
-          { name: 'Plunge & Serve', instructions: 'Lower the plunger slowly and steadily — it should take about 15 seconds. Pour immediately to stop extraction.', duration: 15 },
-        ],
-      },
-      {
-        id: 'aeropress', name: 'Aeropress', tagline: 'Smooth & low acidity',
-        icon: '/images/moka-pot.webp',
-        desc: 'A quick, versatile pressure extraction that creates a smooth, concentrated cup with very low acidity. Ideal for travel and recipe experimentation.',
-        coffeeGrams: 16, waterGrams: 220, grind: 'Medium-Fine', temp: '85°C', time: '2:00',
-        steps: [
-          { name: 'Bloom', instructions: 'Set Aeropress inverted. Add grounds, pour a small splash of water. Stir vigorously 5 times to saturate all the grounds. Wait 30 seconds.', duration: 30 },
-          { name: 'Infuse', instructions: 'Pour the remaining water smoothly. Wet a paper filter, lock the cap tightly to create a vacuum seal. Steep undisturbed.', duration: 60 },
-          { name: 'Press', instructions: 'Carefully flip the Aeropress onto your mug. Press slowly and steadily. Stop pressing when you hear a slight hiss.', duration: 30 },
+          { name: 'Infusion', instructions: 'Pour hot water over the grounds in one steady pour. Swirl gently, cover with plunger up, and steep.', duration: 240 },
+          { name: 'Break Crust', instructions: 'Remove lid. Stir top crust of grounds gently 3 times with a spoon to let sediment settle.', duration: 30 },
+          { name: 'Plunge & Serve', instructions: 'Lower the plunger slowly and steadily. Pour coffee immediately to prevent over-extraction.', duration: 15 },
         ],
       },
     ],
     tr: [
       {
         id: 'v60', name: 'V60 Pour Over', tagline: 'Berraklık ve parlaklık',
-        icon: '/images/dripper.webp',
+        icon: '/images/quiz/v60_dripper.png',
         desc: 'Tek kökenli kahvelerin asiditesini ve hassas tadım notalarını öne çıkaran, berrak ve aromatik bir fincan. Spiral kanallar, özütleme üzerinde hassas kontrol sağlar.',
         coffeeGrams: 15, waterGrams: 250, grind: 'Orta-İnce', temp: '93°C', time: '3:00',
         steps: [
-          { name: 'Ön Demleme', instructions: 'Sıcak suyu kahvenin üzerine eşit şekilde dökün (kahve miktarının yaklaşık 3 katı). Demliği nazikçe sallayın. CO₂ salınımı için 45 saniye bekleyin.', duration: 45 },
-          { name: 'İlk Döküş', instructions: 'Merkezden dışa doğru dar dairelerde yavaşça toplam hacmin %60\'ına tamamlayın. Kahve yatağının 5cm üzerinde sabit akış sağlayın.', duration: 60 },
-          { name: 'Son Döküş', instructions: 'Toplam hedef ağırlığa ulaşana kadar daireler çizerek dökün. Kenarlardaki kuru tortuları yıkamak için merkeze doğru dökün.', duration: 60 },
-          { name: 'Süzülme', instructions: 'Suyun kahve yatağından tamamen süzülmesini bekleyin. Kahve yatağı düz olmalıdır. Demliği kaldırıp bir kez nazikçe vurun.', duration: 30 },
+          { name: 'Ön Demleme', instructions: 'Sıcak suyu kahvenin üzerine eşit şekilde dökün (yaklaşık 50g). Demliği nazikçe sallayın. CO₂ salınımı için 45 saniye bekleyin.', duration: 45 },
+          { name: 'İlk Döküş', instructions: 'Merkezden dışa doğru dairelerde yavaşça 150g\'a tamamlayın. Kahve yatağının 5cm üzerinde sabit döküş sağlayın.', duration: 60 },
+          { name: 'Son Döküş', instructions: 'Toplam 250g ağırlığa ulaşana kadar daireler çizerek dökün. Kenarlardaki kuru tortuları temizlemek için merkeze dökün.', duration: 60 },
+          { name: 'Süzülme', instructions: 'Suyun tamamen süzülmesini bekleyin. Kahve yatağı düz olmalıdır. Sürahiyi son bir kez nazikçe sallayın.', duration: 15 },
+        ],
+      },
+      {
+        id: 'chemex', name: 'Chemex', tagline: 'Yumuşak ve temiz gövde',
+        icon: '/images/quiz/chemex.png',
+        desc: 'Kağıt filtrenin acı yağları ve tortuları süzdüğü, olağanüstü berrak ve aromatik bir gövde sunan zarif süzme yöntemi.',
+        coffeeGrams: 30, waterGrams: 500, grind: 'Orta', temp: '92°C', time: '4:00',
+        steps: [
+          { name: 'Filtreyi Yıka', instructions: 'Chemex kağıt filtresini yerleştirin ve sıcak suyla durulayın. Kahve eklemeden önce durulama suyunu dökün.', duration: 30 },
+          { name: 'Ön Demleme', instructions: 'Kahveyi ekleyin. 90g sıcak su dökerek ıslatın. Nazikçe sallayın ve 45 saniye bekleyin.', duration: 45 },
+          { name: 'Ana Demleme', instructions: 'Kalan suyu daireler çizerek yavaşça 500g\'a tamamlayın. Su seviyesini Chemex ağzının altında tutun.', duration: 120 },
+          { name: 'Süzülme', instructions: 'Suyun kahve yatağından tamamen geçmesini bekleyin. Filtreyi çıkarın ve sürahiyi sallayarak servis edin.', duration: 45 },
+        ],
+      },
+      {
+        id: 'moka-pot', name: 'Moka Pot', tagline: 'Güçlü karakter ve gövde',
+        icon: '/images/quiz/moka_pot.png',
+        desc: 'Espresso yoğunluğuna yakın, basınçlı buhar gücüyle hazırlanan, dolgun gövdeli geleneksel ocak üstü kahve demleme yöntemi.',
+        coffeeGrams: 18, waterGrams: 150, grind: 'İnce', temp: '95°C', time: '5:00',
+        steps: [
+          { name: 'Su Ön Isıtma', instructions: 'Alt hazneye emniyet valfinin altına kadar sıcak su doldurun. Sıcak su kullanmak kahvenin yanmasını engeller.', duration: 60 },
+          { name: 'Sepeti Doldur', instructions: 'Metal sepeti ince kahveyle doldurun. Espresso gibi sıkıştırmadan üzerini düzleştirip alt hazneye yerleştirin.', duration: 45 },
+          { name: 'Ocakta Isıtma', instructions: 'Üst hazneyi sıkıca kapatıp orta-kısık ateşe yerleştirin. Akışı izlemek için kapağı açık tutun.', duration: 150 },
+          { name: 'Soğutma', instructions: 'Kahve akışı sarı/açık köpüğe dönüştüğünde ocaktan alın. Akışı durdurmak için alt hazneyi musluk suyunda soğutun.', duration: 45 },
+        ],
+      },
+      {
+        id: 'espresso', name: 'Espresso Makinesi', tagline: 'Zengin krema ve yoğun gövde',
+        icon: '/images/quiz/espresso_machine.png',
+        desc: 'Yüksek basınçlı su gücüyle hazırlanan, üzerinde altın sarısı kadifemsi krema tabakası bulunan yoğun ve konsantre kahve.',
+        coffeeGrams: 18, waterGrams: 36, grind: 'Çok İnce', temp: '92°C', time: '0:30',
+        steps: [
+          { name: 'Dozlama ve Tamp', instructions: 'Portafiltre sepetine 18g ince kahve koyun. Düzleştirip 15kg dikey kuvvetle dik bir şekilde bastırın (tamping).', duration: 15 },
+          { name: 'Ön Islatma', instructions: 'Grup başlığını durulayın. Portafiltreyi takıp tuşa basın. Düşük basınçlı ilk ön ıslatmayı bekleyin.', duration: 5 },
+          { name: 'Özütleme', instructions: 'Basınç 9 bara ulaştığında 36g sıvı espresso elde edene kadar akışı sürdürün. Akış sıcak süzme bal kıvamında olmalıdır.', duration: 10 },
+        ],
+      },
+      {
+        id: 'turkish-cezve', name: 'Türk Kahvesi (Cezve)', tagline: 'Geleneksel ve yoğun köpük',
+        icon: '/images/quiz/turkish_cezve.png',
+        desc: 'Dünyanın en eski demleme yöntemi. Çok ince pudra gibi öğütülmüş kahve çekirdeklerinin bakır cezvede köpük köpük demlenmesi.',
+        coffeeGrams: 8, waterGrams: 70, grind: 'Çok İnce (Pudra)', temp: '90°C', time: '2:30',
+        steps: [
+          { name: 'Malzemeleri Karıştır', instructions: 'Cezveye 8g ince kahve, su ve isteğe bağlı şeker ekleyin. Kahve çözünene kadar karıştırıp ocağa alın.', duration: 30 },
+          { name: 'Yavaş Pişirme', instructions: 'Çok kısık ateşte yavaşça pişmeye bırakın. Bu aşamadan sonra karıştırmayın. Köpüklerin yükselişini izleyin.', duration: 90 },
+          { name: 'Köpük Paylaşımı', instructions: 'Köpük kenarlardan yükseldiğinde ocaktan alın. Köpüğü fincana paylaştırıp cezveyi tekrar ocağa yerleştirin.', duration: 20 },
+          { name: 'Son Kabarma', instructions: 'Kahveyi 10 saniye daha kabartıp ocaktan alın. Kenarından fincana yavaşça dökerek servis edin.', duration: 10 },
         ],
       },
       {
         id: 'frenchpress', name: 'French Press', tagline: 'Dolgun gövde ve zengin yağlar',
         icon: '/images/french-press.webp',
-        desc: 'Dolgun, yoğun gövdeli, çikolata ve topraksı profillere sahip zengin bir fincan. Metal filtre, kağıt filtrelerin uzaklaştırdığı doğal yağları korur.',
+        desc: 'Klasik daldırma demleme yöntemi. Metal filtre kahvedeki doğal aromatik yağları koruyarak dolgun ve çikolatamsı bir içim sunar.',
         coffeeGrams: 20, waterGrams: 320, grind: 'Kalın', temp: '95°C', time: '4:45',
         steps: [
-          { name: 'Demlenme', instructions: 'Suyun tamamını kahvenin üzerine tek seferde dökün. Hızlıca karıştırın, kapağı kapatın (pistonu bastırmadan) ve bekleyin.', duration: 240 },
-          { name: 'Kabuk Kırma', instructions: 'Kapağı açın. Üstteki kabuksu tabakayı kaşıkla 3 kez nazikçe karıştırın. Tortuların çökmesi için bekleyin.', duration: 30 },
-          { name: 'Presleme', instructions: 'Pistonu yavaşça ve sabit şekilde aşağı itin (yaklaşık 15 saniye). Demlenmeyi durdurmak için hemen dökün.', duration: 15 },
-        ],
-      },
-      {
-        id: 'aeropress', name: 'Aeropress', tagline: 'Pürüzsüz ve düşük asidite',
-        icon: '/images/moka-pot.webp',
-        desc: 'Çok düşük asidite ile pürüzsüz, konsantre bir fincan üreten hızlı ve çok yönlü basınçlı demleme. Seyahat ve tarif denemeleri için idealdir.',
-        coffeeGrams: 16, waterGrams: 220, grind: 'Orta-İnce', temp: '85°C', time: '2:00',
-        steps: [
-          { name: 'Ön Demleme', instructions: 'Aeropress\'i ters çevirin. Kahveyi ekleyip az miktarda su dökün. 5 kez kuvvetlice karıştırın. 30 saniye bekleyin.', duration: 30 },
-          { name: 'Çözünme', instructions: 'Kalan suyu pürüzsüzce dökün. Filtre kağıdını ıslatıp kapağı sıkıca kilitleyin. Bekleyin.', duration: 60 },
-          { name: 'Presleme', instructions: 'Aeropress\'i bardağınızın üzerine dikkatli çevirin. Yavaş ve sabit şekilde preslemeye başlayın. Hafif tıslama sesinde durun.', duration: 30 },
+          { name: 'Demlenme', instructions: 'Sıcak suyun tamamını kahvenin üzerine tek seferde dökün. Nazikçe karıştırıp piston yukarıda şekilde bekleyin.', duration: 240 },
+          { name: 'Kabuk Kırma', instructions: 'Kapağı açın. Üstte biriken kahve tortularını kaşıkla 3 kez karıştırarak dibe çökmesini sağlayın.', duration: 30 },
+          { name: 'Presleme', instructions: 'Pistonu yavaş ve dengeli şekilde aşağıya bastırın. Demlemeyi sonlandırmak için hemen servis edin.', duration: 15 },
         ],
       },
     ],
@@ -118,43 +191,43 @@ export default function BrewGuidesContent({ locale = 'en' }: BrewGuidesContentPr
   const activeT = locale === 'tr' ? methods.tr : methods.en;
 
   const L = locale === 'tr' ? {
-    eyebrow: 'ESTO ATÖLYESİ', heroTitle: 'Demleme Rehberleri',
-    heroSub: 'Baristalarımızdan adım adım demleme yöntemleri. Yerleşik zamanlayıcıyla interaktif demleme asistanını açmak için bir yöntem seçin.',
-    methodsLabel: 'Yöntemlerimiz', methodsHeading: 'Üç Farklı Demleme',
-    methodsSub: 'Her yöntem çekirdekten farklı bir boyut ortaya çıkarır. Ekipmanınıza uygun olan yöntemle başlayın.',
-    ratio: 'Oran', grind: 'Öğütüm', temp: 'Su Sıcaklığı', time: 'Demleme Süresi',
-    beginGuide: 'Başla', tipsLabel: 'İpuçları', tipsHeading: 'İyi Kahvenin Prensipleri',
-    startBtn: 'Başlat', pauseBtn: 'Duraklat', resumeBtn: 'Devam', resetBtn: 'Sıfırla',
-    brewAgain: 'Tekrar Demle', doneMsg: 'Kahvenizin tadını çıkarın.',
-    soundToggle: 'Sesli sinyal', step: 'Adım', stepsHeading: 'Demleme Adımları',
-    ctaLabel: 'Hazır mısınız?', ctaTitle: 'Her seferinde doğru demlenen kahve.',
-    ctaShop: 'Kahvelere Göz At', ctaContact: 'Baristaya Sor',
-    servingSize: 'Porsiyon', singleServing: 'Tek Kişilik', doubleServing: 'Çift Kişilik'
+    eyebrow: 'ESTO WORKSHOP', heroTitle: 'Demleme Rehberleri',
+    heroSub: 'Baristalarımızdan interaktif, adım adım kılavuzlar. Ekipmanınıza uygun bir demleme yöntemi seçin ve yerleşik zamanlayıcıyı başlatın.',
+    methodsLabel: 'Yöntemler', methodsHeading: 'Zanaat ve Demleme',
+    methodsSub: 'Her demleme yöntemi çekirdeğin farklı tatlarını fincana yansıtır.',
+    ratio: 'Oran', grind: 'Öğütüm', temp: 'Sıcaklık', time: 'Süre',
+    beginGuide: 'Kılavuzu Aç', tipsLabel: 'Altın İpuçları', tipsHeading: 'İyi Kahvenin Püf Noktaları',
+    startBtn: 'Zamanlayıcıyı Başlat', pauseBtn: 'Duraklat', resumeBtn: 'Devam Et', resetBtn: 'Sıfırla',
+    brewAgain: 'Tekrar Demle', doneMsg: 'Afiyet olsun!',
+    soundToggle: 'Ses Sinyalleri', step: 'Adım', stepsHeading: 'Demleme Adımları',
+    ctaLabel: 'Destek mi gerekiyor?', ctaTitle: 'Mükemmel kahveyi demlemek artık çok kolay.',
+    ctaShop: 'Kahveleri İncele', ctaContact: 'Baristaya Yazın',
+    servingSize: 'Demleme Porsiyonu', singleServing: '1 Fincan (Standart)', doubleServing: '2 Fincan (Çift Kat)'
   } : {
-    eyebrow: 'ESTO WORKSHOP', heroTitle: 'Brew Guides',
-    heroSub: 'Step-by-step methods from our baristas. Select a method to open the interactive brew companion with a built-in timer.',
-    methodsLabel: 'Our Methods', methodsHeading: 'Three Ways to Brew',
-    methodsSub: 'Each method brings out a different dimension of the bean. Start with the one that matches your equipment.',
-    ratio: 'Ratio', grind: 'Grind Size', temp: 'Water Temp', time: 'Brew Time',
-    beginGuide: 'Begin Guide', tipsLabel: 'Step Tips', tipsHeading: 'Principles of Great Coffee',
+    eyebrow: 'ESTO WORKSHOP', heroTitle: 'Interactive Brew Guides',
+    heroSub: 'Step-by-step interactive brewing logs curated by our baristas. Select a method below to launch the companion timer.',
+    methodsLabel: 'Methods', methodsHeading: 'Select Your Gear',
+    methodsSub: 'Each brewing device coaxes distinct flavor profiles from the roasted beans.',
+    ratio: 'Ratio', grind: 'Grind Size', temp: 'Water Temp', time: 'Total Time',
+    beginGuide: 'Launch Guide', tipsLabel: 'Pro Tips', tipsHeading: 'Fundamentals of Great Coffee',
     startBtn: 'Start Timer', pauseBtn: 'Pause', resumeBtn: 'Resume', resetBtn: 'Reset',
     brewAgain: 'Brew Again', doneMsg: 'Enjoy your cup.',
-    soundToggle: 'Audio signals', step: 'Step', stepsHeading: 'Brew Steps',
-    ctaLabel: 'Ready to start?', ctaTitle: 'Coffee brewed right, every time.',
-    ctaShop: 'Shop Coffee', ctaContact: 'Ask a Barista',
-    servingSize: 'Yield Size', singleServing: 'Single Batch', doubleServing: 'Double Batch'
+    soundToggle: 'Audio Signals', step: 'Step', stepsHeading: 'Brew Steps',
+    ctaLabel: 'Need Assistance?', ctaTitle: 'Exceptional coffee brewed right, every single time.',
+    ctaShop: 'Shop Beans', ctaContact: 'Ask a Barista',
+    servingSize: 'Yield Target', singleServing: '1 Cup (Standard)', doubleServing: '2 Cups (Double Yield)'
   };
 
   const tips = locale === 'tr' ? [
     { label: 'Su Kalitesi', text: 'Filtreli su kullanın. Mineraller özütlemeyi önemli ölçüde etkiler — damıtılmış ve musluk suyu kullanmaktan kaçının.' },
-    { label: 'Taze Öğütme', text: 'Kahvenizi demleme öncesinde öğütün. Öğütülmüş kahve, havaya maruz kaldıktan 15 dakika içinde aromasını kaybeder.' },
-    { label: 'Her Şeyi Isıtın', text: 'Kabınızı ve filtrenizi önce sıcak suyla durulayın. Bu demleme sıcaklığını korur ve kağıt tadını giderir.' },
-    { label: 'Tartı, Kaşık Değil', text: 'Her seferinde kahvenizi ve suyunuzu tartın. Hacimsel ölçümler öğütüm boyutuna göre değişir.' },
+    { label: 'Taze Öğütme', text: 'En iyi aroma için kahvenizi demlemeden hemen önce öğütün. Taze öğütülmüş kahve, fincanda daha canlı ve dengeli bir lezzet sunar.' },
+    { label: 'Demlemeye Hazırlanın', text: 'Demlemeye başlamadan önce ekipmanınızı ve fincanınızı sıcak suyla önceden ısıtın. Bu işlem demleme sıcaklığını korur, filtre kâğıdının tadını giderir ve kahvenizin aroma notalarının fincana daha dengeli şekilde aktarılmasını sağlar. Küçük bir hazırlık, fincanınızdaki lezzette büyük bir fark yaratır.' },
+    { label: 'Hassas Ölçüm Yapın', text: 'Her demlemede kahve ve su miktarını hassas bir terazi ile ölçün. Kaşıkla yapılan ölçümler tutarsız sonuçlar verebilir. Doğru oranlar ise her fincanda aynı kaliteyi ve dengeli lezzeti elde etmenizi sağlar.' },
   ] : [
     { label: 'Water Quality', text: 'Use filtered water. Minerals significantly affect extraction — avoid distilled and tap water.' },
-    { label: 'Fresh Grind', text: 'Grind coffee right before brewing. Ground coffee loses aromatics within 15 minutes of exposure to air.' },
-    { label: 'Preheat Everything', text: 'Rinse your vessel and filter with hot water first. This maintains brew temperature and removes paper taste.' },
-    { label: 'Scale, Not Scoops', text: 'Weigh your coffee and water on a scale every time. Volume measurements vary by grind size.' },
+    { label: 'Fresh Grind', text: 'For the best aroma, grind your coffee right before brewing. Freshly ground coffee offers a livelier and more balanced flavor in the cup.' },
+    { label: 'Prepare to Brew', text: 'Preheat your equipment and cup with hot water before starting to brew. This maintains the brewing temperature, removes the paper taste from the filter, and ensures that the aroma notes of your coffee are transferred more evenly into the cup. A little preparation makes a big difference in the flavor of your cup.' },
+    { label: 'Measure Precisely', text: 'Weigh your coffee and water quantity with a precise scale for every brew. Volume measurements with spoons can produce inconsistent results, whereas correct ratios ensure you get the same quality and balanced taste in every cup.' },
   ];
 
   const playChime = (type: 'next' | 'done') => {
@@ -184,10 +257,9 @@ export default function BrewGuidesContent({ locale = 'en' }: BrewGuidesContentPr
           o2.connect(g2); g2.connect(c2.destination); o2.start(); o2.stop(c2.currentTime + 0.25);
         }, 160);
       }
-    } catch { /* non-fatal */ }
+    } catch { /* ignore */ }
   };
 
-  // ── HIGH VISIBILITY ACCESSIBILITY MODAL SIDE-EFFECTS ──
   useEffect(() => {
     if (selectedMethod) {
       document.body.style.overflow = 'hidden';
@@ -202,14 +274,13 @@ export default function BrewGuidesContent({ locale = 'en' }: BrewGuidesContentPr
     }
   }, [selectedMethod]);
 
-  // ── HTML5 WAKE LOCK API Integration ──
   useEffect(() => {
     let wakeLock: any = null;
     async function requestWakeLock() {
       if ('wakeLock' in navigator && isRunning) {
         try {
           wakeLock = await (navigator as any).wakeLock.request('screen');
-        } catch { /* Un-supported/denied execution silently handled */ }
+        } catch { /* ignore */ }
       }
     }
     if (isRunning) {
@@ -218,88 +289,101 @@ export default function BrewGuidesContent({ locale = 'en' }: BrewGuidesContentPr
       wakeLock.release().then(() => { wakeLock = null; });
     }
     return () => {
-      if (wakeLock) wakeLock.release();
+      if (wakeLock) {
+        wakeLock.release().then(() => { wakeLock = null; });
+      }
     };
   }, [isRunning]);
 
-  // ── BULLETPROOF TIMESTAMP REFRESH LOOP (Prevents Background Tab Drifting) ──
-  useEffect(() => {
-    if (isRunning && timeLeft > 0 && selectedMethod) {
-      targetEndTimeRef.current = Date.now() + timeLeft * 1000;
-
-      const tick = () => {
-        if (!targetEndTimeRef.current) return;
-        const remaining = Math.max(0, Math.ceil((targetEndTimeRef.current - Date.now()) / 1000));
-
-        if (remaining !== timeLeft) {
-          setTimeLeft(remaining);
-        }
-
-        if (remaining > 0) {
-          timerRef.current = requestAnimationFrame(tick);
-        } else {
-          const next = currentStepIndex + 1;
-          if (next < selectedMethod.steps.length) {
-            playChime('next');
-            setCurrentStepIndex(next);
-            setTimeLeft(selectedMethod.steps[next].duration);
-          } else {
-            playChime('done');
-            setIsRunning(false);
-            setIsDone(true);
-          }
-        }
-      };
-
-      timerRef.current = requestAnimationFrame(tick);
-    }
-
-    return () => {
-      if (timerRef.current) cancelAnimationFrame(timerRef.current);
-    };
-  }, [isRunning, timeLeft, selectedMethod, currentStepIndex]);
-
-  const openMethod = (m: BrewMethod) => {
-    setSelectedMethod(m);
+  const selectMethod = (method: BrewMethod) => {
+    setSelectedMethod(method);
     setCurrentStepIndex(0);
-    setYieldMultiplier(1);
-    setTimeLeft(m.steps[0].duration);
+    setTimeLeft(method.steps[0].duration);
     setIsRunning(false);
     setIsDone(false);
+    setYieldMultiplier(1);
   };
 
   const closeMethod = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
     setSelectedMethod(null);
     setIsRunning(false);
     setIsDone(false);
-    if (timerRef.current) cancelAnimationFrame(timerRef.current);
   };
 
-  const resetTimer = () => {
-    if (selectedMethod) {
-      setCurrentStepIndex(0);
-      setTimeLeft(selectedMethod.steps[0].duration);
+  const activeStep = selectedMethod ? selectedMethod.steps[currentStepIndex] : null;
+
+  useEffect(() => {
+    if (isRunning && timeLeft > 0) {
+      targetEndTimeRef.current = Date.now() + timeLeft * 1000;
+      timerRef.current = window.setInterval(() => {
+        const remaining = Math.max(0, Math.round((targetEndTimeRef.current! - Date.now()) / 1000));
+        setTimeLeft(remaining);
+        if (remaining <= 0) {
+          handleStepComplete();
+        }
+      }, 200) as unknown as number;
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [isRunning, currentStepIndex]);
+
+  const handleStepComplete = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (!selectedMethod) return;
+
+    const nextIndex = currentStepIndex + 1;
+    if (nextIndex < selectedMethod.steps.length) {
+      playChime('next');
+      setCurrentStepIndex(nextIndex);
+      setTimeLeft(selectedMethod.steps[nextIndex].duration);
+    } else {
+      playChime('done');
       setIsRunning(false);
-      setIsDone(false);
+      setIsDone(true);
+      setTimeLeft(0);
     }
   };
 
-  const activeStep = selectedMethod?.steps[currentStepIndex];
-  const CIRC = 2 * Math.PI * 96;
-  const progressRatio = activeStep
-    ? (activeStep.duration - timeLeft) / activeStep.duration
-    : 0;
+  const startTimer = () => setIsRunning(true);
+  const pauseTimer = () => setIsRunning(false);
+  const resetTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    setIsRunning(false);
+    setIsDone(false);
+    if (selectedMethod) {
+      setCurrentStepIndex(0);
+      setTimeLeft(selectedMethod.steps[0].duration);
+    }
+  };
+
+  const formatMinSec = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
   const linkPrefix = locale === 'tr' ? '' : '/en';
 
   return (
-    <div className={styles.page}>
+    <div className={styles.pageWrapper}>
 
-      {/* ── HERO ── */}
-      <section className={styles.hero}>
-        <img src="/images/beans.webp" className="heroBean heroBean1" alt="" aria-hidden="true" />
-        <img src="/images/beans.webp" className="heroBean heroBean3" alt="" aria-hidden="true" />
+      {/* ── HERO BANNER ── */}
+      <section className={styles.heroSection}>
+        <div className={styles.heroOverlay} />
+        
         <div className={styles.heroInner}>
-          <span className={styles.heroEyebrow}>{L.eyebrow}</span>
+          <span className={styles.heroLabel}>{L.eyebrow}</span>
           <h1 className={styles.heroTitle}>{L.heroTitle}</h1>
           <p className={styles.heroSub}>{L.heroSub}</p>
         </div>
@@ -308,33 +392,40 @@ export default function BrewGuidesContent({ locale = 'en' }: BrewGuidesContentPr
       {/* ── METHODS GRID ── */}
       <section className={styles.methodsSection}>
         <div className={styles.container}>
-          <span className={styles.sectionLabel}>{L.methodsLabel}</span>
-          <h2 className={styles.sectionHeading}>{L.methodsHeading}</h2>
-          <p className={styles.sectionSub}>{L.methodsSub}</p>
+          <div className={styles.sectionHeader}>
+            <span className={styles.sectionLabel}>{L.methodsLabel}</span>
+            <h2 className={styles.sectionHeading}>{L.methodsHeading}</h2>
+            <p className={styles.sectionSub}>{L.methodsSub}</p>
+          </div>
 
           <div className={styles.grid}>
             {activeT.map((method) => (
               <article
                 key={method.id}
-                className={styles.card}
-                onClick={() => openMethod(method)}
+                className={styles.methodCard}
+                onClick={() => selectMethod(method)}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => e.key === 'Enter' && openMethod(method)}
-                aria-label={`Open ${method.name} brew guide`}
+                onKeyDown={(e) => { if (e.key === 'Enter') selectMethod(method); }}
+                aria-label={`View brew guide for ${method.name}`}
               >
-                <div className={styles.cardImageWrap}>
-                  <img src={method.icon} alt={method.name} className={styles.cardImage} />
-                  <div className={styles.cardImageOverlay} />
+                <div className={styles.cardImageContainer}>
+                  <img
+                    src={method.icon}
+                    alt={method.name}
+                    className={styles.cardIconImage}
+                  />
                 </div>
-                <div className={styles.cardBody}>
-                  <p className={styles.cardTagline}>{method.tagline}</p>
+                <div className={styles.cardInfo}>
                   <h3 className={styles.cardTitle}>{method.name}</h3>
+                  <p className={styles.cardTagline}>{method.tagline}</p>
                   <p className={styles.cardDesc}>{method.desc}</p>
-                  <div className={styles.specsTable}>
+                  <div className={styles.cardSpecs}>
                     <div className={styles.specRow}>
                       <span className={styles.specLabel}>{L.ratio}</span>
-                      <span className={styles.specValue}>{method.coffeeGrams}g / {method.waterGrams}g</span>
+                      <span className={styles.specValue}>
+                        {method.coffeeGrams}g / {method.waterGrams}g
+                      </span>
                     </div>
                     <div className={styles.specRow}>
                       <span className={styles.specLabel}>{L.grind}</span>
@@ -357,25 +448,34 @@ export default function BrewGuidesContent({ locale = 'en' }: BrewGuidesContentPr
         </div>
       </section>
 
-      {/* ── TIPS EDITORIAL ROWS ── */}
+      {/* ── TIPS EDITORIAL GRID ── */}
       <section className={styles.infoFeedSection}>
         <div className={styles.container}>
-          <span className={styles.sectionLabel}>{L.tipsLabel}</span>
-          <h2 className={styles.sectionHeading}>{L.tipsHeading}</h2>
-          <div className={styles.infoFeed} style={{ marginTop: '56px' }}>
+          <span className={styles.tipsLabel}>{L.tipsLabel}</span>
+          <h2 className={styles.tipsHeading}>{L.tipsHeading}</h2>
+          
+          <div className={styles.tipsGrid}>
             {tips.map((tip, i) => (
-              <div key={tip.label} className={i % 2 === 0 ? styles.infoRow : styles.infoRowReverse}>
-                <div className={styles.infoImageWrap}>
+              <div key={tip.label} className={styles.tipGridCard}>
+                <div className={styles.tipImageContainer}>
                   <img
-                    src={['/images/coffee_grouped.webp', '/images/beans.webp', '/images/dripper.webp', '/images/french-press.webp'][i]}
+                    src={[
+                      '/images/coffee_grouped.png', 
+                      '/images/beans.png', 
+                      '/images/coffee_hands.png', 
+                      '/images/barista_espresso.png'
+                    ][i]}
                     alt={tip.label}
-                    className={styles.infoImage}
+                    className={styles.tipCardImage}
                   />
+                  <div className={styles.tipCardBadge}>
+                    {String(i + 1).padStart(2, '0')}
+                  </div>
                 </div>
-                <div className={styles.infoContent}>
-                  <span className={styles.infoStepNumber}>{String(i + 1).padStart(2, '0')} — {L.tipsLabel}</span>
-                  <h3 className={styles.infoHeading}>{tip.label}</h3>
-                  <p className={styles.infoText}>{tip.text}</p>
+                <div className={styles.tipCardBody}>
+                  <span className={styles.tipCardEyebrow}>{L.tipsLabel}</span>
+                  <h3 className={styles.tipCardTitle}>{tip.label}</h3>
+                  <p className={styles.tipCardText}>{tip.text}</p>
                 </div>
               </div>
             ))}
@@ -383,20 +483,25 @@ export default function BrewGuidesContent({ locale = 'en' }: BrewGuidesContentPr
         </div>
       </section>
 
-      {/* ── BLACK CTA BANNER ── */}
-      <div className={styles.ctaBannerSection}>
+      {/* ── CINEMATIC CTA SECTION ── */}
+      <section className={styles.ctaBannerSection}>
         <div className={styles.container}>
-          <span className={styles.ctaBannerLabel}>{L.ctaLabel}</span>
-          <p className={styles.ctaBannerTitle}>{L.ctaTitle}</p>
-          <div className={styles.ctaContainer}>
-            <Link href={`${linkPrefix}/coffee`} className={styles.ctaLink}>{L.ctaShop}</Link>
-            <Link href={`${linkPrefix}/contact`} className={styles.ctaLink}>{L.ctaContact}</Link>
+          <div className={styles.ctaCard}>
+            <div className={styles.ctaCardBg} />
+            <div className={styles.ctaCardContent}>
+              <span className={styles.ctaBannerLabel}>{L.ctaLabel}</span>
+              <h2 className={styles.ctaBannerTitle}>{L.ctaTitle}</h2>
+              <div className={styles.ctaContainer}>
+                <Link href={`${linkPrefix}/coffee`} className={styles.ctaLink}>{L.ctaShop}</Link>
+                <Link href={`${linkPrefix}/contact`} className={styles.ctaLink}>{L.ctaContact}</Link>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* ══════════════════════════════════════════════
-          BREW GUIDE MODAL — Premium Redesign
+          BREW GUIDE MODAL — PremiumRedesign
       ══════════════════════════════════════════════ */}
       {selectedMethod && activeStep && (
         <div
@@ -430,8 +535,8 @@ export default function BrewGuidesContent({ locale = 'en' }: BrewGuidesContentPr
                 <svg viewBox="0 0 220 220" className={styles.arcSvg} aria-hidden="true">
                   <defs>
                     <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#0051a8" />
-                      <stop offset="100%" stopColor="#0066cc" />
+                      <stop offset="0%" stopColor="#c9963a" />
+                      <stop offset="100%" stopColor="#e5c158" />
                     </linearGradient>
                   </defs>
                   {/* Subtle minute-tick marks */}
@@ -450,188 +555,142 @@ export default function BrewGuidesContent({ locale = 'en' }: BrewGuidesContentPr
                       />
                     );
                   })}
-                  {/* Track */}
-                  <circle cx="110" cy="110" r="96" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="5" />
-                  {/* Progress — Colored with your sleek cobalt blue theme */}
+
+                  {/* Arc Progress Ring */}
                   <circle
-                    cx="110" cy="110" r="96"
+                    cx="110"
+                    cy="110"
+                    r="87"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.03)"
+                    strokeWidth="4"
+                  />
+                  <motion.circle
+                    cx="110"
+                    cy="110"
+                    r="87"
                     fill="none"
                     stroke="url(#arcGrad)"
-                    strokeWidth="5"
-                    strokeLinecap="butt"
-                    strokeDasharray={CIRC}
-                    strokeDashoffset={isDone ? 0 : CIRC - CIRC * progressRatio}
+                    strokeWidth="4"
+                    strokeDasharray={2 * Math.PI * 87}
+                    animate={{
+                      strokeDashoffset: 2 * Math.PI * 87 * (1 - timeLeft / activeStep.duration)
+                    }}
+                    transition={{ duration: isRunning ? 0.25 : 0.5, ease: 'linear' }}
+                    strokeLinecap="round"
                     transform="rotate(-90 110 110)"
-                    style={{ transition: 'stroke-dashoffset 1s linear' }}
                   />
                 </svg>
 
-                {/* Center content */}
-                <div className={styles.arcCenter}>
-                  {isDone ? (
-                    <>
-                      <span className={styles.arcDoneCheck} style={{ color: '#0051a8' }}>✓</span>
-                      <span className={styles.arcDoneLabel}>{L.doneMsg}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className={styles.arcTime}>
-                        {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
-                      </span>
-                      <span className={styles.arcMeta}>
-                        {L.step} {currentStepIndex + 1} / {selectedMethod.steps.length}
-                      </span>
-                      <span className={styles.arcCurrentStep} style={{ color: '#0051a8' }}>{activeStep.name}</span>
-                    </>
-                  )}
+                {/* Numeric timer overlays inside arc */}
+                <div className={styles.arcCenterContent}>
+                  <div className={styles.timeValue} aria-live="polite">
+                    {isDone ? '✓' : formatMinSec(timeLeft)}
+                  </div>
+                  <div className={styles.activeStepLabel}>
+                    {isDone ? L.doneMsg : activeStep.name}
+                  </div>
                 </div>
               </div>
 
-              {/* Play/Pause + Reset buttons */}
-              <div className={styles.timerBtns}>
-                {!isDone ? (
+              {/* Multiplier / Yield Selector */}
+              <div className={styles.servingSelectorRow}>
+                <span className={styles.servingTitleLabel}>{L.servingSize}</span>
+                <div className={styles.servingButtonGroup}>
                   <button
-                    onClick={() => setIsRunning(!isRunning)}
-                    className={isRunning ? styles.btnPause : styles.btnStart}
+                    className={`${styles.servingBtn} ${yieldMultiplier === 1 ? styles.servingBtnActive : ''}`}
+                    onClick={() => { setYieldMultiplier(1); resetTimer(); }}
                   >
-                    {isRunning ? (
-                      <>
-                        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
-                          <rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" />
-                        </svg>
-                        {L.pauseBtn}
-                      </>
-                    ) : (
-                      <>
-                        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
-                          <polygon points="5 3 19 12 5 21 5 3" />
-                        </svg>
-                        {currentStepIndex > 0 ? L.resumeBtn : L.startBtn}
-                      </>
-                    )}
+                    {L.singleServing}
                   </button>
-                ) : (
-                  <button onClick={resetTimer} className={styles.btnStart}>
-                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                      <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 102.13-9.36L1 10" />
-                    </svg>
+                  <button
+                    className={`${styles.servingBtn} ${yieldMultiplier === 2 ? styles.servingBtnActive : ''}`}
+                    onClick={() => { setYieldMultiplier(2); resetTimer(); }}
+                  >
+                    {L.doubleServing}
+                  </button>
+                </div>
+              </div>
+
+              {/* Timer interactive button row */}
+              <div className={styles.timerActionRow}>
+                {!isRunning && !isDone && (
+                  <button className={styles.playBtn} onClick={startTimer}>
+                    {L.startBtn}
+                  </button>
+                )}
+                {isRunning && (
+                  <button className={styles.pauseBtn} onClick={pauseTimer}>
+                    {L.pauseBtn}
+                  </button>
+                )}
+                {isDone && (
+                  <button className={styles.playAgainBtn} onClick={resetTimer}>
                     {L.brewAgain}
                   </button>
                 )}
-                <button
-                  onClick={resetTimer}
-                  className={styles.btnReset}
-                  disabled={currentStepIndex === 0 && timeLeft === activeStep.duration && !isDone}
-                >
+                <button className={styles.resetBtn} onClick={resetTimer} disabled={!isRunning && timeLeft === activeStep.duration}>
                   {L.resetBtn}
                 </button>
               </div>
 
-              {/* Dynamic Batch Scaling Interface Controls */}
-              <div style={{ display: 'flex', gap: '8px', width: '100%', marginTop: '-4px' }}>
-                <button
-                  onClick={() => { if (!isRunning) { setYieldMultiplier(1); setTimeLeft(selectedMethod.steps[currentStepIndex].duration); } }}
-                  disabled={isRunning}
-                  style={{
-                    flex: 1, padding: '6px', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700, cursor: isRunning ? 'not-allowed' : 'pointer',
-                    background: yieldMultiplier === 1 ? '#0051a8' : 'transparent', color: yieldMultiplier === 1 ? '#fff' : 'rgba(255,255,255,0.4)',
-                    border: '1px solid rgba(255,255,255,0.15)'
-                  }}
-                >
-                  {L.singleServing}
-                </button>
-                <button
-                  onClick={() => { if (!isRunning) { setYieldMultiplier(2); setTimeLeft(selectedMethod.steps[currentStepIndex].duration); } }}
-                  disabled={isRunning}
-                  style={{
-                    flex: 1, padding: '6px', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700, cursor: isRunning ? 'not-allowed' : 'pointer',
-                    background: yieldMultiplier === 2 ? '#0051a8' : 'transparent', color: yieldMultiplier === 2 ? '#fff' : 'rgba(255,255,255,0.4)',
-                    border: '1px solid rgba(255,255,255,0.15)'
-                  }}
-                >
-                  {L.doubleServing}
-                </button>
+              {/* Accessibility options bar */}
+              <div className={styles.accessibilityRow}>
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={chimesEnabled}
+                    onChange={(e) => setChimesEnabled(e.target.checked)}
+                  />
+                  <span>{L.soundToggle}</span>
+                </label>
               </div>
 
-              {/* Specs strip */}
-              <div className={styles.timerSpecsRow}>
-                {[
-                  { label: L.ratio, value: `${selectedMethod.coffeeGrams * yieldMultiplier}g / ${selectedMethod.waterGrams * yieldMultiplier}g` },
-                  { label: L.temp, value: selectedMethod.temp },
-                  { label: L.grind, value: selectedMethod.grind },
-                ].map((s) => (
-                  <div key={s.label} className={styles.timerSpec}>
-                    <span className={styles.timerSpecLabel}>{s.label}</span>
-                    <span className={styles.timerSpecValue}>{s.value}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Audio toggle */}
-              <label className={styles.soundToggle}>
-                <input type="checkbox" checked={chimesEnabled} onChange={(e) => setChimesEnabled(e.target.checked)} />
-                <span className={styles.soundToggleLabel}>{L.soundToggle}</span>
-              </label>
             </div>
 
-            {/* ═══ RIGHT — Light panel: all steps always visible ═══ */}
+            {/* ═══ RIGHT — Light panel: step directions list ═══ */}
             <div className={styles.timerRight}>
-              <div className={styles.timerRightHeader}>
-                <h3 className={styles.timerRightTitle}>{L.stepsHeading}</h3>
-                <span className={styles.timerRightMethod}>{selectedMethod.name}</span>
+              <div className={styles.rightHeader}>
+                <h3 className={styles.stepsHeading}>{L.stepsHeading}</h3>
+                <div className={styles.yieldInfoBlock}>
+                  <span>{L.ratio}: <strong>{selectedMethod.coffeeGrams * yieldMultiplier}g</strong> kahve / <strong>{selectedMethod.waterGrams * yieldMultiplier}g</strong> su</span>
+                </div>
               </div>
 
-              <ol className={styles.stepsList}>
-                {selectedMethod.steps.map((step, idx) => {
-                  const isActive = idx === currentStepIndex && !isDone;
-                  const isCompleted = idx < currentStepIndex || isDone;
+              <div className={styles.stepsScroller}>
+                {selectedMethod.steps.map((step, index) => {
+                  const isActive = index === currentStepIndex;
+                  const isPast = index < currentStepIndex;
                   return (
-                    <li
+                    <div
                       key={step.name}
-                      className={`${styles.stepsItem} ${isActive ? styles.stepsItemActive : ''} ${isCompleted ? styles.stepsItemDone : ''}`}
+                      className={`${styles.stepRowItem} ${isActive ? styles.stepRowActive : ''} ${isPast ? styles.stepRowPast : ''}`}
                     >
-                      {/* Vertical timeline connector */}
-                      <div className={styles.stepsConnector}>
-                        <div className={styles.stepsNum}>
-                          {isCompleted ? (
-                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
-                              <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                          ) : (
-                            <span>{idx + 1}</span>
-                          )}
+                      <div className={styles.stepMarkerCol}>
+                        <div className={styles.markerCircle}>
+                          {isPast ? '✓' : index + 1}
                         </div>
-                        {idx < selectedMethod.steps.length - 1 && (
-                          <div className={`${styles.stepsLine} ${isCompleted ? styles.stepsLineDone : ''}`} />
+                        {index < selectedMethod.steps.length - 1 && (
+                          <div className={styles.markerConnector} />
                         )}
                       </div>
-
-                      {/* Step body */}
-                      <div className={styles.stepsBody}>
-                        <div className={styles.stepsMeta}>
-                          <h4 className={styles.stepsName}>{step.name}</h4>
-                          <span className={styles.stepsDuration}>{step.duration}s</span>
+                      <div className={styles.stepInstructionsCol}>
+                        <div className={styles.stepHeaderRow}>
+                          <h4 className={styles.stepNameText}>{step.name}</h4>
+                          <span className={styles.stepTimeDuration}>{step.duration}s</span>
                         </div>
-                        <p className={styles.stepsInstructions}>{step.instructions}</p>
-                        {/* Progress bar — only on active step */}
-                        {isActive && !isDone && (
-                          <div className={styles.stepsProgressTrack}>
-                            <div
-                              className={styles.stepsProgressFill}
-                              style={{ width: `${Math.round(progressRatio * 100)}%` }}
-                            />
-                          </div>
-                        )}
+                        <p className={styles.stepInstructionsText}>{step.instructions}</p>
                       </div>
-                    </li>
+                    </div>
                   );
                 })}
-              </ol>
+              </div>
             </div>
 
           </div>
         </div>
       )}
+
     </div>
   );
 }

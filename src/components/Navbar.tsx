@@ -11,6 +11,51 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
   const { cartCount, setIsCartOpen } = useCart();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [products, setProducts] = useState<any[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+
+  // Fetch products on mount or when search is clicked
+  useEffect(() => {
+    if (isSearchOpen && products.length === 0) {
+      fetch('/api/products')
+        .then(res => res.json())
+        .then(json => {
+          if (json.success) {
+            setProducts(json.data);
+          }
+        })
+        .catch(err => console.error("Search fetch products error:", err));
+    }
+  }, [isSearchOpen, products]);
+
+  // Filter products based on query
+  useEffect(() => {
+    if (!searchQuery) {
+      setFilteredProducts([]);
+      return;
+    }
+    const q = searchQuery.toLowerCase();
+    const filtered = products.filter(p => {
+      const name = (locale === 'tr' ? p.nameTr || p.name : p.nameEn || p.name).toLowerCase();
+      const desc = (locale === 'tr' ? p.descriptionTr || p.description : p.descriptionEn || p.description).toLowerCase();
+      return name.includes(q) || desc.includes(q);
+    });
+    setFilteredProducts(filtered.slice(0, 5)); // show top 5 results
+  }, [searchQuery, products, locale]);
+
+  // Close search on escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsSearchOpen(false);
+        setSearchQuery('');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Monitor scroll height to trigger background blur shifts
   useEffect(() => {
@@ -29,7 +74,7 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
   const translations = {
     en: {
       home: 'Home',
-      about: 'About',
+      about: 'About Us',
       locations: 'Locations',
       coffee: 'Coffee',
       quiz: 'Find Your Roast',
@@ -40,10 +85,11 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
       homepage: 'Coffee Esto Roastery Homepage',
       orderAhead: 'ORDER AHEAD',
       search: 'Search',
-      shippingPromo: 'Free Shipping on Orders Over ₺500',
+      shippingPromo: 'Free Shipping over ₺500 | Sign up for 10% Off Coffees!',
       shop: 'SHOP',
       subscriptions: 'SUBSCRIPTIONS',
       coldBrew: 'COLD BREW',
+      coffeeWorld: 'COFFEE WORLD',
       learn: 'LEARN',
       account: 'ACCOUNT',
       allCoffees: 'All Coffees',
@@ -52,6 +98,7 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
       filterCategory: 'Filter Coffee',
       turkishCategory: 'Turkish Coffee',
       limitedCategory: 'Limited Edition',
+      contact: 'Contact',
     },
     tr: {
       home: 'Ana Sayfa',
@@ -66,10 +113,11 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
       homepage: 'Coffee Esto Roastery Ana Sayfa',
       orderAhead: 'ÖNCEDEN SİPARİŞ ET',
       search: 'Ara',
-      shippingPromo: '500 TL Üzeri Siparişlerde Ücretsiz Kargo',
+      shippingPromo: '500 TL Üzeri Ücretsiz Kargo | Üye Ol, Kahvelerde %10 İndirim Kazan!',
       shop: 'MAĞAZA',
       subscriptions: 'ABONELİK',
       coldBrew: 'SOĞUK DEMLEME',
+      coffeeWorld: 'KAHVE DÜNYASI',
       learn: 'REHBER',
       account: 'SİPARİŞ TAKİBİ',
       allCoffees: 'Tüm Kahveler',
@@ -78,6 +126,7 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
       filterCategory: 'Filtre Kahve',
       turkishCategory: 'Türk Kahvesi',
       limitedCategory: 'Özel Seri',
+      contact: 'İletişim',
     }
   };
 
@@ -104,21 +153,19 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
       <div className={styles.announcementBar}>
         <div className={styles.announcementInner}>
           <div className={styles.announcementLeft}>
-            <Link href={`${linkPrefix}/location`} className={styles.orderAheadBtn}>
-              {t.orderAhead}
-            </Link>
+            {/* Order Ahead removed */}
           </div>
           <div className={styles.announcementCenter}>
             <span>{t.shippingPromo}</span>
           </div>
           <div className={styles.announcementRight}>
-            <Link href={`${linkPrefix}/coffee`} className={styles.searchBtn}>
+            <button type="button" onClick={() => setIsSearchOpen(true)} className={styles.searchBtn}>
               <span className={styles.searchText}>{t.search}</span>
               <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" className={styles.searchIcon}>
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
-            </Link>
+            </button>
             <span className={styles.barDivider}>|</span>
             <Link 
               href={getLanguageToggleHref()} 
@@ -134,6 +181,20 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
       {/* 2. White Main Brand Bar */}
       <div className={styles.brandBar}>
         <div className={styles.brandInner}>
+          {/* Mobile Left Controls (Hamburger) */}
+          <div className={styles.mobileLeftControls}>
+            <button 
+              className={`${styles.burger} ${isNavOpen ? styles.burgerActive : ''}`}
+              onClick={() => setIsNavOpen(!isNavOpen)} 
+              aria-label="Toggle navigation menu"
+              aria-expanded={isNavOpen}
+            >
+              <span className={styles.burgerBar}></span>
+              <span className={styles.burgerBar}></span>
+              <span className={styles.burgerBar}></span>
+            </button>
+          </div>
+
           {/* Desktop Left Menu Links */}
           <nav className={styles.desktopMenuLeft}>
             <div className={styles.shopDropdownWrapper}>
@@ -144,50 +205,84 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
                 </svg>
               </Link>
               <div className={styles.shopDropdownMenu}>
-                <Link href={`${linkPrefix}/coffee`} className={styles.dropdownLink}>
-                  {t.allCoffees}
-                </Link>
-                <Link href={`${linkPrefix}/coffee?category=single-origin`} className={styles.dropdownLink}>
-                  {t.singleOriginCategory}
-                </Link>
-                <Link href={`${linkPrefix}/coffee?category=espresso`} className={styles.dropdownLink}>
-                  {t.espressoCategory}
-                </Link>
-                <Link href={`${linkPrefix}/coffee?category=filter`} className={styles.dropdownLink}>
-                  {t.filterCategory}
-                </Link>
-                <Link href={`${linkPrefix}/coffee?category=turkish`} className={styles.dropdownLink}>
-                  {t.turkishCategory}
-                </Link>
-                <Link href={`${linkPrefix}/coffee?category=limited-edition`} className={styles.dropdownLink}>
-                  {t.limitedCategory}
-                </Link>
+                <div className={styles.dropdownColumn}>
+                  <h4 className={styles.dropdownColTitle}>
+                    {locale === 'tr' ? 'KAHVELER' : 'COFFEES'}
+                  </h4>
+                  <Link href={`${linkPrefix}/coffee`} className={styles.dropdownLink}>
+                    {t.allCoffees}
+                  </Link>
+                  <Link href={`${linkPrefix}/coffee?category=single-origin`} className={styles.dropdownLink}>
+                    {locale === 'tr' ? 'Single Origin (Tek Yöre)' : 'Single Origin'}
+                  </Link>
+                  <Link href={`${linkPrefix}/coffee?category=espresso`} className={styles.dropdownLink}>
+                    {locale === 'tr' ? 'Espresso Blend' : 'Espresso Blend'}
+                  </Link>
+                  <Link href={`${linkPrefix}/coffee?category=filter`} className={styles.dropdownLink}>
+                    {locale === 'tr' ? 'Filtre Blend' : 'Filter Blend'}
+                  </Link>
+                  <Link href={`${linkPrefix}/coffee?category=turkish`} className={styles.dropdownLink}>
+                    {locale === 'tr' ? 'Türk Kahvesi' : 'Turkish Coffee'}
+                  </Link>
+                  <Link href={`${linkPrefix}/coffee?category=signature-blend`} className={styles.dropdownLink}>
+                    {locale === 'tr' ? 'Özel Harmanlar (Signature)' : 'Signature Blend'}
+                  </Link>
+                </div>
+                <div className={styles.dropdownColumn}>
+                  <h4 className={styles.dropdownColTitle}>
+                    {locale === 'tr' ? 'EKİPMAN & AKSESUAR' : 'EQUIPMENT & GEAR'}
+                  </h4>
+                  <Link href={`${linkPrefix}/coffee?category=espresso-machines`} className={styles.dropdownLink}>
+                    {locale === 'tr' ? 'Espresso Makineleri' : 'Espresso Machines'}
+                  </Link>
+                  <Link href={`${linkPrefix}/coffee?category=coffee-grinders`} className={styles.dropdownLink}>
+                    {locale === 'tr' ? 'Kahve Değirmenleri' : 'Coffee Grinders'}
+                  </Link>
+                  <Link href={`${linkPrefix}/coffee?category=filter-brewing-equipment`} className={styles.dropdownLink}>
+                    {locale === 'tr' ? 'Filtre Demleme Ekipmanları' : 'Filter Brewing Equipment'}
+                  </Link>
+                  <Link href={`${linkPrefix}/coffee?category=small-bar-equipment`} className={styles.dropdownLink}>
+                    {locale === 'tr' ? 'Küçük Bar Ekipmanları' : 'Small Bar Equipment'}
+                  </Link>
+                  <Link href={`${linkPrefix}/coffee?category=barista-accessories`} className={styles.dropdownLink}>
+                    {locale === 'tr' ? 'Barista Aksesuarları' : 'Barista Accessories'}
+                  </Link>
+                  <Link href={`${linkPrefix}/coffee?category=cleaning-products`} className={styles.dropdownLink}>
+                    {locale === 'tr' ? 'Temizlik Ürünleri' : 'Cleaning Products'}
+                  </Link>
+                </div>
               </div>
             </div>
-            <Link href={`${linkPrefix}/coffee?category=single-origin`} className={styles.brandLink}>
-              {t.subscriptions}
-            </Link>
             <Link href={`${linkPrefix}/wholesale`} className={styles.brandLink}>
               {t.wholesale}
             </Link>
-            <Link href={`${linkPrefix}/coffee`} className={styles.brandLink}>
-              {t.coldBrew}
+            <Link href={`${linkPrefix}/coffee-world`} className={styles.brandLink}>
+              {t.coffeeWorld}
+            </Link>
+            <Link href={`${linkPrefix}/about`} className={styles.brandLink}>
+              {t.about}
             </Link>
           </nav>
 
           {/* Centered Brand Logo */}
           <Link href={locale === 'tr' ? '/' : '/en'} className={styles.logoContainer} aria-label={t.homepage} onClick={() => setIsNavOpen(false)}>
             <span className={styles.logoTitle}>C O F F E E &nbsp; E S T O</span>
-            <span className={styles.logoSubtitle}>C O F F E E &nbsp; R O A S T E R S</span>
+            <span className={styles.logoSubtitle}>C O F F E E &nbsp; R O A S T E R Y</span>
           </Link>
 
           {/* Desktop Right Menu Links */}
           <nav className={styles.desktopMenuRight}>
+            <Link href={`${linkPrefix}/quiz`} className={styles.brandLink}>
+              {t.quiz}
+            </Link>
+            <Link href={`${linkPrefix}/brew`} className={styles.brandLink}>
+              {t.brew}
+            </Link>
             <Link href={`${linkPrefix}/location`} className={styles.brandLink}>
               {t.locations}
             </Link>
-            <Link href={`${linkPrefix}/brew`} className={styles.brandLink}>
-              {t.learn}
+            <Link href={`${linkPrefix}/contact`} className={styles.brandLink}>
+              {t.contact}
             </Link>
             <Link href={`${linkPrefix}/account`} className={styles.brandLink}>
               {t.account}
@@ -202,7 +297,7 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
             </button>
           </nav>
 
-          {/* Mobile Right Controls */}
+          {/* Mobile Right Controls (Cart only) */}
           <div className={styles.mobileRightControls}>
             <button 
               className={styles.cartBubbleBtnMobile} 
@@ -210,16 +305,6 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
               aria-label={`${t.cart}, ${cartCount} items`}
             >
               <span>{cartCount}</span>
-            </button>
-            <button 
-              className={`${styles.burger} ${isNavOpen ? styles.burgerActive : ''}`}
-              onClick={() => setIsNavOpen(!isNavOpen)} 
-              aria-label="Toggle navigation menu"
-              aria-expanded={isNavOpen}
-            >
-              <span className={styles.burgerBar}></span>
-              <span className={styles.burgerBar}></span>
-              <span className={styles.burgerBar}></span>
             </button>
           </div>
         </div>
@@ -234,18 +319,28 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
             </Link>
           </li>
           <li>
-            <Link href={`${linkPrefix}/coffee?category=single-origin`} onClick={() => setIsNavOpen(false)}>
-              {t.subscriptions}
-            </Link>
-          </li>
-          <li>
             <Link href={`${linkPrefix}/wholesale`} onClick={() => setIsNavOpen(false)}>
               {t.wholesale}
             </Link>
           </li>
           <li>
-            <Link href={`${linkPrefix}/coffee`} onClick={() => setIsNavOpen(false)}>
-              {t.coldBrew}
+            <Link href={`${linkPrefix}/coffee-world`} onClick={() => setIsNavOpen(false)}>
+              {t.coffeeWorld}
+            </Link>
+          </li>
+          <li>
+            <Link href={`${linkPrefix}/quiz`} onClick={() => setIsNavOpen(false)}>
+              {t.quiz}
+            </Link>
+          </li>
+          <li>
+            <Link href={`${linkPrefix}/brew`} onClick={() => setIsNavOpen(false)}>
+              {t.brew}
+            </Link>
+          </li>
+          <li>
+            <Link href={`${linkPrefix}/about`} onClick={() => setIsNavOpen(false)}>
+              {t.about}
             </Link>
           </li>
           <li>
@@ -254,8 +349,8 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
             </Link>
           </li>
           <li>
-            <Link href={`${linkPrefix}/brew`} onClick={() => setIsNavOpen(false)}>
-              {t.learn}
+            <Link href={`${linkPrefix}/contact`} onClick={() => setIsNavOpen(false)}>
+              {t.contact}
             </Link>
           </li>
           <li>
@@ -279,6 +374,68 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
           </li>
         </ul>
       </nav>
+
+      {/* Premium Morphing Search Overlay */}
+      {isSearchOpen && (
+        <div className={styles.searchBackdrop} onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}>
+          <div className={styles.searchContainer} onClick={e => e.stopPropagation()}>
+            <div className={styles.searchHeader}>
+              <span className={styles.searchTitle}>
+                {locale === 'tr' ? 'Kahve Arama' : 'Search our Roasts'}
+              </span>
+              <button className={styles.closeSearchBtn} onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}>✕</button>
+            </div>
+            
+            <div className={styles.searchInputWrapper}>
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" className={styles.searchBarIcon}>
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input
+                type="text"
+                autoFocus
+                placeholder={locale === 'tr' ? 'Kahve adı, köken veya tat profili arayın...' : 'Search by origin, roast profile, note...'}
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className={styles.searchBarInput}
+              />
+            </div>
+
+            {filteredProducts.length > 0 && (
+              <div className={styles.searchResultsList}>
+                {filteredProducts.map(p => {
+                  const productUrl = `${linkPrefix}/coffee/${p.id}`;
+                  const displayName = locale === 'tr' ? p.nameTr || p.name : p.nameEn || p.name;
+                  const price = p.price;
+                  return (
+                    <Link
+                      key={p.id}
+                      href={productUrl}
+                      className={styles.searchResultItem}
+                      onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
+                    >
+                      {p.imageUrl && (
+                        <img src={p.imageUrl} alt={displayName} className={styles.searchResultImg} />
+                      )}
+                      <div className={styles.searchResultMeta}>
+                        <span className={styles.searchResultName}>{displayName}</span>
+                        <span className={styles.searchResultCategory}>{p.category}</span>
+                      </div>
+                      <span className={styles.searchResultPrice}>₺{price}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+            
+            {searchQuery && filteredProducts.length === 0 && (
+              <div className={styles.noResultsText}>
+                {locale === 'tr' ? 'Eşleşen kahve bulunamadı.' : 'No roasts found matching your search.'}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 }

@@ -185,11 +185,12 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
           id: 'brewMethod',
           title: 'How do you usually brew your coffee?',
           options: [
-            { value: 'espresso', label: 'Espresso / Latte', desc: 'Fine grind, rich & pressurized brew.', icon: <img src="/images/latte-art.webp" alt="Espresso" className={styles.customQuizIcon} /> },
-            { value: 'filter', label: 'Filter / V60', desc: 'Medium-fine, bright & clean pour-over.', icon: <img src="/images/dripper.webp" alt="Filter" className={styles.customQuizIcon} /> },
-            { value: 'press', label: 'French Press', desc: 'Coarse, full-bodied immersion brew.', icon: <img src="/images/french-press.webp" alt="French Press" className={styles.customQuizIcon} /> },
-            { value: 'moka', label: 'Moka Pot / Aeropress', desc: 'Versatile, intense & textured cup.', icon: <img src="/images/moka-pot.webp" alt="Moka Pot" className={styles.customQuizIcon} /> },
-            { value: 'turkish', label: 'Turkish Coffee', desc: 'Ultra-fine, traditional unfiltered cup.', icon: <img src="/images/coffee-pot.webp" alt="Turkish Coffee" className={styles.customQuizIcon} /> }
+            { value: 'espresso', label: 'Espresso Machine', desc: 'I prefer coffees with an intense body, strong aroma, and rich crema.', icon: <img src="/images/quiz/espresso_machine.png" alt="Espresso Machine" className={styles.customQuizIcon} /> },
+            { value: 'v60', label: 'V60', desc: 'I am looking for a clean, balanced cup with prominent floral and fruity notes.', icon: <img src="/images/quiz/v60_dripper.png" alt="V60" className={styles.customQuizIcon} /> },
+            { value: 'chemex', label: 'Chemex', desc: 'I enjoy smooth-drinking, clear coffees with elegant and delicate aromas.', icon: <img src="/images/quiz/chemex.png" alt="Chemex" className={styles.customQuizIcon} /> },
+            { value: 'filter', label: 'Filter Coffee Machine', desc: 'I prefer practical, balanced coffees that I can enjoy throughout the day.', icon: <img src="/images/quiz/filter_machine.png" alt="Filter Coffee Machine" className={styles.customQuizIcon} /> },
+            { value: 'moka', label: 'Moka Pot', desc: 'I love strong-character coffees with an intensity close to espresso.', icon: <img src="/images/quiz/moka_pot.png" alt="Moka Pot" className={styles.customQuizIcon} /> },
+            { value: 'turkish', label: 'Turkish Coffee (Cezve)', desc: 'I cannot give up on heavily aromatic and frothy coffees prepared with traditional methods.', icon: <img src="/images/quiz/turkish_cezve.png" alt="Turkish Coffee (Cezve)" className={styles.customQuizIcon} /> }
           ]
         },
         {
@@ -246,11 +247,12 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
           id: 'brewMethod',
           title: 'Kahvenizi genellikle nasıl demlersiniz?',
           options: [
-            { value: 'espresso', label: 'Espresso / Latte', desc: 'İnce öğütüm, yoğun ve basınçlı demleme.', icon: <img src="/images/latte-art.webp" alt="Espresso" className={styles.customQuizIcon} /> },
-            { value: 'filter', label: 'Filtre Kahve / V60', desc: 'Orta-ince, berrak ve gövdeli demleme.', icon: <img src="/images/dripper.webp" alt="Filtre" className={styles.customQuizIcon} /> },
-            { value: 'press', label: 'French Press', desc: 'Kalın öğütüm, dolgun ve gövdeli dinlendirme.', icon: <img src="/images/french-press.webp" alt="French Press" className={styles.customQuizIcon} /> },
-            { value: 'moka', label: 'Moka Pot / Aeropress', desc: 'Çok yönlü, yoğun ve dokulu sert fincan.', icon: <img src="/images/moka-pot.webp" alt="Moka Pot" className={styles.customQuizIcon} /> },
-            { value: 'turkish', label: 'Türk Kahvesi', desc: 'Çok ince öğütüm, geleneksel telveli lezzet.', icon: <img src="/images/coffee-pot.webp" alt="Türk Kahvesi" className={styles.customQuizIcon} /> }
+            { value: 'espresso', label: 'Espresso Makinesi', desc: 'Yoğun gövdeli, güçlü aromalı ve krema açısından zengin kahveleri tercih ediyorum.', icon: <img src="/images/quiz/espresso_machine.png" alt="Espresso Makinesi" className={styles.customQuizIcon} /> },
+            { value: 'v60', label: 'V60', desc: 'Çiçeksi ve meyvemsi notaların öne çıktığı temiz, dengeli bir fincan arıyorum.', icon: <img src="/images/quiz/v60_dripper.png" alt="V60" className={styles.customQuizIcon} /> },
+            { value: 'chemex', label: 'Chemex', desc: 'Yumuşak içimli, berrak ve zarif aromalara sahip kahvelerden keyif alıyorum.', icon: <img src="/images/quiz/chemex.png" alt="Chemex" className={styles.customQuizIcon} /> },
+            { value: 'filter', label: 'Filtre Kahve Makinesi', desc: 'Pratik, dengeli ve gün boyunca keyifle tüketebileceğim kahveleri tercih ediyorum.', icon: <img src="/images/quiz/filter_machine.png" alt="Filtre Kahve Makinesi" className={styles.customQuizIcon} /> },
+            { value: 'moka', label: 'Moka Pot', desc: 'Espressoya yakın yoğunlukta, güçlü karakterli kahveleri seviyorum.', icon: <img src="/images/quiz/moka_pot.png" alt="Moka Pot" className={styles.customQuizIcon} /> },
+            { value: 'turkish', label: 'Türk Kahvesi (Cezve)', desc: 'Geleneksel yöntemlerle hazırlanan yoğun aromalı ve köpüklü kahvelerden vazgeçemiyorum.', icon: <img src="/images/quiz/turkish_cezve.png" alt="Türk Kahvesi (Cezve)" className={styles.customQuizIcon} /> }
           ]
         },
         {
@@ -340,14 +342,14 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
       scores['brazil-cerrado'] += 3;
       scores.guatemala += 2;
       scores.colombia += 1;
-    } else if (brew === 'filter') {
+    } else if (brew === 'v60' || brew === 'chemex') {
       scores['velora-signature'] += 3;
       scores.ethiopia += 3;
       scores['brazil-mogiana'] += 2;
-    } else if (brew === 'press') {
-      scores['brazil-cerrado'] += 2;
+    } else if (brew === 'filter') {
       scores.colombia += 3;
       scores['brazil-mogiana'] += 2;
+      scores.guatemala += 1;
     } else if (brew === 'moka') {
       scores.guatemala += 3;
       scores.colombia += 2;
@@ -418,6 +420,7 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
         id: coffee.id,
         name: coffee.name,
         price: coffee.price,
+        category: coffee.category,
         stock: coffee.stock,
         emoji: style.emoji,
         bagColor: style.bagColor,
@@ -448,6 +451,8 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
 
       {/* ── HERO SECTION ── */}
       <section className={styles.hero} aria-labelledby="quiz-hero-title">
+        <div className={styles.heroOverlay} />
+        
         <div className={styles.heroInner}>
           <span className={styles.heroEyebrow}>{locale === 'tr' ? 'KAVRUM BULUCU' : 'COFFEE FINDER'}</span>
           <h1 id="quiz-hero-title" className={styles.heroTitle}>

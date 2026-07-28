@@ -139,7 +139,7 @@ export default function SpecialSection({ locale = 'en' }: { locale?: string }) {
             roastDate="02/05/26"
             mapPath={mapPaths.sumatra}
             className={styles.bagFarLeft}
-            imageUrl="https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/brazil-rio-minas.webp"
+            imageUrl="/images/coffee_packs/BRAZIL_RIOMINAS.png"
             locale={locale}
           />
 
@@ -155,7 +155,7 @@ export default function SpecialSection({ locale = 'en' }: { locale?: string }) {
             roastDate="03/05/26"
             mapPath={mapPaths.colombia}
             className={styles.bagInnerLeft}
-            imageUrl="https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/colombia.webp"
+            imageUrl="/images/coffee_packs/COLOMBIA.png"
             locale={locale}
           />
 
@@ -171,7 +171,7 @@ export default function SpecialSection({ locale = 'en' }: { locale?: string }) {
             roastDate="08/05/26"
             mapPath={mapPaths.kenya}
             className={styles.bagCenter}
-            imageUrl="https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/kenya.webp"
+            imageUrl="/images/coffee_packs/KENYA.png"
             locale={locale}
           />
 
@@ -187,7 +187,7 @@ export default function SpecialSection({ locale = 'en' }: { locale?: string }) {
             roastDate="11/05/26"
             mapPath={mapPaths.papua}
             className={styles.bagInnerRight}
-            imageUrl="https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/brazil-mogiana.webp"
+            imageUrl="/images/coffee_packs/BRAZIL_MOGIANA.png"
             locale={locale}
           />
 
@@ -203,7 +203,7 @@ export default function SpecialSection({ locale = 'en' }: { locale?: string }) {
             roastDate="15/05/26"
             mapPath={mapPaths.ethiopia}
             className={styles.bagFarRight}
-            imageUrl="https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/ethiopia-sidamo.webp"
+            imageUrl="/images/coffee_packs/ETHIOPIA_SIDAMO.png"
             locale={locale}
           />
         </div>

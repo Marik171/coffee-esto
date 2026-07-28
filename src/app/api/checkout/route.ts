@@ -26,6 +26,15 @@ interface ShippingDetails {
   zipCode: string;
 }
 
+function getProductId(id: string): string {
+  const parts = id.split('-');
+  const sizeIndex = parts.findIndex((p) => p === '250g' || p === '500g' || p === '1kg');
+  if (sizeIndex !== -1) {
+    return parts.slice(0, sizeIndex).join('-');
+  }
+  return id;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -72,25 +81,45 @@ export async function POST(request: Request) {
     }
 
     // ── 2. Fetch products from DB (server-side price source of truth) ──
-    const productIds = items.map((i) => i.id);
+    const customerToken = (await cookies()).get('customer_token')?.value;
+    const customerPayload = customerToken ? await verifyToken(customerToken) : null;
+    const customerId = customerPayload?.role === 'customer' ? (customerPayload.customerId as string) : undefined;
+
+    let isSubscriber = false;
+    if (customerId) {
+      const customer = await db.customer.findUnique({ where: { id: customerId } });
+      if (customer?.isSubscriber) {
+        isSubscriber = true;
+      }
+    }
+
+    const productIds = Array.from(new Set(items.map((i) => getProductId(i.id))));
     const products = await db.product.findMany({
       where: { id: { in: productIds }, isActive: true },
-      select: { id: true, name: true, price: true, wholesalePrice: true, stock: true },
+      select: { id: true, name: true, category: true, price: true, wholesalePrice: true, stock: true },
     });
 
-    type DbProduct = { id: string; name: string; price: number; wholesalePrice: number; stock: number };
+    type DbProduct = { id: string; name: string; category: string; price: number; wholesalePrice: number; stock: number };
     const productMap = new Map<string, DbProduct>(
       products.map((p: DbProduct) => [p.id, p])
     );
+
+    // Sum requested quantities per base product ID
+    const requestedTotals = new Map<string, number>();
+    for (const item of items) {
+      const baseId = getProductId(item.id);
+      requestedTotals.set(baseId, (requestedTotals.get(baseId) ?? 0) + item.quantity);
+    }
 
     let calculatedSubtotal = 0;
     const mappedItems: Array<{ id: string; name: string; quantity: number; price: number }> = [];
 
     for (const item of items) {
-      const product = productMap.get(item.id);
+      const baseId = getProductId(item.id);
+      const product = productMap.get(baseId);
       if (!product) {
         return NextResponse.json(
-          { success: false, error: `Product "${item.id}" is unavailable or no longer active.` },
+          { success: false, error: `Product "${baseId}" is unavailable or no longer active.` },
           { status: 400 }
         );
       }
@@ -100,13 +129,21 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       }
-      if (!isWholesale && product.stock < item.quantity) {
+      
+      const totalRequested = requestedTotals.get(baseId) ?? 0;
+      if (!isWholesale && product.stock < totalRequested) {
         return NextResponse.json(
           { success: false, error: `"${product.name}" only has ${product.stock} units in stock.` },
           { status: 400 }
         );
       }
-      const priceToUse = isWholesale ? product.wholesalePrice : product.price;
+
+      let priceToUse = isWholesale ? product.wholesalePrice : product.price;
+      const isCoffeeProduct = ['single-origin', 'limited-edition', 'signature-blend', 'filter', 'espresso', 'turkish'].includes(product.category);
+      if (!isWholesale && isSubscriber && isCoffeeProduct) {
+        priceToUse = Math.round(priceToUse * 0.90);
+      }
+
       calculatedSubtotal += priceToUse * item.quantity;
       mappedItems.push({ id: product.id, name: product.name, quantity: item.quantity, price: priceToUse });
     }
@@ -206,9 +243,7 @@ export async function POST(request: Request) {
     }
 
     // ── 5. Payment succeeded — persist order + decrement stock atomically ──
-    const customerToken = (await cookies()).get('customer_token')?.value;
-    const customerPayload = customerToken ? await verifyToken(customerToken) : null;
-    const customerId = customerPayload?.role === 'customer' ? (customerPayload.customerId as string) : undefined;
+
 
     const [newOrder] = await db.$transaction([
       db.order.create({
@@ -236,10 +271,10 @@ export async function POST(request: Request) {
         },
         include: { items: true },
       }),
-      ...mappedItems.map((item) =>
+      ...Array.from(requestedTotals.entries()).map(([baseId, qty]) =>
         db.product.update({
-          where: { id: item.id },
-          data: { stock: { decrement: item.quantity } },
+          where: { id: baseId },
+          data: { stock: { decrement: qty } },
         })
       ),
     ]);

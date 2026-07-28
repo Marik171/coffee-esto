@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from '../app/account/account.module.css';
+import { useCart } from '../context/CartContext';
 import AccountDashboard from './AccountDashboard';
 
 interface AccountContentProps {
@@ -20,6 +22,8 @@ interface CustomerData {
 }
 
 export default function AccountContent({ locale = 'en' }: AccountContentProps) {
+  const router = useRouter();
+  const { refreshUserStatus } = useCart();
   const [step, setStep] = useState<Step>('checking');
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
@@ -138,6 +142,7 @@ export default function AccountContent({ locale = 'en' }: AccountContentProps) {
       }
 
       setCustomer(json.data);
+      refreshUserStatus();
     } catch (err) {
       console.error(err);
       setError(t.genericError);
@@ -149,6 +154,7 @@ export default function AccountContent({ locale = 'en' }: AccountContentProps) {
   const handleSignOut = async () => {
     await fetch('/api/account/logout', { method: 'POST' }).catch(() => {});
     setCustomer(null);
+    refreshUserStatus();
     setEmail('');
     setCode('');
     setStep('email');
@@ -172,8 +178,8 @@ export default function AccountContent({ locale = 'en' }: AccountContentProps) {
     <div className={styles.pageWrapper}>
       {/* Brand Identity Header */}
       <div className={styles.logo}>
-        <p className={styles.logoText}>CEREMONY</p>
-        <p className={styles.logoSubtext}>Coffee Roasters</p>
+        <p className={styles.logoText}>COFFEE ESTO</p>
+        <p className={styles.logoSubtext}>Roastery</p>
       </div>
 
       <div className={styles.accountSection}>

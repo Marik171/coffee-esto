@@ -6,7 +6,6 @@
   overflow-x: hidden;
   width: 100%;
 }
-
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -14,76 +13,83 @@
   position: relative;
 }
 
+.navOffset {
+  height: 110px;
+}
+
+@media (max-width: 992px) {
+  .navOffset {
+    height: 100px;
+  }
+}
+
 /* ── 1. Hero Banner Section ─────────────────────────────────────── */
 .heroSection {
   position: relative;
-  height: 520px; /* Full-bleed banner height */
-  width: 100%;
-  margin-bottom: 140px; /* Give room for overlapping hero card */
-}
-
-.heroImageContainer {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55)), url('/images/heroes/about-hero.png');
+  background-size: cover;
+  background-position: center 15%; /* Shuffled upward to prevent cutting off the crown/head */
+  background-attachment: fixed;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 24px;
+  color: #ffffff;
+  text-align: center;
   overflow: hidden;
-}
-
-.heroImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 40%;
-  display: block;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .heroOverlay {
   position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.08); /* Minimal tint */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.5) 100%);
+  pointer-events: none;
 }
 
-/* Floating White Overlay Card - Sits on the left overlapping the banner bottom */
-.heroCard {
-  position: absolute;
-  bottom: -90px;
-  left: 40px;
-  width: calc(100% - 80px);
-  max-width: 480px;
-  background: #ffffff;
-  padding: 44px 48px;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.04);
-  border: 1px solid #f0ebe4;
-  z-index: 10;
-  text-align: left;
+.heroInner {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
 
 .heroEyebrow {
-  display: block;
-  font-family: var(--font-family-primary);
+  display: inline-block;
   font-size: 11px;
   font-weight: 700;
+  letter-spacing: 0.25em;
+  color: #c9963a;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: #8a7a70;
-  margin-bottom: 12px;
+  border: 1px solid rgba(201, 150, 58, 0.4);
+  background: rgba(201, 150, 58, 0.08);
+  padding: 4px 16px;
+  border-radius: 20px;
 }
 
 .heroTitle {
-  font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
-  font-size: clamp(26px, 3.8vw, 36px);
-  font-weight: 400; /* Regular weight serif */
-  color: #1a0e07;
-  line-height: 1.25;
-  margin: 0 0 16px 0;
+  font-family: var(--font-family-display, Georgia, serif);
+  font-size: clamp(36px, 5.5vw, 64px);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  margin: 0;
 }
 
 .heroSub {
-  font-family: var(--font-family-primary);
-  font-size: 14px;
-  color: #666666;
-  line-height: 1.6;
-  font-weight: 400;
+  font-size: clamp(15px, 2vw, 17px);
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.65;
+  max-width: 650px;
   margin: 0;
 }
 
@@ -132,10 +138,53 @@
   text-transform: uppercase;
 }
 
+/* ── 2.5 Horizontal Gallery Section ───────────────────────────── */
+.gallerySection {
+  background: #ffffff;
+  padding: 0 0 60px 0;
+}
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.galleryItem {
+  width: 100%;
+}
+
+.galleryImageFrame {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 1px solid #eaeaea;
+  position: relative;
+  background-color: #eae5d8;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  transition: box-shadow 0.3s ease;
+}
+
+.galleryImageFrame:hover {
+  box-shadow: 0 10px 30px rgba(26, 14, 7, 0.08);
+}
+
+.galleryImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.galleryImageFrame:hover .galleryImg {
+  transform: scale(1.05);
+}
+
 /* ── 3. Vertical Stories & Images Feed ─────────────────────────── */
 .feedSection {
   background: #fdfcf7;
-  padding: 60px 0 120px;
+  padding: 80px 0 140px;
 }
 
 .feed {
@@ -144,72 +193,52 @@
   gap: 120px; /* Big gaps between rows to give print editorial breathing room */
 }
 
-/* Standard row: Image left, details right */
-.feedRow {
-  display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 60px;
-  align-items: center;
-}
-
-/* Reverse row: Details left, Image right */
+/* Symmetric alternating rows: grid split layout */
+.feedRow,
 .feedRowReverse {
   display: grid;
-  grid-template-columns: 0.8fr 1.2fr;
-  gap: 60px;
-  align-items: center;
-}
-
-/* Double image row: two tall images side-by-side */
-.feedDoubleImageRow {
-  display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 40px;
+  gap: 80px;
+  align-items: center;
 }
 
 .feedColImage {
   width: 100%;
 }
 
-.doubleImageCol {
-  width: 100%;
-}
-
 .feedColContent {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   padding: 20px 0;
+  max-width: 480px;
+}
+
+.feedRowReverse .feedColContent {
+  margin-left: auto;
 }
 
 .imageFrame {
   width: 100%;
+  aspect-ratio: 4 / 3; /* Fixed, coherent landscape crop */
   overflow: hidden;
   border: 1px solid #eaeaea;
   position: relative;
   background-color: #eae5d8;
+  box-shadow: 0 8px 32px rgba(26, 14, 7, 0.04);
+  transition: box-shadow 0.3s ease;
 }
 
-/* Standard row aspect ratio: auto landscape to show full photo without cropping */
-.feedColImage .imageFrame {
-  aspect-ratio: auto;
-}
-
-/* Double row aspect ratio: 4 / 5 portrait */
-.doubleImageCol .imageFrame {
-  aspect-ratio: 4 / 5;
+.imageFrame:hover {
+  box-shadow: 0 16px 48px rgba(26, 14, 7, 0.08);
 }
 
 .feedImg {
   width: 100%;
-  height: auto;
-  display: block;
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.doubleImageCol .feedImg {
   height: 100%;
   object-fit: cover;
+  display: block;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .imageFrame:hover .feedImg {
@@ -221,25 +250,34 @@
   font-family: var(--font-family-primary);
   font-size: 10px;
   font-weight: 700;
-  color: #8a7a70;
-  letter-spacing: 0.16em;
+  color: #c9963a; /* Elegant gold label */
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
 .feedHeading {
   font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
-  font-size: clamp(24px, 3.2vw, 36px);
-  font-weight: 400; /* Regular weight Playfair Display */
+  font-size: clamp(26px, 3.5vw, 40px);
+  font-weight: 400;
   color: #1a0e07;
-  line-height: 1.25;
+  line-height: 1.2;
   margin: 0;
+}
+
+/* Elegant thin separator under headings */
+.feedDivider {
+  width: 40px;
+  height: 1px;
+  background-color: #c9963a;
+  margin: 8px 0 16px 0;
+  opacity: 0.8;
 }
 
 .feedText {
   font-family: var(--font-family-primary);
-  font-size: 14px;
-  color: #666666;
-  line-height: 1.75;
+  font-size: 14.5px;
+  color: #6e655f;
+  line-height: 1.8;
   margin: 0;
 }
 
@@ -284,15 +322,13 @@
   }
   
   .heroSection {
-    height: 400px;
-    margin-bottom: 100px;
+    min-height: 400px;
+    padding: 80px 24px;
   }
   
-  .heroCard {
-    left: 20px;
-    width: calc(100% - 40px);
-    padding: 32px;
-    bottom: -60px;
+  .galleryGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
   
   .feed {
@@ -302,7 +338,7 @@
   .feedRow,
   .feedRowReverse {
     grid-template-columns: 1fr;
-    gap: 30px;
+    gap: 40px;
   }
   
   .feedRowReverse {
@@ -310,33 +346,29 @@
     flex-direction: column-reverse;
   }
   
-  .feedDoubleImageRow {
-    gap: 20px;
+  .feedColContent {
+    max-width: 100%;
+    padding: 0;
   }
 }
 
 @media (max-width: 600px) {
   .heroSection {
-    height: 300px;
-    margin-bottom: 120px;
-  }
-  
-  .heroCard {
-    padding: 24px;
-    bottom: -90px;
+    min-height: 320px;
+    padding: 60px 16px;
   }
   
   .quoteSection {
     padding: 60px 16px 40px;
   }
   
-  .feedSection {
-    padding: 40px 0 80px;
+  .galleryGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
   
-  .feedDoubleImageRow {
-    grid-template-columns: 1fr;
-    gap: 20px;
+  .feedSection {
+    padding: 60px 0 80px;
   }
   
   .ctaContainer {

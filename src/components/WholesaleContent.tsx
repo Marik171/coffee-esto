@@ -175,110 +175,96 @@ export default function WholesaleContent({ locale }: WholesaleContentProps) {
   return (
     <div className={styles.page}>
       <Navbar locale={locale} />
+      <div className={styles.navOffset} />
 
       {/* ── 1. Split Hero Section ────────────────────────────── */}
       <section className={styles.heroSection}>
-        <div className={styles.container}>
-          <div className={styles.heroGrid}>
-            <motion.div
-              ref={heroRef}
-              className={styles.heroContent}
-              initial={{ opacity: 0, y: 28 }}
-              animate={heroInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.7 }}
-            >
-              <span className={styles.heroLabel}>{t.heroLabel}</span>
-              <h1 className={styles.heroTitle}>
-                {t.heroTitle.split('\n')[0]}<br />{t.heroTitle.split('\n')[1]}
-              </h1>
-              <p className={styles.heroSub}>{t.heroSub}</p>
-            </motion.div>
-            
-            <div className={styles.heroImageFrame}>
-              <img
-                src="/images/about/about-7.webp"
-                alt="Serve Coffee Esto"
-                className={styles.heroImg}
-              />
-            </div>
-          </div>
-        </div>
+        <div className={styles.heroOverlay} />
+        
+        <motion.div
+          ref={heroRef}
+          className={styles.heroInner}
+          initial={{ opacity: 0, y: 28 }}
+          animate={heroInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7 }}
+        >
+          <span className={styles.heroLabel}>{t.heroLabel}</span>
+          <h1 className={styles.heroTitle}>
+            {t.heroTitle.split('\n')[0]}<br />{t.heroTitle.split('\n')[1]}
+          </h1>
+          <p className={styles.heroSub}>{t.heroSub}</p>
+        </motion.div>
       </section>
 
-      {/* ── 2. Alternating Feed Grid ─────────────────────────── */}
+      {/* ── 2. Bento Grid Showcase ───────────────────────────── */}
       <section className={styles.feedSection}>
         <div className={styles.container}>
-          <div className={styles.feed}>
+          <div className={styles.bentoGrid}>
 
-            {/* Row 1: Cafes */}
-            <div className={styles.feedRow}>
-              <FadeUp className={styles.feedColImage}>
-                <div className={styles.imageFrame}>
-                  <img src="/images/about/about-2.webp" alt="Cafes" className={styles.feedImg} />
-                </div>
-              </FadeUp>
-              <FadeUp className={styles.feedColContent} delay={0.08}>
-                <span className={styles.feedLabel}>{t.feed1Label}</span>
-                <h2 className={styles.feedHeading}>{t.feed1Title}</h2>
-                <p className={styles.feedText}>{t.feed1Text}</p>
-              </FadeUp>
-            </div>
+            {/* Card 1: Cafes (Wide) */}
+            <FadeUp className={`${styles.bentoCard} ${styles.cardWide}`}>
+              <div className={styles.cardBg}>
+                <img src="/images/about/about-2.webp" alt="Cafes" className={styles.cardImg} />
+                <div className={styles.cardOverlay} />
+              </div>
+              <div className={styles.cardContent}>
+                <span className={styles.cardLabel}>{t.feed1Label}</span>
+                <h2 className={styles.cardHeading}>{t.feed1Title}</h2>
+                <p className={styles.cardText}>{t.feed1Text}</p>
+              </div>
+            </FadeUp>
 
-            {/* Row 2: Equipment */}
-            <div className={styles.feedRowReverse}>
-              <FadeUp className={styles.feedColContent}>
-                <span className={styles.feedLabel}>{t.feed2Label}</span>
-                <h2 className={styles.feedHeading}>{t.feed2Title}</h2>
-                <p className={styles.feedText}>{t.feed2Text}</p>
-              </FadeUp>
-              <FadeUp className={styles.feedColImage} delay={0.08}>
-                <div className={styles.imageFrame}>
-                  <img src="/images/about/about-4.webp" alt="Espresso Equipment Setup" className={styles.feedImg} />
-                </div>
-              </FadeUp>
-            </div>
+            {/* Card 2: Equipment (Standard) */}
+            <FadeUp className={styles.bentoCard} delay={0.06}>
+              <div className={styles.cardBg}>
+                <img src="/images/about/about-4.webp" alt="Equipment" className={styles.cardImg} />
+                <div className={styles.cardOverlay} />
+              </div>
+              <div className={styles.cardContent}>
+                <span className={styles.cardLabel}>{t.feed2Label}</span>
+                <h2 className={styles.cardHeading}>{t.feed2Title}</h2>
+                <p className={styles.cardText}>{t.feed2Text}</p>
+              </div>
+            </FadeUp>
 
-            {/* Row 3: Barista Training */}
-            <div className={styles.feedRow}>
-              <FadeUp className={styles.feedColImage}>
-                <div className={styles.imageFrame}>
-                  <img src="/images/about/about-6.webp" alt="Barista Training" className={styles.feedImg} />
-                </div>
-              </FadeUp>
-              <FadeUp className={styles.feedColContent} delay={0.08}>
-                <span className={styles.feedLabel}>{t.feed3Label}</span>
-                <h2 className={styles.feedHeading}>{t.feed3Title}</h2>
-                <p className={styles.feedText}>{t.feed3Text}</p>
-              </FadeUp>
-            </div>
+            {/* Card 3: Barista Training (Standard) */}
+            <FadeUp className={styles.bentoCard}>
+              <div className={styles.cardBg}>
+                <img src="/images/about/about-6.webp" alt="Barista Training" className={styles.cardImg} />
+                <div className={styles.cardOverlay} />
+              </div>
+              <div className={styles.cardContent}>
+                <span className={styles.cardLabel}>{t.feed3Label}</span>
+                <h2 className={styles.cardHeading}>{t.feed3Title}</h2>
+                <p className={styles.cardText}>{t.feed3Text}</p>
+              </div>
+            </FadeUp>
 
-            {/* Row 4: Sourcing & Values */}
-            <div className={styles.feedRowReverse}>
-              <FadeUp className={styles.feedColContent}>
-                <span className={styles.feedLabel}>{t.feed4Label}</span>
-                <h2 className={styles.feedHeading}>{t.feed4Title}</h2>
-                <p className={styles.feedText}>{t.feed4Text}</p>
-              </FadeUp>
-              <FadeUp className={styles.feedColImage} delay={0.08}>
-                <div className={styles.imageFrame}>
-                  <img src="/images/about/about-3.webp" alt="Sourcing & Values" className={styles.feedImg} />
-                </div>
-              </FadeUp>
-            </div>
+            {/* Card 4: Sourcing & Values (Standard) */}
+            <FadeUp className={styles.bentoCard} delay={0.06}>
+              <div className={styles.cardBg}>
+                <img src="/images/about/about-3.webp" alt="Sourcing & Values" className={styles.cardImg} />
+                <div className={styles.cardOverlay} />
+              </div>
+              <div className={styles.cardContent}>
+                <span className={styles.cardLabel}>{t.feed4Label}</span>
+                <h2 className={styles.cardHeading}>{t.feed4Title}</h2>
+                <p className={styles.cardText}>{t.feed4Text}</p>
+              </div>
+            </FadeUp>
 
-            {/* Row 5: Offices */}
-            <div className={styles.feedRow}>
-              <FadeUp className={styles.feedColImage}>
-                <div className={styles.imageFrame}>
-                  <img src="/images/about/about-1.webp" alt="Office Coffee Setup" className={styles.feedImg} />
-                </div>
-              </FadeUp>
-              <FadeUp className={styles.feedColContent} delay={0.08}>
-                <span className={styles.feedLabel}>{t.feed5Label}</span>
-                <h2 className={styles.feedHeading}>{t.feed5Title}</h2>
-                <p className={styles.feedText}>{t.feed5Text}</p>
-              </FadeUp>
-            </div>
+            {/* Card 5: Office Programs (Standard) */}
+            <FadeUp className={styles.bentoCard} delay={0.12}>
+              <div className={styles.cardBg}>
+                <img src="/images/about/about-1.webp" alt="Office Coffee Setup" className={styles.cardImg} />
+                <div className={styles.cardOverlay} />
+              </div>
+              <div className={styles.cardContent}>
+                <span className={styles.cardLabel}>{t.feed5Label}</span>
+                <h2 className={styles.cardHeading}>{t.feed5Title}</h2>
+                <p className={styles.cardText}>{t.feed5Text}</p>
+              </div>
+            </FadeUp>
 
           </div>
         </div>
