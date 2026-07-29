@@ -33,7 +33,7 @@
 /* ── Hero (Stark Charcoal Background) ── */
 .hero {
   position: relative;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55)), url('/images/heroes/quiz-hero.png');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55)), url('/images/heroes/quiz-hero.webp');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -517,4 +517,21 @@
 .loadingText {
   font-size: 16px;
   font-weight: 500;
+}
+
+/* Fix: background-attachment:fixed breaks on iOS Safari — disable on mobile */
+@media (max-width: 992px) {
+  .hero {
+    min-height: 400px;
+    padding: 140px 24px 80px;
+    background-attachment: scroll;
+    background-size: cover;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    min-height: 320px;
+    padding: 120px 16px 60px;
+  }
 }

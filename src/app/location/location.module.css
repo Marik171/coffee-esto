@@ -620,11 +620,21 @@ a.contactRow:hover {
   .mapCol {
     height: 380px;
   }
+
+  .heroSection {
+    min-height: 400px;
+    padding: 140px 24px 80px;
+    background-attachment: scroll;
+    background-size: cover;
+  }
 }
 
 @media (max-width: 600px) {
   .heroSection {
+    min-height: 320px;
     padding: 120px 16px 80px;
+    background-attachment: scroll; /* Fixed attachment breaks on iOS Safari */
+    background-size: cover;
   }
 
   .ctaButtonsRow {

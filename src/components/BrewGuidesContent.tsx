@@ -460,10 +460,10 @@ export default function BrewGuidesContent({ locale = 'en' }: BrewGuidesContentPr
                 <div className={styles.tipImageContainer}>
                   <img
                     src={[
-                      '/images/coffee_grouped.png', 
-                      '/images/beans.png', 
-                      '/images/coffee_hands.png', 
-                      '/images/barista_espresso.png'
+                      '/images/coffee_grouped.webp', 
+                      '/images/brand-grounds.webp', 
+                      '/images/barista-chemex.webp', 
+                      '/images/barista-class.webp'
                     ][i]}
                     alt={tip.label}
                     className={styles.tipCardImage}

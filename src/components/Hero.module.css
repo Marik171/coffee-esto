@@ -28,6 +28,13 @@
   opacity: 0.8;
 }
 
+/* Hide iOS Safari native play button overlay on background videos */
+.backgroundVideo::-webkit-media-controls-start-playback-button,
+.backgroundVideo::-webkit-media-controls {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
 /* Dark gradient overlay for text readability */
 .overlay {
   position: absolute;
@@ -158,17 +165,18 @@
 /* Responsive Styles */
 @media (max-width: 992px) {
   .heroContainer {
-    padding: 100px 8% 0 8%; /* Adjust padding for mobile header (100px) */
+    padding: 90px 8% 0 8%;
+    min-height: 100svh; /* Use small viewport height so bottom chrome doesn't cut content */
   }
 
   .backgroundVideo {
-    top: 100px;
-    height: calc(100% - 100px);
+    top: 70px; /* Mobile navbar is ~70px */
+    height: calc(100% - 70px);
   }
 
   .overlay {
-    top: 100px;
-    height: calc(100% - 100px);
+    top: 70px;
+    height: calc(100% - 70px);
   }
 
   .scrollTopBtn {
@@ -179,25 +187,36 @@
 
 @media (max-width: 576px) {
   .heroContainer {
-    padding: 100px 6% 0 6%;
+    padding: 90px 6% 0 6%;
+    min-height: 100svh;
+    justify-content: center; /* Vertically centre content on small phones */
   }
 
   .backgroundVideo {
-    top: 100px;
-    height: calc(100% - 100px);
+    top: 70px;
+    height: calc(100% - 70px);
+    object-position: 50% top; /* Centered on mobile viewports */
   }
 
   .overlay {
-    top: 100px;
-    height: calc(100% - 100px);
+    top: 70px;
+    height: calc(100% - 70px);
+    /* Stronger left-side gradient so text is always readable on portrait */
+    background: linear-gradient(
+      to right,
+      rgba(12, 12, 12, 0.85) 0%,
+      rgba(12, 12, 12, 0.5) 60%,
+      rgba(12, 12, 12, 0.25) 100%
+    );
   }
 
   .contentOverlay {
-    margin-top: 20px;
+    margin-top: 0;
+    max-width: 100%;
   }
 
   .title {
-    font-size: 32px;
+    font-size: clamp(28px, 8vw, 36px);
   }
 
   .subtitle {

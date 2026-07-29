@@ -23,7 +23,7 @@
 /* ── Hero section ── */
 .heroSection {
   position: relative;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55)), url('/images/heroes/brew-hero.png');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55)), url('/images/heroes/brew-hero.webp');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -894,5 +894,22 @@
   
   .grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Fix: background-attachment:fixed breaks on iOS Safari — disable on mobile */
+@media (max-width: 992px) {
+  .heroSection {
+    min-height: 400px;
+    padding: 140px 24px 80px;
+    background-attachment: scroll;
+    background-size: cover;
+  }
+}
+
+@media (max-width: 600px) {
+  .heroSection {
+    min-height: 320px;
+    padding: 120px 16px 60px;
   }
 }

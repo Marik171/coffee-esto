@@ -21,12 +21,18 @@
   .navOffset {
     height: 100px;
   }
+  .heroSection {
+    min-height: 400px;
+    padding: 140px 24px 80px;
+    background-attachment: scroll;
+    background-size: cover;
+  }
 }
 
 /* ── 1. Split Hero Section ──────────────────────────────────────── */
 .heroSection {
   position: relative;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55)), url('/images/heroes/wholesale-hero.png');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55)), url('/images/heroes/wholesale-hero.webp');
   background-size: cover;
   background-position: center 15%; /* Shuffled upward to prevent cutting off the crown/head */
   background-attachment: fixed;
@@ -428,7 +434,10 @@
 
 @media (max-width: 600px) {
   .heroSection {
-    padding: 140px 0 60px;
+    min-height: 320px;
+    padding: 120px 16px 60px;
+    background-attachment: scroll; /* Fixed attachment breaks on iOS Safari */
+    background-size: cover;
   }
   
   .feedSection,

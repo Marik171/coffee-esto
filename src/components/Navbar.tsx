@@ -297,8 +297,29 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
             </button>
           </nav>
 
-          {/* Mobile Right Controls (Cart only) */}
+          {/* Mobile Right Controls (Search + Account + Cart) */}
           <div className={styles.mobileRightControls}>
+            <button 
+              type="button" 
+              onClick={() => setIsSearchOpen(true)} 
+              className={styles.searchBtnMobile}
+              aria-label={t.search}
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" className={styles.searchIconMobile}>
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </button>
+            <Link 
+              href={`${linkPrefix}/account`} 
+              className={styles.accountBtnMobile}
+              aria-label={t.account}
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" className={styles.accountIconMobile}>
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </Link>
             <button 
               className={styles.cartBubbleBtnMobile} 
               onClick={() => setIsCartOpen(true)}
@@ -358,11 +379,7 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
               {t.account}
             </Link>
           </li>
-          <li>
-            <Link href={`${linkPrefix}/coffee`} onClick={() => setIsNavOpen(false)}>
-              {t.search.toUpperCase()}
-            </Link>
-          </li>
+
           <li className={styles.mobileLangLi}>
             <Link 
               href={getLanguageToggleHref()} 

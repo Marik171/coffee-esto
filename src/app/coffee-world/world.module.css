@@ -16,10 +16,20 @@
   }
 }
 
+/* Fix: background-attachment:fixed breaks on iOS Safari — disable on mobile */
+@media (max-width: 992px) {
+  .heroSection {
+    min-height: 400px;
+    padding: 140px 24px 80px;
+    background-attachment: scroll;
+    background-size: cover;
+  }
+}
+
 /* Hero Section */
 .heroSection {
   position: relative;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55)), url('/images/heroes/world-hero.png');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55)), url('/images/heroes/world-hero.webp');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -420,4 +430,11 @@
 }
 .modalText a:hover {
   opacity: 0.8;
+}
+
+@media (max-width: 600px) {
+  .heroSection {
+    min-height: 320px;
+    padding: 120px 16px 60px;
+  }
 }

@@ -33,7 +33,7 @@
 
 .heroSection {
   position: relative;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55)), url('/images/heroes/catalog-hero.png');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55)), url('/images/heroes/catalog-hero.webp');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -58,6 +58,13 @@
   object-position: center top; /* Align top of video to prevent cutting off heads/top details */
   z-index: 1;
   pointer-events: none;
+}
+
+/* Hide iOS Safari native play button overlay on background videos */
+.backgroundVideo::-webkit-media-controls-start-playback-button,
+.backgroundVideo::-webkit-media-controls {
+  display: none !important;
+  -webkit-appearance: none;
 }
 
 .heroOverlay {
@@ -641,8 +648,15 @@
 /* ── Media Queries ──────────────────────────────────────────── */
 @media (max-width: 992px) {
   .backgroundVideo {
-    top: 100px; /* Aligned to start below the mobile navbar */
-    height: calc(100% - 100px);
+    top: 70px; /* Aligned to start below the mobile navbar (70px) */
+    height: calc(100% - 70px);
+  }
+
+  .heroSection {
+    min-height: 400px;
+    padding: 140px 24px 80px;
+    background-attachment: scroll; /* Fixed attachment breaks on iOS Safari */
+    background-size: cover;
   }
 
   .coffeeGrid {
@@ -657,7 +671,10 @@
 
 @media (max-width: 600px) {
   .heroSection {
-    padding: 140px 16px 60px;
+    min-height: 320px;
+    padding: 120px 16px 60px;
+    background-attachment: scroll;
+    background-size: cover;
   }
   
   .catalogSection {

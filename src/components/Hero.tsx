@@ -105,6 +105,7 @@ export default function Hero({ locale = 'en' }: { locale?: string }) {
         src="/videos/hero_queen_ambassador.mp4"
         autoPlay
         loop
+        muted
         playsInline
         className={styles.backgroundVideo}
       />

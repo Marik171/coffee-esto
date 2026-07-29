@@ -34,11 +34,39 @@
     right: 0;
     width: 100%;
     max-width: 100%;
-    max-height: 88vh;
+    max-height: 70vh;
     border: none;
     border-top: 1px solid #eaeaea;
     box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08);
     padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .header {
+    padding: 16px 20px;
+  }
+
+  .meter {
+    padding: 10px 20px 4px;
+  }
+
+  .body {
+    padding: 16px 20px;
+  }
+
+  .footer {
+    padding: 16px 20px;
+  }
+
+  .cartItem {
+    grid-template-columns: 64px 1fr auto;
+    gap: 12px;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+  }
+
+  .thumb {
+    width: 64px;
+    height: 64px;
   }
 }
 

@@ -14,7 +14,8 @@
 
 /* Header styling */
 .sectionHeader {
-  text-align: left; /* Left align! */
+  text-align: left;
+  /* Left align! */
   margin-bottom: 48px;
   max-width: 800px;
 }
@@ -34,7 +35,8 @@
 .title {
   font-family: var(--font-family-display, 'Playfair Display', serif);
   font-size: clamp(28px, 4vw, 40px);
-  font-weight: 400; /* Regular weight serif */
+  font-weight: 400;
+  /* Regular weight serif */
   color: #1a0e07;
   margin-bottom: 12px;
   line-height: 1.2;
@@ -61,12 +63,15 @@
   position: relative;
   display: flex;
   overflow: hidden;
-  border-radius: 0; /* Sharp corners */
-  box-shadow: none; /* Removed heavy shadow */
+  border-radius: 0;
+  /* Sharp corners */
+  box-shadow: none;
+  /* Removed heavy shadow */
   border: 1px solid #eaeaea;
   cursor: pointer;
   outline: none;
-  opacity: 0; /* Animated on inView */
+  opacity: 0;
+  /* Animated on inView */
   transform: translateY(40px);
   transition: border-color 0.3s ease, transform 0.3s ease;
 }
@@ -76,6 +81,7 @@
     opacity: 0;
     transform: translateY(40px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -99,37 +105,22 @@
 
 /* Spans for Bento Grid Layout (Desktop) */
 .cardCoffee {
-  grid-column: span 4;
-  height: 320px;
-}
-
-.cardBrewBags {
-  grid-column: span 4;
-  height: 320px;
-}
-
-.cardBundles {
-  grid-column: span 4;
-  height: 320px;
-}
-
-.cardSubscriptions {
-  grid-column: span 6;
-  height: 360px;
-}
-
-.cardEquipment {
-  grid-column: span 6;
-  height: 360px;
-}
-
-.cardWholesale {
   grid-column: span 8;
   height: 360px;
 }
 
-.cardLocations {
+.cardEquipment {
   grid-column: span 4;
+  height: 360px;
+}
+
+.cardWholesale {
+  grid-column: span 4;
+  height: 360px;
+}
+
+.cardLocations {
+  grid-column: span 8;
   height: 360px;
 }
 
@@ -171,7 +162,8 @@
   background-color: #ffffff;
   border: 1px solid #1a0e07;
   padding: 10px 20px;
-  border-radius: 0; /* Sharp corners */
+  border-radius: 0;
+  /* Sharp corners */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
@@ -221,18 +213,11 @@
   }
 
   .cardCoffee,
-  .cardBrewBags,
-  .cardBundles,
-  .cardSubscriptions,
-  .cardEquipment {
-    grid-column: span 1;
-    height: 300px;
-  }
-
+  .cardEquipment,
   .cardWholesale,
   .cardLocations {
-    grid-column: span 2;
-    height: 340px;
+    grid-column: span 1;
+    height: 300px;
   }
 }
 

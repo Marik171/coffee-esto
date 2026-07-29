@@ -137,22 +137,22 @@ export default function AboutContent({ locale = 'en' }: AboutContentProps) {
           <div className={styles.galleryGrid}>
             <FadeUp className={styles.galleryItem} delay={0.05}>
               <div className={styles.galleryImageFrame}>
-                <img src="/images/about/about-1.webp" alt="Select Green Beans Sourcing" className={styles.galleryImg} />
+                <img src="/images/brand-sacks.webp" alt="Select Green Beans Sourcing" className={styles.galleryImg} />
               </div>
             </FadeUp>
             <FadeUp className={styles.galleryItem} delay={0.1}>
               <div className={styles.galleryImageFrame}>
-                <img src="/images/about/about-5.webp" alt="Premium Cafe Space" className={styles.galleryImg} />
+                <img src="/images/brand-carrier.webp" alt="Premium Cafe Space" className={styles.galleryImg} />
               </div>
             </FadeUp>
             <FadeUp className={styles.galleryItem} delay={0.15}>
               <div className={styles.galleryImageFrame}>
-                <img src="/images/about/about-2.webp" alt="Coffee Esto Roast Control" className={styles.galleryImg} />
+                <img src="/images/brand-beans.webp" alt="Coffee Esto Roast Control" className={styles.galleryImg} />
               </div>
             </FadeUp>
             <FadeUp className={styles.galleryItem} delay={0.2}>
               <div className={styles.galleryImageFrame}>
-                <img src="/images/about/about-6.webp" alt="Espresso Extraction QC" className={styles.galleryImg} />
+                <img src="/images/barista-class.webp" alt="Espresso Extraction QC" className={styles.galleryImg} />
               </div>
             </FadeUp>
           </div>
@@ -168,7 +168,7 @@ export default function AboutContent({ locale = 'en' }: AboutContentProps) {
             <div className={styles.feedRow}>
               <FadeUp className={styles.feedColImage}>
                 <div className={styles.imageFrame}>
-                  <img src="/images/about/about-1.webp" alt={t.storyTitle} className={styles.feedImg} />
+                  <img src="/images/brand-sacks.webp" alt={t.storyTitle} className={styles.feedImg} />
                 </div>
               </FadeUp>
               <FadeUp className={styles.feedColContent} delay={0.08}>
@@ -189,7 +189,7 @@ export default function AboutContent({ locale = 'en' }: AboutContentProps) {
               </FadeUp>
               <FadeUp className={styles.feedColImage} delay={0.08}>
                 <div className={styles.imageFrame}>
-                  <img src="/images/about/about-6.webp" alt={t.mattersTitle} className={styles.feedImg} />
+                  <img src="/images/barista-class.webp" alt={t.mattersTitle} className={styles.feedImg} />
                 </div>
               </FadeUp>
             </div>
@@ -219,7 +219,7 @@ export default function AboutContent({ locale = 'en' }: AboutContentProps) {
               </FadeUp>
               <FadeUp className={styles.feedColImage} delay={0.08}>
                 <div className={styles.imageFrame}>
-                  <img src="/images/about/about-4.webp" alt={t.roastTitle} className={styles.feedImg} />
+                  <img src="/images/brand-grounds.webp" alt={t.roastTitle} className={styles.feedImg} />
                 </div>
               </FadeUp>
             </div>

@@ -204,7 +204,7 @@ export default function WholesaleContent({ locale }: WholesaleContentProps) {
             {/* Card 1: Cafes (Wide) */}
             <FadeUp className={`${styles.bentoCard} ${styles.cardWide}`}>
               <div className={styles.cardBg}>
-                <img src="/images/about/about-2.webp" alt="Cafes" className={styles.cardImg} />
+                <img src="/images/brand-carrier.webp" alt="Cafes" className={styles.cardImg} />
                 <div className={styles.cardOverlay} />
               </div>
               <div className={styles.cardContent}>
@@ -230,7 +230,7 @@ export default function WholesaleContent({ locale }: WholesaleContentProps) {
             {/* Card 3: Barista Training (Standard) */}
             <FadeUp className={styles.bentoCard}>
               <div className={styles.cardBg}>
-                <img src="/images/about/about-6.webp" alt="Barista Training" className={styles.cardImg} />
+                <img src="/images/barista-class.webp" alt="Barista Training" className={styles.cardImg} />
                 <div className={styles.cardOverlay} />
               </div>
               <div className={styles.cardContent}>
@@ -256,7 +256,7 @@ export default function WholesaleContent({ locale }: WholesaleContentProps) {
             {/* Card 5: Office Programs (Standard) */}
             <FadeUp className={styles.bentoCard} delay={0.12}>
               <div className={styles.cardBg}>
-                <img src="/images/about/about-1.webp" alt="Office Coffee Setup" className={styles.cardImg} />
+                <img src="/images/brand-sacks.webp" alt="Office Coffee Setup" className={styles.cardImg} />
                 <div className={styles.cardOverlay} />
               </div>
               <div className={styles.cardContent}>

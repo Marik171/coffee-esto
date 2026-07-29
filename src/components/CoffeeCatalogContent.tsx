@@ -396,6 +396,19 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
     loadData();
   }, []);
 
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch((err) => {
+        console.log("Autoplay prevented on coffee catalog hero:", err);
+      });
+    }
+  }, []);
+
   // Filter coffees
   const filteredCoffees = coffees.filter((coffee) => {
     const matchesSearch =
@@ -441,6 +454,7 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
         aria-labelledby="catalog-hero-title"
       >
         <video
+          ref={videoRef}
           src="/videos/catalog-hero.mp4"
           autoPlay
           loop
