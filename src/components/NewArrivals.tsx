@@ -44,7 +44,7 @@ function ShowcaseCard({
       variants={cardVariants} 
       whileHover={{ y: -6 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      style={{ height: '100%' }}
+      className={styles.cardWrapper}
     >
       <Link href={`${linkPrefix}/coffee/${id}`} className={styles.cardLink}>
         <div className={styles.cardContainer}>

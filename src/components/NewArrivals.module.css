@@ -109,10 +109,16 @@
 }
 
 /* Product Card */
+.cardWrapper {
+  flex: 0 0 300px; /* Fixed width for card slot in row */
+  height: 100%;
+}
+
 .cardLink {
   text-decoration: none;
   display: block;
-  flex: 0 0 300px; /* Fixed width for card slot in row */
+  width: 100%;
+  height: 100%;
 }
 
 .cardContainer {
@@ -251,7 +257,7 @@
     font-size: 13px;
   }
 
-  .cardLink {
+  .cardWrapper {
     flex: 0 0 260px; /* slightly smaller on smaller screens */
   }
 
@@ -275,7 +281,7 @@
     display: none; /* Swipe scroll handles mobile navigation */
   }
 
-  .cardLink {
+  .cardWrapper {
     flex: 0 0 230px;
   }
 
