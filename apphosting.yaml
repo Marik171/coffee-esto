@@ -32,6 +32,48 @@ env:
       - BUILD
       - RUNTIME
 
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: AIzaSyAZieMuFbJGcYfT4pcXcJkTNM6uDa9isww
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: coffee-esto-70690.firebaseapp.com
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: coffee-esto-70690
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: coffee-esto-70690.firebasestorage.app
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "610437324640"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:610437324640:web:82e78558a3643200270805"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+    value: G-S08ZQD3FR0
+    availability:
+      - BUILD
+      - RUNTIME
+
   # Secrets — values live in Secret Manager, set via `firebase apphosting:secrets:set`
   - variable: JWT_SECRET
     secret: JWT_SECRET
