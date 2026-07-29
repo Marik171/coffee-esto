@@ -2,7 +2,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import styles from './CategoriesBento.module.css';
+
+const MotionLink = motion.create(Link);
 
 interface CategoryItem {
   id: string;
@@ -13,6 +16,27 @@ interface CategoryItem {
   svgIcon?: React.ReactNode;
   imageSrc?: string;
 }
+
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.215, 0.61, 0.355, 1] as const,
+    },
+  },
+};
 
 export default function CategoriesBento({ locale = 'en' }: { locale?: string }) {
   const [inView, setInView] = useState(false);
@@ -90,7 +114,6 @@ export default function CategoriesBento({ locale = 'en' }: { locale?: string }) 
       bgColor: '#fcf6f0', // Warm cream
       imageSrc: '/images/coffee_grouped.webp'
     },
-
     {
       id: 'equipment',
       name: t.categories.equipment,
@@ -134,41 +157,59 @@ export default function CategoriesBento({ locale = 'en' }: { locale?: string }) 
           </p>
         </div>
 
-        {/* 12-Column Modern Bento Grid */}
-        <div className={styles.grid}>
-          {categories.map((cat, idx) => (
-            <Link 
+        {/* 12-Column Modern Bento Grid with staggered Framer Motion entrances */}
+        <motion.div 
+          className={styles.grid}
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+        >
+          {categories.map((cat) => (
+            <MotionLink 
               key={cat.id}
               href={cat.link}
               className={`${styles.card} ${cat.gridClass}`}
               aria-label={locale === 'tr' ? `${cat.name.toLowerCase()} kategorimizi keşfedin` : `Explore our ${cat.name.toLowerCase()} category`}
-              style={{ 
-                backgroundColor: cat.bgColor,
-                animationDelay: `${idx * 0.1}s` 
-              }}
+              style={{ backgroundColor: cat.bgColor }}
+              variants={cardVariants}
+              whileHover="hover"
             >
-              {/* Decorative Vector Graphic Background */}
+              {/* Decorative Vector Graphic Background with smooth hover zoom */}
               <div className={styles.graphic}>
-                {cat.imageSrc ? (
-                  <img src={cat.imageSrc} alt="" className={styles.cardImage} />
-                ) : (
-                  cat.svgIcon
+                {cat.imageSrc && (
+                  <motion.img 
+                    src={cat.imageSrc} 
+                    alt="" 
+                    className={styles.cardImage} 
+                    variants={{
+                      hover: { scale: 1.04 }
+                    }}
+                    transition={{ duration: 0.4, ease: 'easeOut' }}
+                  />
                 )}
               </div>
 
               {/* Glassmorphic Floating Label */}
               <div className={styles.label}>
                 <span className={styles.name}>{cat.name}</span>
-                <span className={styles.arrow} aria-hidden="true">
+                <motion.span 
+                  className={styles.arrow} 
+                  aria-hidden="true"
+                  variants={{
+                    hover: { x: 6 }
+                  }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                >
                   <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12" />
                     <polyline points="12 5 19 12 12 19" />
                   </svg>
-                </span>
+                </motion.span>
               </div>
-            </Link>
+            </MotionLink>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

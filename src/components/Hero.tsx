@@ -29,46 +29,39 @@ export default function Hero({ locale = 'en' }: { locale?: string }) {
   const t = locale === 'tr' ? translations.tr : translations.en;
   const linkPrefix = locale === 'tr' ? '' : '/en';
 
-  // Handle video playback and unmuting (with user interaction fallback for browser policies)
+  // Handle video playback and scroll visibility
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    // Set volume to be not too loud (25% volume)
-    video.volume = 0.25;
+    // Background videos should loop silently and be completely muted
+    video.muted = true;
+    video.volume = 0;
 
-    let cleanupListeners: (() => void) | null = null;
-
-    // Try playing unmuted
-    video.muted = false;
     const playPromise = video.play();
-
     if (playPromise !== undefined) {
-      playPromise.catch(() => {
-        // Browser blocked unmuted autoplay. Fallback to playing muted.
-        video.muted = true;
-        video.play();
-
-        // Unmute on the first user interaction anywhere on the document
-        const unmuteOnInteraction = () => {
-          video.muted = false;
-          video.volume = 0.25;
-        };
-
-        window.addEventListener('click', unmuteOnInteraction, { once: true });
-        window.addEventListener('keydown', unmuteOnInteraction, { once: true });
-
-        cleanupListeners = () => {
-          window.removeEventListener('click', unmuteOnInteraction);
-          window.removeEventListener('keydown', unmuteOnInteraction);
-        };
-      });
+      playPromise.catch(() => {});
     }
 
+    // Pause when out of view, play when in view
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(video);
+
     return () => {
-      if (cleanupListeners) {
-        cleanupListeners();
-      }
+      observer.disconnect();
+      video.pause();
     };
   }, []);
 

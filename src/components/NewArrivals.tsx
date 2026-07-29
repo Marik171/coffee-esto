@@ -2,6 +2,7 @@
 
 import React, { useRef } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import styles from './NewArrivals.module.css';
 
 interface ShowcaseCardProps {
@@ -15,6 +16,18 @@ interface ShowcaseCardProps {
   locale?: string;
 }
 
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.215, 0.61, 0.355, 1] as const,
+    },
+  },
+};
+
 function ShowcaseCard({
   id,
   name,
@@ -27,36 +40,52 @@ function ShowcaseCard({
 }: ShowcaseCardProps) {
   const linkPrefix = locale === 'tr' ? '' : '/en';
   return (
-    <Link href={`${linkPrefix}/coffee/${id}`} className={styles.cardLink}>
-      <div className={styles.cardContainer}>
-        {/* Solid Pastel Colored Card Box */}
-        <div className={styles.cardBox} style={{ backgroundColor: bgColor }}>
-          <div className={styles.bagWrapper}>
-            <img 
-              src={imageUrl} 
-              alt={name} 
-              className={styles.coffeeBagImage} 
-              loading="lazy" 
-            />
+    <motion.div 
+      variants={cardVariants} 
+      whileHover={{ y: -6 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
+      style={{ height: '100%' }}
+    >
+      <Link href={`${linkPrefix}/coffee/${id}`} className={styles.cardLink}>
+        <div className={styles.cardContainer}>
+          {/* Solid Pastel Colored Card Box */}
+          <div className={styles.cardBox} style={{ backgroundColor: bgColor }}>
+            <div className={styles.bagWrapper}>
+              <img 
+                src={imageUrl} 
+                alt={name} 
+                className={styles.coffeeBagImage} 
+                loading="lazy" 
+              />
+            </div>
+            {/* Slide up tasting notes overlay on hover */}
+            <div className={styles.notesOverlay}>
+              <span className={styles.notesLabel}>
+                {locale === 'tr' ? 'TADIM NOTLARI' : 'TASTING NOTES'}
+              </span>
+              <span className={styles.notesText}>{tastingNotes}</span>
+            </div>
           </div>
-          {/* Slide up tasting notes overlay on hover */}
-          <div className={styles.notesOverlay}>
-            <span className={styles.notesLabel}>
-              {locale === 'tr' ? 'TADIM NOTLARI' : 'TASTING NOTES'}
-            </span>
-            <span className={styles.notesText}>{tastingNotes}</span>
+          {/* Centered label information below card box */}
+          <div className={styles.cardInfo}>
+            <span className={styles.cardOrigin}>{origin}</span>
+            <h3 className={styles.cardName}>{name}</h3>
+            <span className={styles.cardPrice}>{price}</span>
           </div>
         </div>
-        {/* Centered label information below card box */}
-        <div className={styles.cardInfo}>
-          <span className={styles.cardOrigin}>{origin}</span>
-          <h3 className={styles.cardName}>{name}</h3>
-          <span className={styles.cardPrice}>{price}</span>
-        </div>
-      </div>
-    </Link>
+      </Link>
+    </motion.div>
   );
 }
+
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
 
 export default function NewArrivals({ locale = 'en' }: { locale?: string }) {
   const gridRef = useRef<HTMLDivElement | null>(null);
@@ -100,92 +129,92 @@ export default function NewArrivals({ locale = 'en' }: { locale?: string }) {
           id: 'ethiopia',
           name: 'Ethiopia Sidamo',
           origin: 'SIDAMO, ETHIOPIA',
-          price: '₺325.00',
+          price: '₺352.50',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/ethiopia-sidamo.webp',
-          bgColor: '#f7ebec',
-          tastingNotes: 'Bergamot, Citrus, Tea Notes',
+          bgColor: '#fbf1c9',
+          tastingNotes: 'Floral, Jasmine, Citric Brightness',
         },
         {
-          id: 'brazil-mogiana',
+          id: 'brazil',
           name: 'Brazil Mogiana',
-          origin: 'ALTA MOGIANA, BRAZIL',
-          price: '₺325.00',
+          origin: 'MOGIANA, BRAZIL',
+          price: '₺292.50',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/brazil-mogiana.webp',
-          bgColor: '#e2e4e6',
-          tastingNotes: 'Caramel, Hazelnut, Balanced',
+          bgColor: '#ebdbe8',
+          tastingNotes: 'Nutty, Cocoa, Low Acidity',
         },
         {
           id: 'colombia',
           name: 'Colombia Supremo',
           origin: 'HUILA, COLOMBIA',
-          price: '₺350.00',
+          price: '₺315.00',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/colombia.webp',
-          bgColor: '#eae9e7',
-          tastingNotes: 'Chocolate, Hazelnut, Caramel',
+          bgColor: '#e0ebd5',
+          tastingNotes: 'Caramel, Red Apple, Balanced Body',
         },
         {
-          id: 'velora-signature',
-          name: 'Velora Signature Espresso',
-          origin: 'SINGLE ESTATE, ETHIOPIA',
-          price: '₺350.00',
+          id: 'velora',
+          name: 'Velora Signature',
+          origin: 'HOUSE BLEND',
+          price: '₺360.00',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/velora-signature.webp',
-          bgColor: '#eaebe6',
-          tastingNotes: 'Floral, Winey, Tropical Fruit, Honey',
-        },
+          bgColor: '#f5e2d6',
+          tastingNotes: 'Rich Berry, Dark Chocolate, Smooth Finish',
+        }
       ]
     },
     tr: {
       category: 'YENİ GELENLER',
       title: 'Tazelerin En Tazesi',
-      descPrefix: 'Tazeleri keşfedin',
-      descSuffix: ' - Yıl boyunca tedarik edilen, sezonluk kahvelerimizin yer aldığı eşsiz seriden en taze kavrumlarımız.',
+      descPrefix: 'Mevsimlik kahvelerimizin',
+      descSuffix: ' en tazesini yıl boyu özenle tedarik ediyor ve kavuruyoruz.',
       linkUrl: '/coffee',
       products: [
         {
           id: 'guatemala',
           name: 'Guatemala Antigua',
           origin: 'ANTIGUA, GUATEMALA',
-          price: '337,50 TL',
+          price: '337.50 TL',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/guatemala.webp',
           bgColor: '#e0ebf5',
           tastingNotes: 'Çikolata, Portakal, Tatlı Asidite',
         },
         {
           id: 'ethiopia',
-          name: 'Etiyopya Sidamo',
+          name: 'Ethiopia Sidamo',
           origin: 'SIDAMO, ETİYOPYA',
-          price: '325,00 TL',
+          price: '352.50 TL',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/ethiopia-sidamo.webp',
-          bgColor: '#f7ebec',
-          tastingNotes: 'Bergamot, Narenciye, Çay Notaları',
+          bgColor: '#fbf1c9',
+          tastingNotes: 'Çiçeksi, Yasemin, Narenciye Parlaklığı',
         },
         {
-          id: 'brazil-mogiana',
-          name: 'Brezilya Mogiana',
-          origin: 'ALTA MOGIANA, BREZİLYA',
-          price: '325,00 TL',
+          id: 'brazil',
+          name: 'Brazil Mogiana',
+          origin: 'MOGIANA, BREZİLYA',
+          price: '292.50 TL',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/brazil-mogiana.webp',
-          bgColor: '#e2e4e6',
-          tastingNotes: 'Karamel, Fındık, Dengeli',
+          bgColor: '#ebdbe8',
+          tastingNotes: 'Fındıksı, Kakao, Düşük Asidite',
         },
         {
           id: 'colombia',
-          name: 'Kolombiya Supremo',
+          name: 'Colombia Supremo',
           origin: 'HUILA, KOLOMBİYA',
-          price: '350,00 TL',
+          price: '315.00 TL',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/colombia.webp',
-          bgColor: '#eae9e7',
-          tastingNotes: 'Çikolata, Fındık, Karamel',
+          bgColor: '#e0ebd5',
+          tastingNotes: 'Karamel, Kırmızı Elma, Dengeli Gövde',
         },
         {
-          id: 'velora-signature',
-          name: 'Velora Özel Seri Espresso',
-          origin: 'TEK ÇİFTLİK, ETİYOPYA',
-          price: '350,00 TL',
+          id: 'velora',
+          name: 'Velora Signature',
+          origin: 'ÖZEL HARMAN',
+          price: '360.00 TL',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/velora-signature.webp',
-          bgColor: '#eaebe6',
-          tastingNotes: 'Çiçeksi, Şarapsı, Tropikal Meyve, Bal',
-        },
+          bgColor: '#f5e2d6',
+          tastingNotes: 'Zengin Orman Meyveleri, Bitter Çikolata, Yumuşak Bitiş',
+        }
       ]
     }
   };
@@ -196,7 +225,6 @@ export default function NewArrivals({ locale = 'en' }: { locale?: string }) {
   return (
     <section className={styles.section} aria-labelledby="arrivals-title">
       <div className={styles.container}>
-        {/* Section Header with split text and arrow controls */}
         <div className={styles.sectionHeader}>
           <div className={styles.headerText}>
             <span className={styles.categoryLabel}>{t.category}</span>
@@ -232,8 +260,15 @@ export default function NewArrivals({ locale = 'en' }: { locale?: string }) {
           </div>
         </div>
 
-        {/* Horizontal Carousel Track */}
-        <div className={styles.grid} ref={gridRef}>
+        {/* Horizontal Carousel Track with staggered Framer Motion entrances */}
+        <motion.div 
+          className={styles.grid} 
+          ref={gridRef}
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+        >
           {t.products.map((product) => (
             <ShowcaseCard 
               key={product.id}
@@ -247,7 +282,7 @@ export default function NewArrivals({ locale = 'en' }: { locale?: string }) {
               locale={locale}
             />
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

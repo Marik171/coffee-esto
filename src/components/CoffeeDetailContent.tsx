@@ -299,6 +299,30 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
   const [grindType, setGrindType] = useState(locale === 'tr' ? 'Çekirdek (Öğütülmemiş)' : 'Whole Bean');
   const [customer, setCustomer] = useState<CustomerData | null>(null);
   const detailRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+      video.pause();
+    };
+  }, [coffee?.videoUrl]);
 
   // ── Reviews state ──────────────────────────────────────────────
   const [reviews, setReviews] = useState<ReviewData[]>([]);
@@ -615,6 +639,7 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
                   <img src={coffee.imageUrl} alt={coffee.name} className={styles.productPhoto} />
                   {coffee.videoUrl && (
                     <video
+                      ref={videoRef}
                       src={coffee.videoUrl}
                       controls
                       muted

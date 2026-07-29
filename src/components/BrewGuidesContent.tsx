@@ -25,11 +25,28 @@ interface BrewMethod {
   steps: BrewStep[];
 }
 
-interface BrewGuidesContentProps {
-  locale?: string;
-}
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
 
-export default function BrewGuidesContent({ locale = 'en' }: BrewGuidesContentProps) {
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.215, 0.61, 0.355, 1] as const,
+    },
+  },
+};
+
+export default function BrewGuidesContent({ locale = 'en' }: { locale?: string }) {
   const [selectedMethod, setSelectedMethod] = useState<BrewMethod | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
@@ -398,9 +415,15 @@ export default function BrewGuidesContent({ locale = 'en' }: BrewGuidesContentPr
             <p className={styles.sectionSub}>{L.methodsSub}</p>
           </div>
 
-          <div className={styles.grid}>
+          <motion.div 
+            className={styles.grid}
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+          >
             {activeT.map((method) => (
-              <article
+              <motion.article
                 key={method.id}
                 className={styles.methodCard}
                 onClick={() => selectMethod(method)}
@@ -408,6 +431,9 @@ export default function BrewGuidesContent({ locale = 'en' }: BrewGuidesContentPr
                 tabIndex={0}
                 onKeyDown={(e) => { if (e.key === 'Enter') selectMethod(method); }}
                 aria-label={`View brew guide for ${method.name}`}
+                variants={cardVariants}
+                whileHover={{ y: -6 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
               >
                 <div className={styles.cardImageContainer}>
                   <img
@@ -442,9 +468,9 @@ export default function BrewGuidesContent({ locale = 'en' }: BrewGuidesContentPr
                   </div>
                   <button className={styles.cardCta} tabIndex={-1}>{L.beginGuide}</button>
                 </div>
-              </article>
+              </motion.article>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 

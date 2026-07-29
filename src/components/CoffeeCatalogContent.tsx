@@ -401,12 +401,35 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
+
+    video.muted = true;
+    video.volume = 0;
+
     const playPromise = video.play();
     if (playPromise !== undefined) {
-      playPromise.catch((err) => {
-        console.log("Autoplay prevented on coffee catalog hero:", err);
-      });
+      playPromise.catch(() => {});
     }
+
+    // Pause when out of view, play when in view
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+      video.pause();
+    };
   }, []);
 
   // Filter coffees
@@ -634,13 +657,6 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
                         <Link href={`${linkPrefix}/coffee/${coffee.id}`} className={styles.buyBtn}>
                           {t.buyNow}
                         </Link>
-                        <button
-                          className={styles.specsBtn}
-                          onClick={() => handleOpenDrawer(coffee)}
-                          aria-label={`View tasting specs for ${coffee.name}`}
-                        >
-                          {t.specs}
-                        </button>
                       </div>
                     </div>
                   </motion.div>

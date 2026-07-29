@@ -17,7 +17,7 @@
 /* ── Hero Section (Dynamic Background) ───────────────────────── */
 .detailSection {
   background-color: var(--product-theme-bg);
-  padding: 60px 20px 100px;
+  padding: 40px 20px 60px;
 }
 
 .container {
@@ -48,6 +48,7 @@
   gap: 16px;
   justify-content: center;
   align-items: center;
+  margin-top: 140px;
 }
 
 /* Clean product image */
@@ -92,7 +93,7 @@
   font-size: 38px;
   font-weight: 600;
   letter-spacing: -0.01em;
-  margin: 64px 0 4px 0;
+  margin: 24px 0 4px 0;
 }
 
 .subtitleNotes {

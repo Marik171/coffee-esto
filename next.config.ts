@@ -5,8 +5,8 @@ const isDev = process.env.NODE_ENV === 'development';
 // script-src needs 'unsafe-eval' in dev for React error overlay / HMR.
 // In production, eval is never used by Next.js or React.
 const scriptSrc = isDev
-  ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-  : "script-src 'self' 'unsafe-inline'";
+  ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://*.firebaseapp.com"
+  : "script-src 'self' 'unsafe-inline' https://apis.google.com https://*.firebaseapp.com";
 
 const cspDirectives = [
   "default-src 'self'",
@@ -20,9 +20,9 @@ const cspDirectives = [
   "img-src 'self' data: blob: https://*.supabase.co https://maps.gstatic.com https://*.googleapis.com",
   "media-src 'self' blob: https://*.supabase.co",
   // iyzico API calls are server-side — only Supabase needs browser connect; Maps JS uses googleapis
-  "connect-src 'self' https://*.supabase.co https://api.iyzipay.com https://sandbox-api.iyzipay.com https://*.googleapis.com",
+  "connect-src 'self' https://*.supabase.co https://api.iyzipay.com https://sandbox-api.iyzipay.com https://*.googleapis.com https://*.firebaseapp.com",
   // Google Maps embeds require google.com and maps.google.com frames
-  "frame-src 'self' https://www.google.com https://maps.google.com https://google.com",
+  "frame-src 'self' https://www.google.com https://maps.google.com https://google.com https://*.firebaseapp.com",
   // Prevent this page from being framed by others (clickjacking)
   "frame-ancestors 'none'",
   "object-src 'none'",

@@ -13,6 +13,7 @@ export async function middleware(request: NextRequest) {
     pathname === '/api/account/request-code' ||
     pathname === '/api/account/verify-code' ||
     pathname === '/api/account/logout' ||
+    pathname === '/api/account/firebase-login' ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api/checkout') ||
     pathname.startsWith('/api/orders/track') ||
