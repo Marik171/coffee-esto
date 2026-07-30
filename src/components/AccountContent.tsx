@@ -111,7 +111,7 @@ export default function AccountContent({ locale = 'en' }: AccountContentProps) {
       const res = await fetch('/api/account/firebase-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
+        body: JSON.stringify({ idToken, locale }),
       });
       const json = await res.json();
       if (!json.success) {
@@ -143,7 +143,7 @@ export default function AccountContent({ locale = 'en' }: AccountContentProps) {
       const res = await fetch('/api/account/firebase-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
+        body: JSON.stringify({ idToken, locale }),
       });
       const json = await res.json();
       if (!json.success) {
@@ -182,7 +182,7 @@ export default function AccountContent({ locale = 'en' }: AccountContentProps) {
       const res = await fetch('/api/account/firebase-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
+        body: JSON.stringify({ idToken, locale }),
       });
       const json = await res.json();
       if (!json.success) {

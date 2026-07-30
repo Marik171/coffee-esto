@@ -11,7 +11,7 @@ const WINDOW_MS = 15 * 60 * 1000;
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email } = body as { email?: string };
+    const { email, locale } = body as { email?: string; locale?: string };
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json(
@@ -45,7 +45,13 @@ export async function POST(request: Request) {
       },
     });
 
-    await sendVerificationEmail(normalizedEmail, code);
+    let detectedLocale = locale;
+    if (!detectedLocale) {
+      const referer = request.headers.get('referer') || '';
+      detectedLocale = (referer.includes('/en/') || referer.endsWith('/en')) ? 'en' : 'tr';
+    }
+
+    await sendVerificationEmail(normalizedEmail, code, detectedLocale);
 
     return NextResponse.json({ success: true, data: { email: normalizedEmail }, error: null });
 

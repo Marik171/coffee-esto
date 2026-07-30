@@ -111,7 +111,7 @@ function CoffeeBag({ coffeeName, origin, bagColor, illustration, emoji, locale =
 const PRODUCT_STYLES: Record<string, { bagColor: string; themeBg: string; sensoryBg: string; sensoryName: string; textColor: string; accentColor: string; illustration: React.ReactNode; emoji: string }> = {
   guatemala: {
     bagColor: '#523e3e',
-    themeBg: '#edf2f7',
+    themeBg: 'linear-gradient(135deg, #e0ebf5 0%, #edf4fa 100%)',
     sensoryBg: 'radial-gradient(circle, rgba(230,215,200,0.7) 0%, rgba(255,255,255,0) 70%)',
     sensoryName: 'Warm Cocoa',
     textColor: '#ffffff',
@@ -135,7 +135,7 @@ const PRODUCT_STYLES: Record<string, { bagColor: string; themeBg: string; sensor
   },
   ethiopia: {
     bagColor: '#74a57f',
-    themeBg: '#fbf1c9',
+    themeBg: 'linear-gradient(135deg, #fbf1c9 0%, #fffdf0 100%)',
     sensoryBg: 'radial-gradient(circle, rgba(247,231,168,0.7) 0%, rgba(255,255,255,0) 70%)',
     sensoryName: 'Bright Yellow',
     textColor: '#ffffff',
@@ -158,7 +158,7 @@ const PRODUCT_STYLES: Record<string, { bagColor: string; themeBg: string; sensor
   },
   nicaragua: {
     bagColor: '#f4a261',
-    themeBg: '#fdf0e2',
+    themeBg: 'linear-gradient(135deg, #fdf0e2 0%, #fffcf8 100%)',
     sensoryBg: 'radial-gradient(circle, rgba(250,220,185,0.7) 0%, rgba(255,255,255,0) 70%)',
     sensoryName: 'Warm Amber',
     textColor: '#2c2626',
@@ -181,7 +181,7 @@ const PRODUCT_STYLES: Record<string, { bagColor: string; themeBg: string; sensor
   },
   sumatra: {
     bagColor: '#3d4b5c',
-    themeBg: '#e3ebf2',
+    themeBg: 'linear-gradient(135deg, #e3ebf2 0%, #f4f8fb 100%)',
     sensoryBg: 'radial-gradient(circle, rgba(202,219,232,0.7) 0%, rgba(255,255,255,0) 70%)',
     sensoryName: 'Deep Moss',
     textColor: '#ffffff',
@@ -203,7 +203,7 @@ const PRODUCT_STYLES: Record<string, { bagColor: string; themeBg: string; sensor
   },
   colombia: {
     bagColor: '#b23b3b',
-    themeBg: '#fbecee',
+    themeBg: 'linear-gradient(135deg, #e0ebd5 0%, #f3f9ee 100%)',
     sensoryBg: 'radial-gradient(circle, rgba(248,212,217,0.7) 0%, rgba(255,255,255,0) 70%)',
     sensoryName: 'Ruby Red',
     textColor: '#ffffff',
@@ -229,7 +229,7 @@ const PRODUCT_STYLES: Record<string, { bagColor: string; themeBg: string; sensor
   },
   papua: {
     bagColor: '#206a5d',
-    themeBg: '#e1f0ec',
+    themeBg: 'linear-gradient(135deg, #e1f0ec 0%, #f2faf8 100%)',
     sensoryBg: 'radial-gradient(circle, rgba(198,231,223,0.7) 0%, rgba(255,255,255,0) 70%)',
     sensoryName: 'Crisp Jade',
     textColor: '#ffffff',
@@ -245,12 +245,132 @@ const PRODUCT_STYLES: Record<string, { bagColor: string; themeBg: string; sensor
         <circle cx="130" cy="75" r="1" fill="#ffffff" opacity="0.7" />
       </g>
     )
+  },
+  'brazil-mogiana': {
+    bagColor: '#6f4e37',
+    themeBg: 'linear-gradient(135deg, #ebdbe8 0%, #faf3f9 100%)',
+    sensoryBg: 'radial-gradient(circle, rgba(235,219,232,0.7) 0%, rgba(255,255,255,0) 70%)',
+    sensoryName: 'Sweet Nut',
+    textColor: '#ffffff',
+    accentColor: '#ebdbe8',
+    emoji: '🥜',
+    illustration: (
+      <g opacity="0.8"><circle cx="100" cy="120" r="18" fill="none" stroke="#ffffff" strokeWidth="1.5" /><path d="M90,115H110" stroke="#ffffff" strokeWidth="1.5" /></g>
+    )
+  },
+  'velora-signature': {
+    bagColor: '#b08d57',
+    themeBg: 'linear-gradient(135deg, #f5e2d6 0%, #fffbf7 100%)',
+    sensoryBg: 'radial-gradient(circle, rgba(245,226,214,0.7) 0%, rgba(255,255,255,0) 70%)',
+    sensoryName: 'Rich Berry',
+    textColor: '#ffffff',
+    accentColor: '#f5e2d6',
+    emoji: '✨',
+    illustration: (
+      <g opacity="0.8"><circle cx="100" cy="120" r="18" fill="none" stroke="#ffffff" strokeWidth="1.5" /><path d="M90,115H110" stroke="#ffffff" strokeWidth="1.5" /></g>
+    )
+  },
+  kenya: {
+    bagColor: '#457b9d',
+    themeBg: 'linear-gradient(135deg, #e3edf5 0%, #f0f7fc 100%)',
+    sensoryBg: 'radial-gradient(circle, rgba(227,237,245,0.7) 0%, rgba(255,255,255,0) 70%)',
+    sensoryName: 'Citrus Zest',
+    textColor: '#ffffff',
+    accentColor: '#e3edf5',
+    emoji: '🦁',
+    illustration: (
+      <g opacity="0.8"><circle cx="100" cy="120" r="18" fill="none" stroke="#ffffff" strokeWidth="1.5" /><path d="M90,115H110" stroke="#ffffff" strokeWidth="1.5" /></g>
+    )
+  },
+  'turk-kahvesi': {
+    bagColor: '#7a5c43',
+    themeBg: 'linear-gradient(135deg, #e8e2db 0%, #f5f2ee 100%)',
+    sensoryBg: 'radial-gradient(circle, rgba(232,226,219,0.7) 0%, rgba(255,255,255,0) 70%)',
+    sensoryName: 'Spiced Velvet',
+    textColor: '#ffffff',
+    accentColor: '#e8e2db',
+    emoji: '☕️',
+    illustration: (
+      <g opacity="0.8"><circle cx="100" cy="120" r="18" fill="none" stroke="#ffffff" strokeWidth="1.5" /><path d="M90,115H110" stroke="#ffffff" strokeWidth="1.5" /></g>
+    )
+  },
+  'italian-blend': {
+    bagColor: '#2b2b2b',
+    themeBg: 'linear-gradient(135deg, #e5e5e5 0%, #f7f7f7 100%)',
+    sensoryBg: 'radial-gradient(circle, rgba(229,229,229,0.7) 0%, rgba(255,255,255,0) 70%)',
+    sensoryName: 'Dark Cacao',
+    textColor: '#ffffff',
+    accentColor: '#e5e5e5',
+    emoji: '🇮🇹',
+    illustration: (
+      <g opacity="0.8"><circle cx="100" cy="120" r="18" fill="none" stroke="#ffffff" strokeWidth="1.5" /><path d="M90,115H110" stroke="#ffffff" strokeWidth="1.5" /></g>
+    )
+  },
+  'espresso-gold': {
+    bagColor: '#b89c30',
+    themeBg: 'linear-gradient(135deg, #f7ebd3 0%, #fffcf5 100%)',
+    sensoryBg: 'radial-gradient(circle, rgba(247,235,211,0.7) 0%, rgba(255,255,255,0) 70%)',
+    sensoryName: 'Golden Honey',
+    textColor: '#ffffff',
+    accentColor: '#f7ebd3',
+    emoji: '🌟',
+    illustration: (
+      <g opacity="0.8"><circle cx="100" cy="120" r="18" fill="none" stroke="#ffffff" strokeWidth="1.5" /><path d="M90,115H110" stroke="#ffffff" strokeWidth="1.5" /></g>
+    )
+  },
+  'premium-blend': {
+    bagColor: '#8c6d58',
+    themeBg: 'linear-gradient(135deg, #e8dcd0 0%, #f7f3ee 100%)',
+    sensoryBg: 'radial-gradient(circle, rgba(232,220,208,0.7) 0%, rgba(255,255,255,0) 70%)',
+    sensoryName: 'Classic Roast',
+    textColor: '#ffffff',
+    accentColor: '#e8dcd0',
+    emoji: '👑',
+    illustration: (
+      <g opacity="0.8"><circle cx="100" cy="120" r="18" fill="none" stroke="#ffffff" strokeWidth="1.5" /><path d="M90,115H110" stroke="#ffffff" strokeWidth="1.5" /></g>
+    )
+  },
+  'house-blend': {
+    bagColor: '#5c483a',
+    themeBg: 'linear-gradient(135deg, #ebdcd5 0%, #faf3f0 100%)',
+    sensoryBg: 'radial-gradient(circle, rgba(235,220,213,0.7) 0%, rgba(255,255,255,0) 70%)',
+    sensoryName: 'Daily Comfort',
+    textColor: '#ffffff',
+    accentColor: '#ebdcd5',
+    emoji: '🏠',
+    illustration: (
+      <g opacity="0.8"><circle cx="100" cy="120" r="18" fill="none" stroke="#ffffff" strokeWidth="1.5" /><path d="M90,115H110" stroke="#ffffff" strokeWidth="1.5" /></g>
+    )
+  },
+  'special-blend': {
+    bagColor: '#6b7a42',
+    themeBg: 'linear-gradient(135deg, #e8ebd5 0%, #f5f7ee 100%)',
+    sensoryBg: 'radial-gradient(circle, rgba(232,235,213,0.7) 0%, rgba(255,255,255,0) 70%)',
+    sensoryName: 'Curated Notes',
+    textColor: '#ffffff',
+    accentColor: '#e8ebd5',
+    emoji: '🍃',
+    illustration: (
+      <g opacity="0.8"><circle cx="100" cy="120" r="18" fill="none" stroke="#ffffff" strokeWidth="1.5" /><path d="M90,115H110" stroke="#ffffff" strokeWidth="1.5" /></g>
+    )
+  },
+  'esto-blend': {
+    bagColor: '#803d3b',
+    themeBg: 'linear-gradient(135deg, #ebdcdb 0%, #faf2f2 100%)',
+    sensoryBg: 'radial-gradient(circle, rgba(235,220,219,0.7) 0%, rgba(255,255,255,0) 70%)',
+    sensoryName: 'Esto Special',
+    textColor: '#ffffff',
+    accentColor: '#ebdcdb',
+    emoji: '🎒',
+    illustration: (
+      <g opacity="0.8"><circle cx="100" cy="120" r="18" fill="none" stroke="#ffffff" strokeWidth="1.5" /><path d="M90,115H110" stroke="#ffffff" strokeWidth="1.5" /></g>
+    )
   }
 };
 
 const DEFAULT_STYLE = {
   bagColor: '#6c5ce7',
-  themeBg: '#e1e9f0',
+  themeBg: 'linear-gradient(135deg, #e1e9f0 0%, #f0f4f8 100%)',
   sensoryBg: 'radial-gradient(circle, rgba(225,233,240,0.7) 0%, rgba(255,255,255,0) 70%)',
   sensoryName: 'Balanced Tone',
   textColor: '#ffffff',
@@ -310,6 +430,8 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
         entries.forEach((entry) => {
           if (!entry.isIntersecting) {
             video.pause();
+          } else {
+            video.play().catch((err) => console.log("Video autoplay blocked:", err));
           }
         });
       },
@@ -641,7 +763,7 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
                     <video
                       ref={videoRef}
                       src={coffee.videoUrl}
-                      controls
+                      autoPlay
                       muted
                       loop
                       playsInline

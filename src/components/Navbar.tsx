@@ -143,6 +143,14 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
     }
   };
 
+  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    setIsNavOpen(false);
+    if (pathname === '/' || pathname === '/en') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const headerClass = `${styles.headerWrapper} ${
     isScrolled ? styles.headerScrolled : ''
   }`;
@@ -265,7 +273,7 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
           </nav>
 
           {/* Centered Brand Logo */}
-          <Link href={locale === 'tr' ? '/' : '/en'} className={styles.logoContainer} aria-label={t.homepage} onClick={() => setIsNavOpen(false)}>
+          <Link href={locale === 'tr' ? '/' : '/en'} className={styles.logoContainer} aria-label={t.homepage} onClick={handleLogoClick}>
             <span className={styles.logoTitle}>C O F F E E &nbsp; E S T O</span>
             <span className={styles.logoSubtitle}>C O F F E E &nbsp; R O A S T E R Y</span>
           </Link>
@@ -284,8 +292,11 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
             <Link href={`${linkPrefix}/contact`} className={styles.brandLink}>
               {t.contact}
             </Link>
-            <Link href={`${linkPrefix}/account`} className={styles.brandLink}>
-              {t.account}
+            <Link href={`${linkPrefix}/account`} className={styles.brandLink} aria-label={t.account} style={{ display: 'flex', alignItems: 'center' }}>
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
             </Link>
             {/* Cart count bubble */}
             <button 
@@ -374,11 +385,7 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
               {t.contact}
             </Link>
           </li>
-          <li>
-            <Link href={`${linkPrefix}/account`} onClick={() => setIsNavOpen(false)}>
-              {t.account}
-            </Link>
-          </li>
+
 
           <li className={styles.mobileLangLi}>
             <Link 

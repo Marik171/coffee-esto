@@ -305,11 +305,11 @@ export default function LocationContent({ locale = 'en' }: LocationContentProps)
                     </span>
                   </a>
 
-                  <a href="mailto:hello@coffeesto.com" className={styles.contactRow}>
+                  <a href="mailto:thecoffeeesto@gmail.com" className={styles.contactRow}>
                     <span className={styles.contactIcon}><IconMail /></span>
                     <span>
                       <span className={styles.contactLabel}>{t.emailLabel}</span>
-                      <span className={styles.contactValue}>hello@coffeesto.com</span>
+                      <span className={styles.contactValue}>thecoffeeesto@gmail.com</span>
                     </span>
                   </a>
 

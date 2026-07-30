@@ -48,8 +48,8 @@ function ShowcaseCard({
     >
       <Link href={`${linkPrefix}/coffee/${id}`} className={styles.cardLink}>
         <div className={styles.cardContainer}>
-          {/* Solid Pastel Colored Card Box */}
-          <div className={styles.cardBox} style={{ backgroundColor: bgColor }}>
+          {/* Gradient Colored Card Box */}
+          <div className={styles.cardBox} style={{ background: bgColor }}>
             <div className={styles.bagWrapper}>
               <img 
                 src={imageUrl} 
@@ -122,7 +122,7 @@ export default function NewArrivals({ locale = 'en' }: { locale?: string }) {
           origin: 'ANTIGUA, GUATEMALA',
           price: '₺337.50',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/guatemala.webp',
-          bgColor: '#e0ebf5',
+          bgColor: 'linear-gradient(135deg, #e0ebf5 0%, #edf4fa 100%)',
           tastingNotes: 'Chocolate, Orange, Sweet Acidity',
         },
         {
@@ -131,16 +131,16 @@ export default function NewArrivals({ locale = 'en' }: { locale?: string }) {
           origin: 'SIDAMO, ETHIOPIA',
           price: '₺352.50',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/ethiopia-sidamo.webp',
-          bgColor: '#fbf1c9',
+          bgColor: 'linear-gradient(135deg, #fbf1c9 0%, #fffdf0 100%)',
           tastingNotes: 'Floral, Jasmine, Citric Brightness',
         },
         {
-          id: 'brazil',
+          id: 'brazil-mogiana',
           name: 'Brazil Mogiana',
           origin: 'MOGIANA, BRAZIL',
           price: '₺292.50',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/brazil-mogiana.webp',
-          bgColor: '#ebdbe8',
+          bgColor: 'linear-gradient(135deg, #ebdbe8 0%, #faf3f9 100%)',
           tastingNotes: 'Nutty, Cocoa, Low Acidity',
         },
         {
@@ -149,16 +149,16 @@ export default function NewArrivals({ locale = 'en' }: { locale?: string }) {
           origin: 'HUILA, COLOMBIA',
           price: '₺315.00',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/colombia.webp',
-          bgColor: '#e0ebd5',
+          bgColor: 'linear-gradient(135deg, #e0ebd5 0%, #f3f9ee 100%)',
           tastingNotes: 'Caramel, Red Apple, Balanced Body',
         },
         {
-          id: 'velora',
+          id: 'velora-signature',
           name: 'Velora Signature',
           origin: 'HOUSE BLEND',
           price: '₺360.00',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/velora-signature.webp',
-          bgColor: '#f5e2d6',
+          bgColor: 'linear-gradient(135deg, #f5e2d6 0%, #fffbf7 100%)',
           tastingNotes: 'Rich Berry, Dark Chocolate, Smooth Finish',
         }
       ]
@@ -176,7 +176,7 @@ export default function NewArrivals({ locale = 'en' }: { locale?: string }) {
           origin: 'ANTIGUA, GUATEMALA',
           price: '337.50 TL',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/guatemala.webp',
-          bgColor: '#e0ebf5',
+          bgColor: 'linear-gradient(135deg, #e0ebf5 0%, #edf4fa 100%)',
           tastingNotes: 'Çikolata, Portakal, Tatlı Asidite',
         },
         {
@@ -185,16 +185,16 @@ export default function NewArrivals({ locale = 'en' }: { locale?: string }) {
           origin: 'SIDAMO, ETİYOPYA',
           price: '352.50 TL',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/ethiopia-sidamo.webp',
-          bgColor: '#fbf1c9',
+          bgColor: 'linear-gradient(135deg, #fbf1c9 0%, #fffdf0 100%)',
           tastingNotes: 'Çiçeksi, Yasemin, Narenciye Parlaklığı',
         },
         {
-          id: 'brazil',
+          id: 'brazil-mogiana',
           name: 'Brazil Mogiana',
           origin: 'MOGIANA, BREZİLYA',
           price: '292.50 TL',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/brazil-mogiana.webp',
-          bgColor: '#ebdbe8',
+          bgColor: 'linear-gradient(135deg, #ebdbe8 0%, #faf3f9 100%)',
           tastingNotes: 'Fındıksı, Kakao, Düşük Asidite',
         },
         {
@@ -203,16 +203,16 @@ export default function NewArrivals({ locale = 'en' }: { locale?: string }) {
           origin: 'HUILA, KOLOMBİYA',
           price: '315.00 TL',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/colombia.webp',
-          bgColor: '#e0ebd5',
+          bgColor: 'linear-gradient(135deg, #e0ebd5 0%, #f3f9ee 100%)',
           tastingNotes: 'Karamel, Kırmızı Elma, Dengeli Gövde',
         },
         {
-          id: 'velora',
+          id: 'velora-signature',
           name: 'Velora Signature',
           origin: 'ÖZEL HARMAN',
           price: '360.00 TL',
           imageUrl: 'https://fdoukqqdqllistvqxvtu.supabase.co/storage/v1/object/public/product-media/images/coffee_packs/velora-signature.webp',
-          bgColor: '#f5e2d6',
+          bgColor: 'linear-gradient(135deg, #f5e2d6 0%, #fffbf7 100%)',
           tastingNotes: 'Zengin Orman Meyveleri, Bitter Çikolata, Yumuşak Bitiş',
         }
       ]

@@ -50,6 +50,8 @@
 }
 
 .buyBtn {
+  display: inline-block;
+  text-decoration: none;
   background-color: transparent;
   color: #1a0e07;
   padding: 14px 44px;

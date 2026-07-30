@@ -263,6 +263,7 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
           isSubscriber,
           shippingDetails: { email, fullName: `${firstName} ${lastName}`, address, city, zipCode, phone },
           cardDetails: { cardHolderName: cardName, cardNumber, expireMonth: parts[0], expireYear: parts[1], cvc: cardCvv },
+          locale,
         }),
       });
       const resData = await response.json();

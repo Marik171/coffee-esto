@@ -24,7 +24,7 @@ export default function CartContent({ locale = 'en' }: CartContentProps) {
   const t = {
     title: isTr ? 'Alışveriş Sepeti' : 'Shopping Cart',
     assistanceTitle: isTr ? 'Yardım mı Lazım?' : 'Need Assistance?',
-    emailVal: 'hello@coffeesto.com',
+    emailVal: 'thecoffeeesto@gmail.com',
     phoneVal: '+90 553 605 31 83',
     linksTitle: isTr ? 'Hızlı Bağlantılar' : 'Quick Links',
     linkWholesale: isTr ? 'Toptan Satış' : 'Wholesale',
@@ -43,8 +43,8 @@ export default function CartContent({ locale = 'en' }: CartContentProps) {
     
     shippingNoticeTitle: isTr ? 'Önemli Kargo Bildirimi' : 'Important Shipping Notice',
     shippingNoticeText: isTr 
-      ? 'Siparişlerinizi zamanında hazırlıyoruz. Kargo firmaları her gün Kartal\'daki kavurmahanemizden teslimat almaktadır. En taze kahve deneyimini sunabilmek için teslimat süresi genellikle 1-3 iş günüdür. Sorularınız için hello@coffeesto.com adresinden bize ulaşabilirsiniz.'
-      : 'We are currently processing orders on time, and couriers pick up daily from our Roastery in Kartal, İstanbul. To ensure you receive the freshest coffee possible, standard delivery takes 1-3 business days. For any queries, reach out to hello@coffeesto.com.',
+      ? 'Siparişlerinizi zamanında hazırlıyoruz. Kargo firmaları her gün Kartal\'daki kavurmahanemizden teslimat almaktadır. En taze kahve deneyimini sunabilmek için teslimat süresi genellikle 1-3 iş günüdür. Sorularınız için thecoffeeesto@gmail.com adresinden bize ulaşabilirsiniz.'
+      : 'We are currently processing orders on time, and couriers pick up daily from our Roastery in Kartal, İstanbul. To ensure you receive the freshest coffee possible, standard delivery takes 1-3 business days. For any queries, reach out to thecoffeeesto@gmail.com.',
       
     roastScheduleTitle: isTr ? 'Kavurma Programımız' : 'Our Roasting Schedule',
     roastScheduleText: isTr

@@ -16,7 +16,7 @@
 
 /* ── Hero Section (Dynamic Background) ───────────────────────── */
 .detailSection {
-  background-color: var(--product-theme-bg);
+  background: var(--product-theme-bg);
   padding: 40px 20px 60px;
 }
 

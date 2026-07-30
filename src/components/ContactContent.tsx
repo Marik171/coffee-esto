@@ -13,6 +13,7 @@ interface ContactContentProps {
 export default function ContactContent({ locale = 'en' }: ContactContentProps) {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const translations = {
     en: {
@@ -20,7 +21,7 @@ export default function ContactContent({ locale = 'en' }: ContactContentProps) {
       officeTitle: 'Offices and Roastery',
       officeVal: 'Coffee Esto Roastery\nTopselvi Mh, Kartal\nİstanbul, Turkey',
       touchTitle: 'Get in Touch',
-      emailVal: 'hello@coffeesto.com',
+      emailVal: 'thecoffeeesto@gmail.com',
       phoneVal: '+90 553 605 31 83',
       linksTitle: 'Quick Links',
       linkShop: 'Shop Products',
@@ -36,14 +37,15 @@ export default function ContactContent({ locale = 'en' }: ContactContentProps) {
       phMsg: 'How can we help?',
       btnSend: 'SEND MESSAGE',
       successMsg: 'Thank you! Your message has been sent. We will get back to you shortly.',
-      errorRequired: 'Please fill out all required fields.'
+      errorRequired: 'Please fill out all required fields.',
+      errorSend: 'Something went wrong sending your message. Please try again later.'
     },
     tr: {
       title: 'Bizimle İletişime Geçin',
       officeTitle: 'Ofis ve Kavurmahane',
       officeVal: 'Coffee Esto Roastery\nTopselvi Mh, Kartal\nİstanbul, Türkiye',
       touchTitle: 'Bize Ulaşın',
-      emailVal: 'hello@coffeesto.com',
+      emailVal: 'thecoffeeesto@gmail.com',
       phoneVal: '+90 553 605 31 83',
       linksTitle: 'Hızlı Bağlantılar',
       linkShop: 'Ürünlerimizi İnceleyin',
@@ -59,21 +61,39 @@ export default function ContactContent({ locale = 'en' }: ContactContentProps) {
       phMsg: 'Nasıl yardımcı olabiliriz?',
       btnSend: 'MESAJI GÖNDER',
       successMsg: 'Teşekkürler! Mesajınız gönderildi. En kısa sürede size geri dönüş sağlayacağız.',
-      errorRequired: 'Lütfen tüm zorunlu alanları doldurun.'
+      errorRequired: 'Lütfen tüm zorunlu alanları doldurun.',
+      errorSend: 'Mesajınız gönderilirken bir sorun oluştu. Lütfen daha sonra tekrar deneyin.'
     }
   };
 
   const t = locale === 'tr' ? translations.tr : translations.en;
   const linkPrefix = locale === 'tr' ? '' : '/en';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
       alert(t.errorRequired);
       return;
     }
-    setSubmitted(true);
-    setFormData({ name: '', email: '', phone: '', message: '' });
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.error || 'Failed to send message.');
+      }
+      setSubmitted(true);
+      setFormData({ name: '', email: '', phone: '', message: '' });
+    } catch {
+      alert(t.errorSend);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -219,8 +239,8 @@ export default function ContactContent({ locale = 'en' }: ContactContentProps) {
               </div>
 
               {/* Submit button */}
-              <button type="submit" className={styles.submitBtn}>
-                {t.btnSend}
+              <button type="submit" className={styles.submitBtn} disabled={isSubmitting}>
+                {isSubmitting ? '...' : t.btnSend}
               </button>
 
             </form>

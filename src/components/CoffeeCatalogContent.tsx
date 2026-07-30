@@ -585,18 +585,26 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
             >
               {filteredCoffees.map((coffee) => {
                 const style = getStyle(coffee.id);
-                // Map product IDs to solid pastel card background colors
+                // Map product IDs to premium gradient background styles matching detail pages
                 const cardBgColors: Record<string, string> = {
-                  guatemala: '#e0ebf5',       // Blue
-                  ethiopia: '#f7ebec',        // Pink
-                  'brazil-mogiana': '#e2e4e6', // Grey
-                  colombia: '#eae9e7',        // Cream
-                  'velora-signature': '#eaebe6', // Sage green
-                  sumatra: '#e0ebf5',
-                  papua: '#eaebe6',
-                  nicaragua: '#f7ebec',
+                  guatemala: 'linear-gradient(135deg, #e0ebf5 0%, #edf4fa 100%)',
+                  ethiopia: 'linear-gradient(135deg, #fbf1c9 0%, #fffdf0 100%)',
+                  'brazil-mogiana': 'linear-gradient(135deg, #ebdbe8 0%, #faf3f9 100%)',
+                  colombia: 'linear-gradient(135deg, #e0ebd5 0%, #f3f9ee 100%)',
+                  'velora-signature': 'linear-gradient(135deg, #f5e2d6 0%, #fffbf7 100%)',
+                  sumatra: 'linear-gradient(135deg, #e3ebf2 0%, #f4f8fb 100%)',
+                  papua: 'linear-gradient(135deg, #e1f0ec 0%, #f2faf8 100%)',
+                  nicaragua: 'linear-gradient(135deg, #fdf0e2 0%, #fffcf8 100%)',
+                  kenya: 'linear-gradient(135deg, #e3edf5 0%, #f0f7fc 100%)',
+                  'turk-kahvesi': 'linear-gradient(135deg, #e8e2db 0%, #f5f2ee 100%)',
+                  'italian-blend': 'linear-gradient(135deg, #e5e5e5 0%, #f7f7f7 100%)',
+                  'espresso-gold': 'linear-gradient(135deg, #f7ebd3 0%, #fffcf5 100%)',
+                  'premium-blend': 'linear-gradient(135deg, #e8dcd0 0%, #f7f3ee 100%)',
+                  'house-blend': 'linear-gradient(135deg, #ebdcd5 0%, #faf3f0 100%)',
+                  'special-blend': 'linear-gradient(135deg, #e8ebd5 0%, #f5f7ee 100%)',
+                  'esto-blend': 'linear-gradient(135deg, #ebdcdb 0%, #faf2f2 100%)',
                 };
-                const bgColor = cardBgColors[coffee.id] || '#f5efe6';
+                const bgColor = cardBgColors[coffee.id] || 'linear-gradient(135deg, #e1e9f0 0%, #f0f4f8 100%)';
                 return (
                   <motion.div
                     key={coffee.id}
@@ -607,8 +615,8 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
                     }}
                   >
                     <Link href={`${linkPrefix}/coffee/${coffee.id}`} className={styles.cardLink}>
-                      {/* Product visual - solid pastel bg */}
-                      <div className={styles.bagWrapper} style={{ backgroundColor: bgColor }}>
+                      {/* Product visual - gradient bg */}
+                      <div className={styles.bagWrapper} style={{ background: bgColor }}>
                         {coffee.imageUrl ? (
                           <img
                             src={coffee.imageUrl}

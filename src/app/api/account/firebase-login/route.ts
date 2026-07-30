@@ -2,10 +2,11 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import db from '@/lib/db';
 import { signToken } from '@/lib/auth';
+import { sendWelcomeEmail } from '@/lib/emails';
 
 export async function POST(request: Request) {
   try {
-    const { idToken } = await request.json() as { idToken?: string };
+    const { idToken, locale } = await request.json() as { idToken?: string; locale?: string };
 
     if (!idToken) {
       return NextResponse.json(
@@ -63,6 +64,8 @@ export async function POST(request: Request) {
     const displayName = firebaseUser.displayName || '';
 
     // Retrieve or create the customer in the local database
+    const existingCustomer = await db.customer.findUnique({ where: { email: normalizedEmail } });
+
     const customer = await db.customer.upsert({
       where: { email: normalizedEmail },
       update: {},
@@ -71,6 +74,15 @@ export async function POST(request: Request) {
         name: displayName,
       },
     });
+
+    if (!existingCustomer) {
+      let detectedLocale = locale;
+      if (!detectedLocale) {
+        const referer = request.headers.get('referer') || '';
+        detectedLocale = (referer.includes('/en/') || referer.endsWith('/en')) ? 'en' : 'tr';
+      }
+      await sendWelcomeEmail(normalizedEmail, displayName, detectedLocale);
+    }
 
     // Issue standard customer session token (JWT)
     const token = await signToken({ customerId: customer.id, role: 'customer' }, 60 * 60 * 24 * 30);

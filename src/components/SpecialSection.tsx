@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import styles from './SpecialSection.module.css';
 
 interface CoffeeBagProps {
@@ -67,10 +68,10 @@ export default function SpecialSection({ locale = 'en' }: { locale?: string }) {
 
   const translations = {
     en: {
-      title: 'Try Our Special – 6 Bags from £40',
-      description: 'Our Half roasters bundle consists of 6 bags of coffee handpicked by John our master roaster who will select a wide variety from our beans available that day you order',
+      title: "The Roaster's Choice – 6 Bags to Explore",
+      description: 'Discover the ultimate sensory journey. Our curated bundle consists of 6 distinct coffees handpicked by our master roaster, selected from the freshest beans available the day you order.',
       buyBtn: 'BUY NOW',
-      ariaLabel: 'Buy our special bundle of 6 coffee bags starting from 40 pounds',
+      ariaLabel: 'Explore our curated selection of six unique coffee bags handpicked by our master roaster',
       roasts: {
         sumatra: 'MANDHELING',
         colombia: 'EL EDEN',
@@ -80,10 +81,10 @@ export default function SpecialSection({ locale = 'en' }: { locale?: string }) {
       }
     },
     tr: {
-      title: 'Özel Teklifimizi Deneyin – 6 Paket ₺1500\'den Başlayan Fiyatlarla',
-      description: 'Yarı kavurucu paketimiz, sipariş verdiğiniz gün mevcut çekirdeklerimiz arasından geniş bir çeşitlilik seçecek olan baş kavurucumuz John tarafından özenle seçilen 6 paket kahveden oluşmaktadır.',
+      title: 'Kavurucunun Seçkisi – Keşfedilmeyi Bekleyen 6 Lezzet',
+      description: 'Eşsiz bir duyusal yolculuğa çıkın. Baş kavurucumuz tarafından, sipariş verdiğiniz günün en taze çekirdekleri arasından özenle seçilen 6 farklı kahveden oluşan özel tadım paketi.',
       buyBtn: 'ŞİMDİ SATIN AL',
-      ariaLabel: '1500 liradan başlayan 6\'lı kahve paketi özel teklifimizi satın alın',
+      ariaLabel: 'Baş kavurucumuz tarafından özenle seçilmiş altı farklı kahve paketinden oluşan özel seçkimizi keşfedin',
       roasts: {
         sumatra: 'MANDHELING',
         colombia: 'EL EDEN',
@@ -95,6 +96,7 @@ export default function SpecialSection({ locale = 'en' }: { locale?: string }) {
   };
 
   const t = locale === 'tr' ? translations.tr : translations.en;
+  const linkPrefix = locale === 'tr' ? '' : '/en';
 
   // Approximate SVG paths representing stylized country map contours
   const mapPaths = {
@@ -120,9 +122,9 @@ export default function SpecialSection({ locale = 'en' }: { locale?: string }) {
           <p className={styles.description}>
             {t.description}
           </p>
-          <button className={styles.buyBtn} aria-label={t.ariaLabel}>
+          <Link href={`${linkPrefix}/coffee`} className={styles.buyBtn} aria-label={t.ariaLabel}>
             {t.buyBtn}
-          </button>
+          </Link>
         </div>
 
         {/* Coffee Bags Fan Layout Container */}

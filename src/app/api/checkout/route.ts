@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import db from '@/lib/db';
 import { createPayment, Iyzipay } from '@/lib/iyzipay';
 import { verifyToken } from '@/lib/auth';
+import { sendOrderConfirmationEmail, sendOwnerNewOrderNotification } from '@/lib/emails';
 
 interface CheckoutItem {
   id: string;
@@ -38,11 +39,12 @@ function getProductId(id: string): string {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { items, shippingDetails, cardDetails, isWholesale } = body as {
+    const { items, shippingDetails, cardDetails, isWholesale, locale } = body as {
       items: CheckoutItem[];
       shippingDetails: ShippingDetails;
       cardDetails: CardDetails;
       isWholesale?: boolean;
+      locale?: string;
     };
 
     // ── 1. Input validation ──────────────────────────────────────
@@ -277,6 +279,28 @@ export async function POST(request: Request) {
           data: { stock: { decrement: qty } },
         })
       ),
+    ]);
+
+    let detectedLocale = locale;
+    if (!detectedLocale) {
+      const referer = request.headers.get('referer') || '';
+      detectedLocale = (referer.includes('/en/') || referer.endsWith('/en')) ? 'en' : 'tr';
+    }
+
+    const orderEmailDetails = {
+      orderId: newOrder.id,
+      email: newOrder.email,
+      fullName: shippingDetails.fullName,
+      items: mappedItems,
+      subtotal: newOrder.subtotal,
+      shippingFee: newOrder.shippingFee,
+      totalAmount: newOrder.totalAmount,
+      locale: detectedLocale,
+    };
+
+    await Promise.all([
+      sendOrderConfirmationEmail(orderEmailDetails),
+      sendOwnerNewOrderNotification(orderEmailDetails),
     ]);
 
     return NextResponse.json({

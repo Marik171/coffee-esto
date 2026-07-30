@@ -6,6 +6,7 @@ import { CartProvider } from '../context/CartContext';
 import CartDrawer from '../components/CartDrawer';
 import ErrorBoundary from '../components/ErrorBoundary';
 import LanguageSync from '../components/LanguageSync';
+import BackToTop from '../components/BackToTop';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -57,6 +58,7 @@ export default function RootLayout({
           <ErrorBoundary fallback={null}>
             <CartDrawer />
           </ErrorBoundary>
+          <BackToTop />
         </CartProvider>
       </body>
     </html>
