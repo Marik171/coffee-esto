@@ -20,7 +20,7 @@ env:
       - RUNTIME
 
   - variable: BREVO_SENDER_EMAIL
-    value: thecoffeeesto@gmail.com
+    value: no-reply@coffeeesto.com
     availability:
       - BUILD
       - RUNTIME
