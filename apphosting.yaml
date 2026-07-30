@@ -13,6 +13,24 @@ env:
       - BUILD
       - RUNTIME
 
+  - variable: OWNER_EMAIL
+    value: thecoffeeesto@gmail.com
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: BREVO_SENDER_EMAIL
+    value: thecoffeeesto@gmail.com
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: BREVO_SENDER_NAME
+    value: Coffee Esto
+    availability:
+      - BUILD
+      - RUNTIME
+
   - variable: SUPABASE_URL
     value: https://fdoukqqdqllistvqxvtu.supabase.co
     availability:
@@ -113,6 +131,12 @@ env:
 
   - variable: IYZIPAY_SECRET_KEY
     secret: IYZIPAY_SECRET_KEY
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: BREVO_API_KEY
+    secret: BREVO_API_KEY
     availability:
       - BUILD
       - RUNTIME
