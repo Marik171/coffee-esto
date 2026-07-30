@@ -304,12 +304,22 @@ export async function sendContactFormNotification(details: {
   email: string;
   phone?: string;
   message: string;
+  locale?: string;
 }): Promise<void> {
   const ownerEmail = getOwnerEmail();
   if (!ownerEmail) {
     console.error('[emails] OWNER_EMAIL is not configured — skipping contact form notification.');
     return;
   }
+
+  const isTr = details.locale === 'tr';
+  const labelName = isTr ? 'İsim' : 'Name';
+  const labelEmail = isTr ? 'E-posta' : 'Email';
+  const labelPhone = isTr ? 'Telefon' : 'Phone';
+  const replyButtonLabel = isTr ? `${details.name} kişisine yanıt ver` : `Reply to ${details.name.split(/\s+/)[0]}`;
+  const subject = isTr ? `Yeni iletişim formu mesajı — ${details.name}` : `New contact form message from ${details.name}`;
+  const heroEyebrow = isTr ? 'İLETİŞİM FORMU' : 'CONTACT FORM';
+  const heroTitle = isTr ? `${details.name} gönderisinden yeni mesaj` : `New message from ${details.name}`;
 
   const safeName = escapeHtml(details.name);
   const safeEmail = escapeHtml(details.email);
@@ -320,11 +330,11 @@ export async function sendContactFormNotification(details: {
   const bodyHtml = `
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 14px; margin-bottom: 20px;">
       <tr>
-        <td style="padding: 4px 0; color: ${colors.warmMid}; width: 90px;">Name</td>
+        <td style="padding: 4px 0; color: ${colors.warmMid}; width: 90px;">${labelName}</td>
         <td style="padding: 4px 0; color: ${colors.warmText};">${safeName}</td>
       </tr>
       <tr>
-        <td style="padding: 4px 0; color: ${colors.warmMid};">Email</td>
+        <td style="padding: 4px 0; color: ${colors.warmMid};">${labelEmail}</td>
         <td style="padding: 4px 0; color: ${colors.warmText};">
           <a href="mailto:${replyToUri}" style="color: ${colors.orange}; text-decoration: none;">${safeEmail}</a>
         </td>
@@ -332,7 +342,7 @@ export async function sendContactFormNotification(details: {
       ${
         safePhone
           ? `<tr>
-              <td style="padding: 4px 0; color: ${colors.warmMid};">Phone</td>
+              <td style="padding: 4px 0; color: ${colors.warmMid};">${labelPhone}</td>
               <td style="padding: 4px 0; color: ${colors.warmText};">${safePhone}</td>
             </tr>`
           : ''
@@ -343,19 +353,19 @@ export async function sendContactFormNotification(details: {
       <p style="margin: 0; font-size: 14px; line-height: 1.7; color: ${colors.warmText}; white-space: pre-line;">${safeMessage}</p>
     </div>
 
-    ${button('Reply to ' + details.name.split(/\s+/)[0].replace(/[<>&"']/g, ''), `mailto:${replyToUri}`)}
+    ${button(replyButtonLabel.replace(/[<>&"']/g, ''), `mailto:${replyToUri}`)}
   `;
 
   await sendEmail({
     to: [{ email: ownerEmail }],
-    subject: `New contact form message from ${details.name}`,
+    subject,
     replyTo: { email: details.email, name: details.name },
     htmlContent: renderEmailLayout({
       preheader: details.message.slice(0, 100),
-      heroEyebrow: 'Contact form',
-      heroTitle: `New message from ${safeName}`,
+      heroEyebrow,
+      heroTitle,
       bodyHtml,
-      locale: 'tr',
+      locale: isTr ? 'tr' : 'en',
     }),
   });
 }

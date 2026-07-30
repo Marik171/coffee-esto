@@ -81,7 +81,7 @@ export default function ContactContent({ locale = 'en' }: ContactContentProps) {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, locale }),
       });
       const json = await res.json();
       if (!res.ok || !json.success) {

@@ -8,11 +8,12 @@ const WINDOW_MS = 15 * 60 * 1000;
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, email, phone, message } = body as {
+    const { name, email, phone, message, locale } = body as {
       name?: string;
       email?: string;
       phone?: string;
       message?: string;
+      locale?: string;
     };
 
     if (!name || !email || !message || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
       );
     }
 
-    await sendContactFormNotification({ name, email, phone, message });
+    await sendContactFormNotification({ name, email, phone, message, locale });
 
     return NextResponse.json({ success: true, data: null, error: null });
   } catch (error) {
