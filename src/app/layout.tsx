@@ -31,6 +31,10 @@ export const metadata: Metadata = {
     statusBarStyle: 'black-translucent',
     title: 'Coffee Esto Roastery',
   },
+  icons: {
+    icon: '/images/logo.png',
+    apple: '/images/logo.png',
+  },
   other: {
     'mobile-web-app-capable': 'yes',
   },
