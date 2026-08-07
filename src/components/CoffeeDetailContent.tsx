@@ -19,6 +19,7 @@ interface CoffeeProduct {
   tastingNotes: string;
   description: string;
   price: number;
+  price1kg: number;
   stock: number;
   imageUrl: string;
   videoUrl: string;
@@ -542,6 +543,8 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
       categorySingleOrigin: 'Single Origin',
       categoryEspresso: 'Espresso Blends',
       brewGuideCTA: '📖 Open Coffee Brewing Companion',
+      shippingNote: 'Free shipping on orders over ₺2,000. For orders below ₺2,000, shipping cost is paid by the buyer.',
+      inquireStock: 'Inquire About Stock',
     },
     tr: {
       loadingText: 'Kavrum parametreleri yükleniyor...',
@@ -568,6 +571,8 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
       categorySingleOrigin: 'Tek Köken',
       categoryEspresso: 'Espresso Harmanları',
       brewGuideCTA: '📖 Kahve Demleme Asistanını Aç',
+      shippingNote: '2.000 TL üzeri siparişlerde kargo ücretsizdir. 2.000 TL altındaki siparişlerde kargo ücreti alıcıya aittir.',
+      inquireStock: 'Stok Sorgulayın',
     }
   };
 
@@ -736,8 +741,9 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
   const style = PRODUCT_STYLES[coffee.id] || DEFAULT_STYLE;
 
   const isCoffeeProduct = ['single-origin', 'limited-edition', 'signature-blend', 'filter', 'espresso', 'turkish'].includes(coffee.category);
+  const unitPrice = size === '1kg' ? coffee.price1kg : coffee.price;
   const showDiscount = isCoffeeProduct && customer?.isSubscriber;
-  const discountedPrice = showDiscount ? Math.round(coffee.price * 0.90) : coffee.price;
+  const discountedPrice = showDiscount ? Math.round(unitPrice * 0.90) : unitPrice;
 
   return (
     <div className={styles.pageWrapper}>
@@ -802,83 +808,125 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
 
               <h1 className={styles.productName}>{coffee.name}</h1>
               <div className={styles.subtitleNotes}>
-                {coffee.varietal || 'Single Origin Blend'} • {coffee.altitude || '1500m'}
+                {isCoffeeProduct
+                  ? <>{coffee.varietal || 'Single Origin Blend'} • {coffee.altitude || '1500m'}</>
+                  : coffee.origin}
               </div>
 
-              <div className={styles.priceRow}>
-                <span className={styles.priceVal}>
-                  {showDiscount ? (
-                    <>
-                      <span style={{ textDecoration: 'line-through', marginRight: '8px', color: '#999', fontSize: '0.8em' }}>
-                        ₺{coffee.price * qty}
+              {isCoffeeProduct ? (
+                <>
+                  <div className={styles.priceRow}>
+                    <span className={styles.priceVal}>
+                      {showDiscount ? (
+                        <>
+                          <span style={{ textDecoration: 'line-through', marginRight: '8px', color: '#999', fontSize: '0.8em' }}>
+                            ₺{unitPrice * qty}
+                          </span>
+                          <span style={{ color: '#0051a8' }}>
+                            ₺{discountedPrice * qty}
+                          </span>
+                        </>
+                      ) : (
+                        `₺${unitPrice * qty}`
+                      )}
+                    </span>
+                    {showDiscount && (
+                      <span className={styles.discountBadge}>
+                        {locale === 'tr' ? '%10 Abone İndirimi' : '10% Subscriber Discount'}
                       </span>
-                      <span style={{ color: '#0051a8' }}>
-                        ₺{discountedPrice * qty}
-                      </span>
-                    </>
-                  ) : (
-                    `₺${coffee.price * qty}`
-                  )}
-                </span>
-                {showDiscount && (
-                  <span className={styles.discountBadge}>
-                    {locale === 'tr' ? '%10 Abone İndirimi' : '10% Subscriber Discount'}
-                  </span>
-                )}
-              </div>
+                    )}
+                  </div>
 
-              <div className={styles.quantitySection}>
-                <label className={styles.quantityLabel}>Quantity</label>
-                <div className={styles.qtyBox}>
-                  <button onClick={decrement} className={styles.qtyBtn} disabled={qty <= 1} aria-label="Decrease quantity">–</button>
-                  <span className={styles.qtyVal}>{qty}</span>
-                  <button onClick={increment} className={styles.qtyBtn} disabled={qty >= coffee.stock} aria-label="Increase quantity">+</button>
+                  <p className={styles.shippingNote}>🚚 {t.shippingNote}</p>
+
+                  <div className={styles.quantitySection}>
+                    <label className={styles.quantityLabel}>Quantity</label>
+                    <div className={styles.qtyBox}>
+                      <button onClick={decrement} className={styles.qtyBtn} disabled={qty <= 1} aria-label="Decrease quantity">–</button>
+                      <span className={styles.qtyVal}>{qty}</span>
+                      <button onClick={increment} className={styles.qtyBtn} disabled={qty >= coffee.stock} aria-label="Increase quantity">+</button>
+                    </div>
+                  </div>
+
+                  <div className={styles.selectControl}>
+                    <label className={styles.selectLabel}>Size</label>
+                    <select value={size} onChange={(e) => setSize(e.target.value)} className={styles.selectInput}>
+                      <option value="250g">250g</option>
+                      <option value="1kg">1kg</option>
+                    </select>
+                  </div>
+
+                  <div className={styles.selectControl}>
+                    <label className={styles.selectLabel}>{locale === 'tr' ? 'Öğütme Seçeneği' : 'Grind Type'}</label>
+                    <select value={grindType} onChange={(e) => setGrindType(e.target.value)} className={styles.selectInput}>
+                      {getGrindOptions(coffee.category, locale).map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <button
+                    onClick={() => addToCart({
+                      id: `${coffee.id}-${size}-${grindType}`,
+                      name: coffee.name,
+                      price: unitPrice,
+                      category: coffee.category,
+                      stock: coffee.stock,
+                      emoji: style.emoji,
+                      bagColor: style.bagColor,
+                      notes: [
+                        ...coffee.tastingNotes.split(',').map(n => n.trim()),
+                        `${locale === 'tr' ? 'Boyut' : 'Size'}: ${size}`,
+                        `${locale === 'tr' ? 'Öğütme' : 'Grind'}: ${grindType}`
+                      ],
+                      imageUrl: coffee.imageUrl,
+                      size,
+                      grindType,
+                    }, qty)}
+                    className={styles.addToCartBtn}
+                    disabled={coffee.stock === 0}
+                  >
+                    {coffee.stock === 0 ? t.outOfStock : t.addToCart}
+                  </button>
+                </>
+              ) : (
+                <div className={styles.equipmentSpecs}>
+                  <p className={styles.priceVal} style={{ fontSize: '1.1em' }}>
+                    {locale === 'tr' ? 'Fiyat için iletişime geçin' : 'Contact us for pricing'}
+                  </p>
+                  <ul className={styles.equipmentSpecList}>
+                    {coffee.tastingNotes.split(',').map((spec, i) => (
+                      <li key={i}>{spec.trim()}</li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
+              )}
 
-              <div className={styles.selectControl}>
-                <label className={styles.selectLabel}>Size</label>
-                <select value={size} onChange={(e) => setSize(e.target.value)} className={styles.selectInput}>
-                  <option value="250g">250g</option>
-                  <option value="500g">500g</option>
-                  <option value="1kg">1kg</option>
-                </select>
-              </div>
-
-              <div className={styles.selectControl}>
-                <label className={styles.selectLabel}>{locale === 'tr' ? 'Öğütme Seçeneği' : 'Grind Type'}</label>
-                <select value={grindType} onChange={(e) => setGrindType(e.target.value)} className={styles.selectInput}>
-                  {getGrindOptions(coffee.category, locale).map((opt) => (
-                    <option key={opt} value={opt}>
-                      {opt}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <button
-                onClick={() => addToCart({
-                  id: `${coffee.id}-${size}-${grindType}`,
-                  name: coffee.name,
-                  price: coffee.price,
-                  category: coffee.category,
-                  stock: coffee.stock,
-                  emoji: style.emoji,
-                  bagColor: style.bagColor,
-                  notes: [
-                    ...coffee.tastingNotes.split(',').map(n => n.trim()),
-                    `${locale === 'tr' ? 'Boyut' : 'Size'}: ${size}`,
-                    `${locale === 'tr' ? 'Öğütme' : 'Grind'}: ${grindType}`
-                  ],
-                  imageUrl: coffee.imageUrl,
-                  size,
-                  grindType,
-                }, qty)}
-                className={styles.addToCartBtn}
-                disabled={coffee.stock === 0}
-              >
-                {coffee.stock === 0 ? t.outOfStock : t.addToCart}
-              </button>
+              {!isCoffeeProduct && (
+                <div className={styles.inquireStockNote}>
+                  <span>
+                    {locale === 'tr' ? (
+                      <>
+                        Güncel stok durumu için{' '}
+                        <Link href={`${linkPrefix}/contact`} style={{ textDecoration: 'underline', fontWeight: '600', color: 'inherit' }}>
+                          bizimle iletişime geçin
+                        </Link>
+                        .
+                      </>
+                    ) : (
+                      <>
+                        Please{' '}
+                        <Link href={`${linkPrefix}/contact`} style={{ textDecoration: 'underline', fontWeight: '600', color: 'inherit' }}>
+                          contact us
+                        </Link>{' '}
+                        for current stock availability.
+                      </>
+                    )}
+                  </span>
+                </div>
+              )}
 
               {customer && !customer.isSubscriber && isCoffeeProduct && (
                 <button

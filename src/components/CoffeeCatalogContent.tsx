@@ -10,6 +10,9 @@ import Navbar from './Navbar';
 import styles from '../app/coffee/coffee.module.css';
 import { localizeProduct } from '../lib/localize';
 
+const COFFEE_CATEGORY_SLUGS = ['single-origin', 'espresso', 'filter', 'turkish', 'signature-blend'];
+const EQUIPMENT_CATEGORY_SLUGS = ['espresso-machines', 'coffee-grinders', 'filter-brewing-equipment', 'small-bar-equipment', 'barista-accessories', 'cleaning-products'];
+
 interface CoffeeProduct {
   id: string;
   name: string;
@@ -325,6 +328,8 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
       customizePurchase: 'Customize Roast & Purchase',
       noResultsTitle: 'No Roasts Located',
       noResultsSub: 'We couldn\'t find any coffee matching "{query}". Try selecting another filter tag or search term.',
+      equipmentInquiryTitle: 'Inquire About Stock',
+      equipmentInquirySub: 'This equipment category is coming soon online. Please contact us directly for current availability and pricing.',
       loadingText: 'Brewing catalog items...',
     },
     tr: {
@@ -350,6 +355,8 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
       customizePurchase: 'Kavrumu Özelleştir & Satın Al',
       noResultsTitle: 'Kavrulmuş Kahve Bulunamadı',
       noResultsSub: '"{query}" ile eşleşen kahve bulamadık. Lütfen başka bir filtre seçin veya arama yapın.',
+      equipmentInquiryTitle: 'Stok Sorgulayın',
+      equipmentInquirySub: 'Bu ekipman kategorisi yakında online olarak eklenecektir. Güncel stok durumu ve fiyat bilgisi için lütfen doğrudan bizimle iletişime geçin.',
       loadingText: 'Katalog ürünleri hazırlanıyor...',
     }
   };
@@ -359,11 +366,18 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
   const getCategoryLabel = (label: string) => {
     const l = label.toLowerCase();
     if (locale === 'tr') {
-      if (l === 'single origin' || l === 'single-origin') return 'Tek Köken';
-      if (l === 'espresso') return 'Espresso';
-      if (l === 'filter coffee' || l === 'filter') return 'Filtre Kahve';
+      if (l === 'single origin' || l === 'single-origin') return 'Single Origin (Tek Yöre)';
+      if (l === 'espresso' || l === 'espresso blend') return 'Espresso Blend';
+      if (l === 'filter coffee' || l === 'filter' || l === 'filter blend') return 'Filtre Blend';
       if (l === 'turkish coffee' || l === 'turkish') return 'Türk Kahvesi';
+      if (l === 'signature blend' || l === 'signature-blend') return 'Özel Harmanlar (Signature)';
       if (l === 'limited-edition' || l === 'limited edition') return 'Sınırlı Üretim';
+      if (l === 'espresso machines') return 'Espresso Makineleri';
+      if (l === 'coffee grinders') return 'Kahve Değirmenleri';
+      if (l === 'filter brewing equipment') return 'Filtre Demleme Ekipmanları';
+      if (l === 'small bar equipment') return 'Küçük Bar Ekipmanları';
+      if (l === 'barista accessories') return 'Barista Aksesuarları';
+      if (l === 'cleaning products') return 'Temizlik Ürünleri';
     }
     return label;
   };
@@ -439,7 +453,7 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
       coffee.origin.toLowerCase().includes(searchQuery.toLowerCase()) ||
       coffee.tastingNotes.toLowerCase().includes(searchQuery.toLowerCase());
 
-    if (activeFilter === 'all') return matchesSearch;
+    if (activeFilter === 'all') return COFFEE_CATEGORY_SLUGS.includes(coffee.category) && matchesSearch;
     if (activeFilter === 'light') return coffee.roastLevel < 45 && matchesSearch;
     if (activeFilter === 'medium-dark') return coffee.roastLevel >= 45 && matchesSearch;
 
@@ -498,6 +512,7 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
 
         <div className={styles.heroInner}>
           <span className={styles.heroBadge}>{t.eyebrow}</span>
+          <span className={styles.heroBrandLine}>COFFEE ESTO Roastery</span>
           <h1 id="catalog-hero-title" className={styles.heroTitle}>
             {t.title}
           </h1>
@@ -517,45 +532,77 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
 
           {/* Filter Bar Row */}
           <div className={styles.filterBar}>
-            <div className={styles.filterTags} role="tablist" aria-label="Coffee Category Filters">
-              {/* All filter */}
-              <button
-                className={`${styles.tagBtn} ${activeFilter === 'all' ? styles.tagBtnActive : ''}`}
-                onClick={() => setActiveFilter('all')}
-                role="tab"
-                aria-selected={activeFilter === 'all'}
-              >
-                {t.allFilters}
-              </button>
-              {/* Dynamic category filters from DB */}
-              {categories.map(cat => (
-                <button
-                  key={cat.slug}
-                  className={`${styles.tagBtn} ${activeFilter === cat.slug ? styles.tagBtnActive : ''}`}
-                  onClick={() => setActiveFilter(cat.slug)}
-                  role="tab"
-                  aria-selected={activeFilter === cat.slug}
-                >
-                  {getCategoryLabel(cat.label)}
-                </button>
-              ))}
-              {/* Roast-level pseudo-filters */}
-              <button
-                className={`${styles.tagBtn} ${activeFilter === 'light' ? styles.tagBtnActive : ''}`}
-                onClick={() => setActiveFilter('light')}
-                role="tab"
-                aria-selected={activeFilter === 'light'}
-              >
-                {t.lightRoasts}
-              </button>
-              <button
-                className={`${styles.tagBtn} ${activeFilter === 'medium-dark' ? styles.tagBtnActive : ''}`}
-                onClick={() => setActiveFilter('medium-dark')}
-                role="tab"
-                aria-selected={activeFilter === 'medium-dark'}
-              >
-                {t.mediumDark}
-              </button>
+            <div className={styles.filterGroups} role="tablist" aria-label="Coffee Category Filters">
+
+              {/* Group: Coffees */}
+              <div className={styles.filterGroup}>
+                <span className={styles.filterGroupLabel}>
+                  {locale === 'tr' ? 'KAHVELER' : 'COFFEES'}
+                </span>
+                <div className={styles.filterTags}>
+                  <button
+                    className={`${styles.tagBtn} ${activeFilter === 'all' ? styles.tagBtnActive : ''}`}
+                    onClick={() => setActiveFilter('all')}
+                    role="tab"
+                    aria-selected={activeFilter === 'all'}
+                  >
+                    {t.allFilters}
+                  </button>
+                  {categories
+                    .filter(cat => COFFEE_CATEGORY_SLUGS.includes(cat.slug))
+                    .map(cat => (
+                      <button
+                        key={cat.slug}
+                        className={`${styles.tagBtn} ${activeFilter === cat.slug ? styles.tagBtnActive : ''}`}
+                        onClick={() => setActiveFilter(cat.slug)}
+                        role="tab"
+                        aria-selected={activeFilter === cat.slug}
+                      >
+                        {getCategoryLabel(cat.label)}
+                      </button>
+                    ))}
+                  <button
+                    className={`${styles.tagBtn} ${activeFilter === 'light' ? styles.tagBtnActive : ''}`}
+                    onClick={() => setActiveFilter('light')}
+                    role="tab"
+                    aria-selected={activeFilter === 'light'}
+                  >
+                    {t.lightRoasts}
+                  </button>
+                  <button
+                    className={`${styles.tagBtn} ${activeFilter === 'medium-dark' ? styles.tagBtnActive : ''}`}
+                    onClick={() => setActiveFilter('medium-dark')}
+                    role="tab"
+                    aria-selected={activeFilter === 'medium-dark'}
+                  >
+                    {t.mediumDark}
+                  </button>
+                </div>
+              </div>
+
+              {/* Group: Equipment & Accessories */}
+              {categories.some(cat => EQUIPMENT_CATEGORY_SLUGS.includes(cat.slug)) && (
+                <div className={styles.filterGroup}>
+                  <span className={styles.filterGroupLabel}>
+                    {locale === 'tr' ? 'EKİPMAN & AKSESUAR' : 'EQUIPMENT & GEAR'}
+                  </span>
+                  <div className={styles.filterTags}>
+                    {categories
+                      .filter(cat => EQUIPMENT_CATEGORY_SLUGS.includes(cat.slug))
+                      .map(cat => (
+                        <button
+                          key={cat.slug}
+                          className={`${styles.tagBtn} ${activeFilter === cat.slug ? styles.tagBtnActive : ''}`}
+                          onClick={() => setActiveFilter(cat.slug)}
+                          role="tab"
+                          aria-selected={activeFilter === cat.slug}
+                        >
+                          {getCategoryLabel(cat.label)}
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Search Input Box */}
@@ -643,7 +690,9 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
                       <span className={styles.cardOrigin}>{coffee.origin}</span>
                       <h3 className={styles.cardName}>{coffee.name}</h3>
                       <span className={styles.cardPrice}>
-                        {isSubscriber && coffeeCategories.includes(coffee.category) ? (
+                        {!coffeeCategories.includes(coffee.category) ? (
+                          locale === 'tr' ? 'Fiyat için iletişime geçin' : 'Contact for pricing'
+                        ) : isSubscriber ? (
                           <>
                             <span style={{ textDecoration: 'line-through', opacity: 0.5, marginRight: '8px' }}>
                               {locale === 'tr' ? `${coffee.price} TL` : `₺${coffee.price}`}
@@ -671,6 +720,17 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
                 );
               })}
             </motion.div>
+          ) : EQUIPMENT_CATEGORY_SLUGS.includes(activeFilter) ? (
+            <div className={styles.noResults}>
+              <span className={styles.noResultsIcon}>🛠️</span>
+              <h3>{t.equipmentInquiryTitle}</h3>
+              <p>
+                {t.equipmentInquirySub}{' '}
+                <Link href={`${linkPrefix}/contact`} style={{ textDecoration: 'underline', fontWeight: 600, color: 'inherit' }}>
+                  {locale === 'tr' ? 'İletişime Geçin' : 'Contact Us'}
+                </Link>
+              </p>
+            </div>
           ) : (
             <div className={styles.noResults}>
               <span className={styles.noResultsIcon}>☕️</span>

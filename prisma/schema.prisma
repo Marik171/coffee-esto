@@ -52,6 +52,7 @@ model Product {
   tastingNotes String
   description  String
   price        Float
+  price1kg     Float    @default(0)
   wholesalePrice Float   @default(0.0)
   stock        Int      @default(0)
   imageUrl     String   @default("")

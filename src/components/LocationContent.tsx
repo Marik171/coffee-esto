@@ -105,8 +105,9 @@ export default function LocationContent({ locale = 'en' }: LocationContentProps)
   const translations = {
     en: {
       eyebrow: 'KARTAL • İSTANBUL',
+      heroLabel: 'THE COFFEE ESTO ROASTERY',
       heroTitle: 'Step Into\nOur Roastery',
-      heroSub: 'Every single batch of specialty beans is freshly roasted at our Kartal space. Drop by to smell the crackle of coffee roasting and bring home a freshly sealed pack.',
+      heroSub: 'At our Kartal roastery, we roast carefully selected coffee beans fresh, with profiles tailored to their character. Visit us to see our roasting process up close, taste our coffees, and discover the perfect coffee for you together.',
       directionsBtn: 'Get Directions',
       findUs: 'VISIT US',
       addressLabel: 'Address',
@@ -150,8 +151,9 @@ export default function LocationContent({ locale = 'en' }: LocationContentProps)
     },
     tr: {
       eyebrow: 'KARTAL • İSTANBUL',
+      heroLabel: 'THE COFFEE ESTO ROASTERY',
       heroTitle: 'Kavurmahanemizi\nKeşfedin',
-      heroSub: 'Tüm özel çekirdekleri Kartal\'daki kavurmahanemizde taze olarak kavuruyoruz. Uğrayıp taze kahve kokusunu solumak ve evinize taze bir paket götürmek için bize katılın.',
+      heroSub: 'Kartal\'daki kavurmahanemizde, özenle seçtiğimiz kahve çekirdeklerini karakterlerine uygun profillerle taze olarak kavuruyoruz. Kavurma sürecimizi yakından görmek, kahvelerimizi tatmak ve size en uygun kahveyi birlikte belirlemek için bizi ziyaret edin.',
       directionsBtn: 'Yol Tarifi Al',
       findUs: 'BİZE ULAŞIN',
       addressLabel: 'Adres',
@@ -233,6 +235,7 @@ export default function LocationContent({ locale = 'en' }: LocationContentProps)
           animate={heroInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
+          <span className={styles.heroEyebrow}>{t.heroLabel}</span>
           <h1 id="location-hero-title" className={styles.heroTitle}>
             {t.heroTitle.split('\n')[0]}<br />{t.heroTitle.split('\n')[1]}
           </h1>

@@ -705,3 +705,55 @@
   color: #333333;
   margin-top: 16px;
 }
+
+.shippingNote {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-family: var(--font-family-primary);
+  color: #555555;
+  line-height: 1.5;
+  margin-top: 14px;
+}
+
+.equipmentSpecs {
+  margin-top: 12px;
+}
+
+.equipmentSpecList {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.equipmentSpecList li {
+  font-size: 12px;
+  font-family: var(--font-family-primary);
+  color: #444444;
+  line-height: 1.5;
+  padding-left: 16px;
+  position: relative;
+}
+
+.equipmentSpecList li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: #c9963a;
+}
+
+.inquireStockNote {
+  background-color: #fff8ef;
+  border-left: 3px solid #c9963a;
+  padding: 14px 18px;
+  font-size: 12px;
+  font-family: var(--font-family-primary);
+  letter-spacing: 0.03em;
+  line-height: 1.6;
+  color: #5a4a2e;
+  margin-top: 16px;
+}

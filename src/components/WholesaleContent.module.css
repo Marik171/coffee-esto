@@ -99,6 +99,33 @@
   margin: 0;
 }
 
+.heroContact {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.heroContactText {
+  font-size: clamp(14px, 1.8vw, 16px);
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0;
+}
+
+.heroContactLink {
+  font-size: clamp(16px, 2.2vw, 19px);
+  font-weight: 600;
+  color: #c9963a;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: color 0.2s ease;
+}
+
+.heroContactLink:hover {
+  color: #e0ac52;
+}
+
 /* ── 2. Bento Grid Showcase ─────────────────────────────────────── */
 .feedSection {
   background: #fdfcf7;

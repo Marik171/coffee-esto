@@ -18,14 +18,14 @@ interface Order {
 interface CoffeeProduct {
   id: string; name: string; category: string; origin: string; altitude: string;
   varietal: string; roastLevel: number; tastingNotes: string; description: string;
-  price: number; stock: number; imageUrl: string; videoUrl: string; isActive: boolean;
+  price: number; price1kg: number; stock: number; imageUrl: string; videoUrl: string; isActive: boolean;
 }
 interface Category { id: string; slug: string; label: string; productCount?: number; }
 
 /* ── Helpers ───────────────────────────────────────────────────── */
 const emptyProduct = (): Partial<CoffeeProduct> => ({
   id: '', name: '', category: '', origin: '', altitude: '', varietal: '',
-  roastLevel: 50, tastingNotes: '', description: '', price: 0, stock: 0,
+  roastLevel: 50, tastingNotes: '', description: '', price: 0, price1kg: 0, stock: 0,
   imageUrl: '', videoUrl: '', isActive: true,
 });
 
@@ -1011,8 +1011,14 @@ export default function AdminDashboardPage() {
 
                 {/* Price */}
                 <div className={styles.inputBox}>
-                  <label htmlFor="prod-price">Unit Price (₺)</label>
+                  <label htmlFor="prod-price">250g Price (₺)</label>
                   <input id="prod-price" type="number" required value={prodForm.price || ''} onChange={e => handleFieldChange('price', e.target.value)} placeholder="e.g. 180" />
+                </div>
+
+                {/* 1kg Price */}
+                <div className={styles.inputBox}>
+                  <label htmlFor="prod-price-1kg">1kg Price (₺)</label>
+                  <input id="prod-price-1kg" type="number" value={prodForm.price1kg || ''} onChange={e => handleFieldChange('price1kg', e.target.value)} placeholder="e.g. 1000" />
                 </div>
 
                 {/* Stock */}

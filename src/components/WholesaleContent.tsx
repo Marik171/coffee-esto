@@ -55,13 +55,16 @@ export default function WholesaleContent({ locale }: WholesaleContentProps) {
 
   const translations = {
     en: {
-      heroLabel: 'WHOLESALE PARTNERSHIPS',
-      heroTitle: 'Serve Coffee Esto\nWherever You Are',
-      heroSub: 'Learn more about our wholesale opportunities and how we can support your business with specialty coffee, equipment, and training.',
-      
+      heroLabel: 'WHOLESALE COFFEE SOLUTIONS',
+      heroTitle: 'Wherever You Are,\nCoffee Esto Is With You',
+      heroSub: 'We support your business with custom coffee blends, freshly roasted quality beans, equipment support, and professional barista training.',
+      heroContact: 'Get in touch for wholesale coffee and business partnerships.',
+      heroContactName: 'Hakan Akdağ',
+      heroContactPhone: '0553 605 31 83',
+
       feed1Label: 'WHOLESALE',
       feed1Title: 'Cafes',
-      feed1Text: 'We roast micro-lots to order and design specific blends to fit your cafe\'s workflow. Partner with us for coffee that elevates your brand and keeps customers coming back.',
+      feed1Text: 'We work together to analyze your cafe\'s target audience and select the coffee that best suits their palate. By creating custom recipes and roast profiles for your business, we strengthen your product standard and maximize customer satisfaction and sales potential.',
       
       feed2Label: 'EQUIPMENT',
       feed2Title: 'Espresso Machinery & Project Setup',
@@ -69,15 +72,15 @@ export default function WholesaleContent({ locale }: WholesaleContentProps) {
       
       feed3Label: 'EDUCATION',
       feed3Title: 'Barista Training',
-      feed3Text: 'Training is key to consistency. We provide hands-on barista classes, recipe mapping, and ongoing tasting cuppings for all our wholesale accounts.',
+      feed3Text: 'Sustainable quality starts with proper training. For our wholesale partners, we offer hands-on barista training, equipment usage guidance, recipe standardization, and periodic tasting support. This helps you maintain the same quality in every cup and boost customer satisfaction.',
       
       feed4Label: 'DIRECT TRADE',
       feed4Title: 'Our Sourcing & Values',
-      feed4Text: 'Ethical micro-lots sourced directly from farms in Colombia, Brazil, and Ethiopia. We pay quality premiums that directly support grower communities.',
+      feed4Text: 'We source our coffee from growers and trusted suppliers who meet our quality standards. We carefully select every bean based on flavor profile, quality, and intended use, keeping sustainable quality at the forefront of every stage of the roasting process.',
       
       feed5Label: 'OFFICES & COMMERCIAL',
       feed5Title: 'Office Coffee Programs',
-      feed5Text: 'Bring specialty coffee to your workplace. We offer modular equipment leases, brewers, and recurring fresh-roasted whole bean deliveries tailored for your office size.',
+      feed5Text: 'We offer coffee solutions tailored to your workplace. Based on your office size and consumption needs, we set up the right equipment, coffee supply, and a regular delivery schedule, giving your employees a fresh, consistent-quality coffee experience every day.',
       
       quote: '“At Coffee Esto, we work to embody the idea that coffee should be something special through our sourcing, roasting, and wholesale partnerships. We strive to bring you exceptional coffees that reflect and honor the tremendous risk and effort put into growing and cultivating this seemingly simple yet dynamic product.”',
       quoteAuthor: 'SERVICE WITH VALUES / COFFEE ESTO ROASTERY',
@@ -107,13 +110,16 @@ export default function WholesaleContent({ locale }: WholesaleContentProps) {
       errorMsg: 'Please fill out all required fields.'
     },
     tr: {
-      heroLabel: 'TOPTAN ORTAKLIKLAR',
-      heroTitle: 'Nerede Olursanız Olun\nCoffee Esto Sunun',
-      heroSub: 'Toptan satış fırsatlarımız ve işletmenizi nitelikli kahve, ekipman ve eğitimlerle nasıl destekleyebileceğimiz hakkında daha fazla bilgi edinin.',
-      
+      heroLabel: 'TOPTAN KAHVE ÇÖZÜMLERİ',
+      heroTitle: 'Nerede Olursanız Olun,\nCoffee Esto Yanınızda',
+      heroSub: 'İşletmenize özel kahve harmanları, taze kavrulmuş nitelikli çekirdekler, ekipman desteği ve profesyonel barista eğitimleriyle yanınızdayız.',
+      heroContact: 'Toptan kahve ve iş ortaklığı için iletişime geçin.',
+      heroContactName: 'Hakan Akdağ',
+      heroContactPhone: '0553 605 31 83',
+
       feed1Label: 'TOPTAN SATIŞ',
       feed1Title: 'Kafeler',
-      feed1Text: 'Kafelerinizin iş akışına uyması için mikro lotları sipariş üzerine kavuruyor ve özel harmanlar tasarlıyoruz. Markanızı yükselten kahveler için bizimle ortak olun.',
+      feed1Text: 'Kafenizin hedef müşteri kitlesini birlikte analiz ediyor, damak zevkine en uygun kahve seçimini gerçekleştiriyoruz. İşletmenize özel reçete ve kavurma profilleri oluşturarak ürün standardınızı güçlendiriyor, müşteri memnuniyetini ve satış potansiyelinizi en üst seviyeye taşıyoruz.',
       
       feed2Label: 'EKİPMAN',
       feed2Title: 'Espresso Makineleri & Kurulum',
@@ -121,15 +127,15 @@ export default function WholesaleContent({ locale }: WholesaleContentProps) {
       
       feed3Label: 'EĞİTİM',
       feed3Title: 'Barista Eğitimi',
-      feed3Text: 'Eğitim, tutarlılığın anahtarıdır. Tüm toptan satış ortaklarımız için uygulamalı barista dersleri, reçete çıkarma ve sürekli tadım seansları sunuyoruz.',
+      feed3Text: 'Sürdürülebilir kalite, doğru eğitimle başlar. Toptan iş ortaklarımıza; uygulamalı barista eğitimi, ekipman kullanımı, reçete standardizasyonu ve periyodik tadım desteği sunuyoruz. Böylece her fincanda aynı kaliteyi korumanızı ve müşteri memnuniyetini artırmanızı sağlıyoruz.',
       
       feed4Label: 'DOĞRUDAN TEDARİK',
       feed4Title: 'Kaynaklarımız & Değerlerimiz',
-      feed4Text: 'Kolombiya, Brezilya ve Etiyopya\'daki çiftliklerden doğrudan temin edilen etik mikro lotlar. Üretici topluluklarını doğrudan destekleyen kalite primleri ödüyoruz.',
+      feed4Text: 'Kahvelerimizi üretici çiftçilerden ve güvenilir tedarikçilerden, kalite standartlarına uygun şekilde temin ediyoruz. Her çekirdeği tat profili, kalite ve kullanım amacına göre özenle seçiyor; kavurma sürecinin her aşamasında sürdürülebilir kaliteyi ön planda tutuyoruz.',
       
       feed5Label: 'OFİS & TİCARİ',
       feed5Title: 'Ofis Kahve Programları',
-      feed5Text: 'Nitelikli kahveyi iş yerinize taşıyın. Ofis büyüklüğünüze göre uyarlanmış modüler ekipman kiralama, demleyiciler ve düzenli taze kahve gönderimleri sunuyoruz.',
+      feed5Text: 'Çalışma ortamınıza özel kahve çözümleri sunuyoruz. Ofisinizin büyüklüğü ve tüketim ihtiyacına göre uygun ekipman, kahve tedariki ve düzenli teslimat planı oluşturuyor; çalışanlarınıza her gün taze ve standart kalitede kahve deneyimi sağlıyoruz.',
       
       quote: '“Coffee Esto olarak, kahvenin tedarik, kavurma ve toptan satış ortaklıklarımız aracılığıyla özel bir şey olması gerektiği fikrini somutlaştırmak için çalışıyoruz. Bu görünüşte basit ama dinamik ürünü yetiştirmek ve işlemek için harcanan muazzam riski ve emeği onurlandıran olağanüstü kahveleri size sunmak için çaba gösteriyoruz.”',
       quoteAuthor: 'DEĞERLERLE HİZMET / COFFEE ESTO ROASTERY',
@@ -193,6 +199,12 @@ export default function WholesaleContent({ locale }: WholesaleContentProps) {
             {t.heroTitle.split('\n')[0]}<br />{t.heroTitle.split('\n')[1]}
           </h1>
           <p className={styles.heroSub}>{t.heroSub}</p>
+          <div className={styles.heroContact}>
+            <p className={styles.heroContactText}>{t.heroContact}</p>
+            <a href={`tel:${t.heroContactPhone.replace(/\s+/g, '')}`} className={styles.heroContactLink}>
+              {t.heroContactName} — {t.heroContactPhone}
+            </a>
+          </div>
         </motion.div>
       </section>
 
@@ -243,7 +255,7 @@ export default function WholesaleContent({ locale }: WholesaleContentProps) {
             {/* Card 4: Sourcing & Values (Standard) */}
             <FadeUp className={styles.bentoCard} delay={0.06}>
               <div className={styles.cardBg}>
-                <img src="/images/about/about-3.webp" alt="Sourcing & Values" className={styles.cardImg} />
+                <img src="/images/hero_direct_farmers.png" alt="Sourcing & Values" className={styles.cardImg} />
                 <div className={styles.cardOverlay} />
               </div>
               <div className={styles.cardContent}>

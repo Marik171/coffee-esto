@@ -42,9 +42,9 @@ export default function AboutContent({ locale = 'en' }: AboutContentProps) {
 
   const translations = {
     en: {
-      heroEyebrow: 'About Coffee Esto',
-      heroTitle: 'About Coffee Esto',
-      heroSub: 'Our core values: to source directly, to roast to order, to welcome. We roast green coffee to reflect its unique terroir in a style that highlights clean sweetness.',
+      heroEyebrow: 'THE COFFEE ESTO ABOUT US',
+      heroTitle: 'We Craft Coffee with Knowledge, Experience, and Passion',
+      heroSub: 'At The Coffee Esto, we carefully select the coffee we source from select farms and trusted suppliers based on origin, processing method, and flavor profile. We develop the right roast profile for every bean, preserving consistent flavor through regular cupping and quality control. Through wholesale coffee supply, business-specific blends, barista training, and equipment support, we stand by our business partners at every stage.',
       quoteText: '“The idea of Coffee Esto starts with the thought that coffee by itself is compelling, but how it brings people to connect in explicitly human ways all over the world is what makes it infinitely spellbinding.”',
       established: 'ESTABLISHED 2021 / KARTAL, İSTANBUL',
       
@@ -68,9 +68,9 @@ export default function AboutContent({ locale = 'en' }: AboutContentProps) {
       ctaWholesale: 'Wholesale'
     },
     tr: {
-      heroEyebrow: 'Coffee Esto Hakkında',
-      heroTitle: 'Coffee Esto Hakkında',
-      heroSub: 'Temel değerlerimiz: doğrudan tedarik etmek, sipariş üzerine kavurmak, eğitmek ve ağırlamak. Yeşil kahveyi, temiz tatlılığı öne çıkaran bir tarzda, kendine özgü yöresini yansıtacak şekilde kavuruyoruz.',
+      heroEyebrow: 'THE COFFEE ESTO HAKKINDA',
+      heroTitle: 'Kahveyi Bilgi, Deneyim ve Tutkuyla İşliyoruz',
+      heroSub: 'The Coffee Esto olarak seçkin çiftliklerden ve güvenilir tedarikçilerden temin ettiğimiz kahveleri; menşei, işleme yöntemi ve tat profiline göre özenle seçiyoruz. Her çekirdek için uygun kavurma profilleri geliştiriyor, düzenli tadım ve kalite kontrolleriyle standart lezzeti koruyoruz. Toptan kahve tedariki, işletmeye özel harmanlar, barista eğitimi ve ekipman desteğiyle iş ortaklarımızın her aşamada yanında yer alıyoruz.',
       quoteText: '“Coffee Esto fikri, kahvenin kendi başına büyüleyici olduğu düşüncesiyle başlar; ancak insanları dünyanın her yerinde insani yollarla birbirine bağlama şeklidir onu sonsuz kılan.”',
       established: 'KURULUŞ 2021 / KARTAL, İSTANBUL',
       

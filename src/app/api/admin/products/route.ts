@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     const {
       id, name, category, origin, altitude,
       varietal, roastLevel, tastingNotes, description,
-      price, stock, imageUrl, videoUrl, isActive,
+      price, price1kg, stock, imageUrl, videoUrl, isActive,
     } = body;
 
     if (!id || !name || !category || price === undefined) {
@@ -52,6 +52,7 @@ export async function POST(request: Request) {
         tastingNotes: tastingNotes || '',
         description: description || '',
         price: Number(price),
+        price1kg: Number(price1kg) || 0,
         stock: Number(stock) || 0,
         imageUrl: imageUrl || '',
         videoUrl: videoUrl || '',
@@ -75,7 +76,7 @@ export async function PUT(request: Request) {
     const {
       id, name, category, origin, altitude,
       varietal, roastLevel, tastingNotes, description,
-      price, stock, imageUrl, videoUrl, isActive,
+      price, price1kg, stock, imageUrl, videoUrl, isActive,
     } = body;
 
     if (!id) {
@@ -97,6 +98,7 @@ export async function PUT(request: Request) {
         tastingNotes,
         description,
         price:        price !== undefined ? Number(price) : undefined,
+        price1kg:     price1kg !== undefined ? Number(price1kg) : undefined,
         stock:        stock !== undefined ? Number(stock) : undefined,
         imageUrl:     imageUrl !== undefined ? imageUrl : undefined,
         videoUrl:     videoUrl !== undefined ? videoUrl : undefined,

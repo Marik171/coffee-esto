@@ -42,8 +42,9 @@ export default function CoffeeWorldContent({ locale = 'tr' }: CoffeeWorldContent
 
   const t = {
     tr: {
+      label: 'THE COFFEE ESTO DERGİ & REHBER',
       title: 'Kahve Dünyası',
-      subtitle: 'Kavurmahanemizden taze haberler, demleme teknikleri, barista ipuçları ve kahve kültürüne dair her şey.',
+      subtitle: 'Kavurma tekniklerinden demleme reçetelerine, barista eğitimlerinden ekipman kullanımına kadar kahveye dair güncel bilgiler, profesyonel öneriler ve sektörel içerikler.',
       loading: 'İçerikler yükleniyor...',
       noPosts: 'Bu kategoride henüz bir yazı bulunmamaktadır.',
       readMore: 'Devamını Oku',
@@ -53,8 +54,9 @@ export default function CoffeeWorldContent({ locale = 'tr' }: CoffeeWorldContent
       author: 'The Coffee Esto Roastery',
     },
     en: {
+      label: 'THE COFFEE ESTO JOURNAL & GUIDE',
       title: 'Coffee World',
-      subtitle: 'Fresh news from our roastery, brewing techniques, barista tips, and everything about coffee culture.',
+      subtitle: 'From roasting techniques to brewing recipes, barista training to equipment use — up-to-date coffee knowledge, professional tips, and industry content.',
       loading: 'Loading content...',
       noPosts: 'No posts available in this category yet.',
       readMore: 'Read More',
@@ -118,9 +120,7 @@ export default function CoffeeWorldContent({ locale = 'tr' }: CoffeeWorldContent
         <div className={styles.heroOverlay} />
         
         <div className={styles.heroInner}>
-          <span className={styles.heroLabel}>
-            {locale === 'tr' ? 'ESTO DERGİ & PORTAL' : 'ESTO JOURNAL'}
-          </span>
+          <span className={styles.heroLabel}>{t.label}</span>
           <h1 className={styles.heroTitle}>{t.title}</h1>
           <p className={styles.heroSubtitle}>{t.subtitle}</p>
         </div>

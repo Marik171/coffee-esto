@@ -10,6 +10,27 @@ interface CheckoutPaymentContentProps {
   locale: string;
 }
 
+interface AddressSuggestion {
+  label: string;
+  address: string;
+  city: string;
+  province: string;
+  postcode: string;
+}
+
+const turkishProvinces = [
+  'Adana', 'Adıyaman', 'Afyonkarahisar', 'Ağrı', 'Amasya', 'Ankara', 'Antalya', 'Artvin',
+  'Aydın', 'Balıkesir', 'Bilecik', 'Bingöl', 'Bitlis', 'Bolu', 'Burdur', 'Bursa',
+  'Çanakkale', 'Çankırı', 'Çorum', 'Denizli', 'Diyarbakır', 'Edirne', 'Elazığ', 'Erzincan',
+  'Erzurum', 'Eskişehir', 'Gaziantep', 'Giresun', 'Gümüşhane', 'Hakkari', 'Hatay', 'Isparta',
+  'Mersin', 'İstanbul', 'İzmir', 'Kars', 'Kastamonu', 'Kayseri', 'Kırklareli', 'Kırşehir',
+  'Kocaeli', 'Konya', 'Kütahya', 'Malatya', 'Manisa', 'Kahramanmaraş', 'Mardin', 'Muğla',
+  'Muş', 'Nevşehir', 'Niğde', 'Ordu', 'Rize', 'Sakarya', 'Samsun', 'Siirt', 'Sinop', 'Sivas',
+  'Tekirdağ', 'Tokat', 'Trabzon', 'Tunceli', 'Şanlıurfa', 'Uşak', 'Van', 'Yozgat', 'Zonguldak',
+  'Aksaray', 'Bayburt', 'Karaman', 'Kırıkkale', 'Batman', 'Şırnak', 'Bartın', 'Ardahan',
+  'Iğdır', 'Yalova', 'Karabük', 'Kilis', 'Osmaniye', 'Düzce',
+];
+
 function PaymentForm({ locale }: CheckoutPaymentContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -207,11 +228,72 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
+  const [isSearchingAddress, setIsSearchingAddress] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const suppressNextSearch = React.useRef(false);
+  const addressFieldRef = React.useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (suppressNextSearch.current) {
+      suppressNextSearch.current = false;
+      return;
+    }
+    if (address.trim().length < 3) {
+      setAddressSuggestions([]);
+      setIsSearchingAddress(false);
+      return;
+    }
+    let cancelled = false;
+    setIsSearchingAddress(true);
+    const handle = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/geocode?q=${encodeURIComponent(address)}`);
+        const d = await res.json();
+        if (!cancelled && res.ok && d.success) {
+          setAddressSuggestions(d.data);
+          setShowSuggestions(true);
+        }
+      } catch {
+        /* non-fatal */
+      } finally {
+        if (!cancelled) setIsSearchingAddress(false);
+      }
+    }, 400);
+    return () => { cancelled = true; clearTimeout(handle); };
+  }, [address]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (addressFieldRef.current && !addressFieldRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const normalizeTr = (s: string) =>
+    s.toLocaleLowerCase('tr').replace(/i̇/g, 'i');
+
+  const handleSelectSuggestion = (s: AddressSuggestion) => {
+    suppressNextSearch.current = true;
+    setAddress(s.address);
+    if (s.city) setCity(s.city);
+    if (s.postcode) setZipCode(s.postcode);
+    if (s.province) {
+      const match = turkishProvinces.find((p) => normalizeTr(p) === normalizeTr(s.province));
+      if (match) setStateName(match);
+    }
+    setAddressSuggestions([]);
+    setShowSuggestions(false);
+  };
+
   const itemsToRender = isWholesale ? wholesaleItems : cartItems;
   const subtotal = isWholesale
     ? wholesaleItems.reduce((acc, item) => acc + item.wholesalePrice * item.quantity, 0)
     : cartTotal;
-  const shippingFee = isWholesale ? 0 : (subtotal >= 500 || subtotal === 0 ? 0 : 35);
+  const shippingFee = isWholesale ? 0 : (subtotal >= 2000 || subtotal === 0 ? 0 : 35);
   const grandTotal = subtotal + shippingFee;
   const totalQty = itemsToRender.reduce((acc: number, item: any) => acc + item.quantity, 0);
 
@@ -404,11 +486,8 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
                   <>
                     <div className={styles.selectField}>
                       <label htmlFor="country" className={styles.floatLabel}>{t.country}</label>
-                      <select id="country" className={styles.floatSelect}>
-                        <option value="TR">Turkey</option>
-                        <option value="US">United States</option>
-                        <option value="DE">Germany</option>
-                        <option value="GB">United Kingdom</option>
+                      <select id="country" className={styles.floatSelect} disabled>
+                        <option value="TR">{locale === 'tr' ? 'Türkiye' : 'Turkey'}</option>
                       </select>
                       <span className={styles.selectChevron}>▾</span>
                     </div>
@@ -429,14 +508,36 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
                         placeholder={t.company} className={styles.floatInput} />
                     </div>
 
-                    <div className={styles.inputField}>
-                      <input id="address" type="text" required value={address} onChange={(e) => setAddress(e.target.value)}
+                    <div className={styles.inputField} ref={addressFieldRef}>
+                      <input id="address" type="text" required value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        onFocus={() => { if (addressSuggestions.length > 0) setShowSuggestions(true); }}
+                        autoComplete="off"
                         placeholder={t.address} className={styles.floatInput} />
                       <button type="button" className={styles.fieldIconBtn} aria-label="search">
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                         </svg>
                       </button>
+                      {showSuggestions && (isSearchingAddress || addressSuggestions.length > 0) && (
+                        <div className={styles.addressSuggestions}>
+                          {isSearchingAddress && addressSuggestions.length === 0 && (
+                            <div className={styles.addressSuggestionLoading}>
+                              {locale === 'tr' ? 'Aranıyor…' : 'Searching…'}
+                            </div>
+                          )}
+                          {addressSuggestions.map((s, i) => (
+                            <button
+                              key={i}
+                              type="button"
+                              className={styles.addressSuggestionItem}
+                              onClick={() => handleSelectSuggestion(s)}
+                            >
+                              {s.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     <div className={styles.inputField}>
@@ -453,9 +554,9 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
                         <label htmlFor="state" className={styles.floatLabel}>{t.state}</label>
                         <select id="state" value={stateName} onChange={(e) => setStateName(e.target.value)} className={styles.floatSelect}>
                           <option value="">{t.state}</option>
-                          <option value="IST">İstanbul</option>
-                          <option value="ANK">Ankara</option>
-                          <option value="IZM">İzmir</option>
+                          {turkishProvinces.map((province) => (
+                            <option key={province} value={province}>{province}</option>
+                          ))}
                         </select>
                         <span className={styles.selectChevron}>▾</span>
                       </div>

@@ -47,7 +47,7 @@ export default function Footer({ locale = 'en' }: FooterProps) {
 
   const translations = {
     en: {
-      brandStatement: 'Independent specialty coffee roastery. Direct-trade micro-lots roasted with precision and care in small batches.',
+      brandStatement: 'We carefully select high-quality coffee beans and roast them with controlled, consistent profiles tailored to each product\'s character. Quality, freshness, and flavor standards stay at the forefront of every stage of production.',
       sitemap: 'Sitemap',
       hours: 'Hours',
       delivery: 'Delivery',
@@ -83,7 +83,7 @@ export default function Footer({ locale = 'en' }: FooterProps) {
       mapLocationAria: 'The Coffee Esto Roastery Map Location',
     },
     tr: {
-      brandStatement: 'Bağımsız nitelikli kavurucular. Doğrudan ticaretle temin edilen mikro lotlar, küçük partiler halinde hassasiyetle kavrulur.',
+      brandStatement: 'Özenle seçtiğimiz nitelikli kahve çekirdeklerini, her ürünün karakterine uygun kavurma profilleriyle kontrollü ve tutarlı şekilde kavuruyoruz. Kaliteyi, tazeliği ve lezzet standardını üretimin her aşamasında ön planda tutuyoruz.',
       sitemap: 'Site Haritası',
       hours: 'Çalışma Saatleri',
       delivery: 'Teslimat',

@@ -150,7 +150,7 @@ export async function POST(request: Request) {
       mappedItems.push({ id: product.id, name: product.name, quantity: item.quantity, price: priceToUse });
     }
 
-    const shippingFee = isWholesale ? 0 : (calculatedSubtotal >= 500 ? 0 : 35);
+    const shippingFee = isWholesale ? 0 : (calculatedSubtotal >= 2000 ? 0 : 35);
     const totalAmount = calculatedSubtotal + shippingFee;
 
     // ── 3. Build iyzico payment request ─────────────────────────

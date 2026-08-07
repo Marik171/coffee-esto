@@ -208,10 +208,10 @@ export default function BrewGuidesContent({ locale = 'en' }: { locale?: string }
   const activeT = locale === 'tr' ? methods.tr : methods.en;
 
   const L = locale === 'tr' ? {
-    eyebrow: 'ESTO WORKSHOP', heroTitle: 'Demleme Rehberleri',
-    heroSub: 'Baristalarımızdan interaktif, adım adım kılavuzlar. Ekipmanınıza uygun bir demleme yöntemi seçin ve yerleşik zamanlayıcıyı başlatın.',
-    methodsLabel: 'Yöntemler', methodsHeading: 'Zanaat ve Demleme',
-    methodsSub: 'Her demleme yöntemi çekirdeğin farklı tatlarını fincana yansıtır.',
+    eyebrow: 'THE COFFEE ESTO REHBERLERİ', heroTitle: 'Demleme Rehberleri',
+    heroSub: 'V60, Chemex, French Press, filtre kahve, moka pot ve Türk kahvesi için doğru ölçü, öğütme ayarı, su sıcaklığı ve demleme süresini adım adım keşfedin. Her fincanda dengeli, lezzetli ve tutarlı sonuçlar elde edin.',
+    methodsLabel: 'Yöntemler', methodsHeading: 'Demleme Yöntemleri',
+    methodsSub: 'Kullandığınız ekipmana uygun reçeteyi seçin ve kahvenizin gerçek karakterini ortaya çıkarın.',
     ratio: 'Oran', grind: 'Öğütüm', temp: 'Sıcaklık', time: 'Süre',
     beginGuide: 'Kılavuzu Aç', tipsLabel: 'Altın İpuçları', tipsHeading: 'İyi Kahvenin Püf Noktaları',
     startBtn: 'Zamanlayıcıyı Başlat', pauseBtn: 'Duraklat', resumeBtn: 'Devam Et', resetBtn: 'Sıfırla',
@@ -221,10 +221,10 @@ export default function BrewGuidesContent({ locale = 'en' }: { locale?: string }
     ctaShop: 'Kahveleri İncele', ctaContact: 'Baristaya Yazın',
     servingSize: 'Demleme Porsiyonu', singleServing: '1 Fincan (Standart)', doubleServing: '2 Fincan (Çift Kat)'
   } : {
-    eyebrow: 'ESTO WORKSHOP', heroTitle: 'Interactive Brew Guides',
-    heroSub: 'Step-by-step interactive brewing logs curated by our baristas. Select a method below to launch the companion timer.',
-    methodsLabel: 'Methods', methodsHeading: 'Select Your Gear',
-    methodsSub: 'Each brewing device coaxes distinct flavor profiles from the roasted beans.',
+    eyebrow: 'THE COFFEE ESTO GUIDES', heroTitle: 'Brewing Guides',
+    heroSub: 'Discover the right measurements, grind setting, water temperature, and brew time for V60, Chemex, French Press, filter coffee, moka pot, and Turkish coffee, step by step. Get balanced, flavorful, and consistent results in every cup.',
+    methodsLabel: 'Methods', methodsHeading: 'Brewing Methods',
+    methodsSub: 'Choose the recipe that suits your equipment and unlock your coffee\'s true character.',
     ratio: 'Ratio', grind: 'Grind Size', temp: 'Water Temp', time: 'Total Time',
     beginGuide: 'Launch Guide', tipsLabel: 'Pro Tips', tipsHeading: 'Fundamentals of Great Coffee',
     startBtn: 'Start Timer', pauseBtn: 'Pause', resumeBtn: 'Resume', resetBtn: 'Reset',

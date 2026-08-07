@@ -252,6 +252,43 @@
 }
 .fieldIconBtn:hover { color: #555; }
 
+.addressSuggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 4px;
+}
+.addressSuggestionItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 10px 12px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: #1a1a1a;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.addressSuggestionItem:hover,
+.addressSuggestionItem:focus {
+  background: #f3f4f6;
+}
+.addressSuggestionLoading {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #999;
+}
+
 /* Checkbox rows */
 .checkboxRow {
   display: flex;

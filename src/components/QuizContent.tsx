@@ -163,7 +163,7 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
   const t = {
     en: {
       title: 'Find Your Perfect Roast',
-      subtitle: 'Answer 4 simple questions to discover your personalized coffee pairing.',
+      subtitle: 'Discover the coffee profile that suits you best based on your brewing method, flavor preferences, roast choice, and coffee habits.',
       stepOf: 'Step {current} of {total}',
       next: 'Next Question',
       prev: 'Back',
@@ -225,7 +225,7 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
     },
     tr: {
       title: 'Mükemmel Kavrumunu Bul',
-      subtitle: 'Kişisel kahve eşleşmeni keşfetmek için 4 basit soruyu yanıtla.',
+      subtitle: 'Demleme yönteminiz, lezzet tercihleriniz, kavrum seçiminiz ve kahve alışkanlıklarınıza göre size en uygun kahve profilini belirleyin.',
       stepOf: 'Soru {current} / {total}',
       next: 'Sonraki Soru',
       prev: 'Geri',
@@ -245,7 +245,7 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
       questions: [
         {
           id: 'brewMethod',
-          title: 'Kahvenizi genellikle nasıl demlersiniz?',
+          title: 'Kahvenizi genellikle hangi yöntemle demliyorsunuz?',
           options: [
             { value: 'espresso', label: 'Espresso Makinesi', desc: 'Yoğun gövdeli, güçlü aromalı ve krema açısından zengin kahveleri tercih ediyorum.', icon: <img src="/images/quiz/espresso_machine.png" alt="Espresso Makinesi" className={styles.customQuizIcon} /> },
             { value: 'v60', label: 'V60', desc: 'Çiçeksi ve meyvemsi notaların öne çıktığı temiz, dengeli bir fincan arıyorum.', icon: <img src="/images/quiz/v60_dripper.png" alt="V60" className={styles.customQuizIcon} /> },
@@ -454,10 +454,10 @@ export default function QuizContent({ locale = 'en' }: QuizContentProps) {
         <div className={styles.heroOverlay} />
         
         <div className={styles.heroInner}>
-          <span className={styles.heroEyebrow}>{locale === 'tr' ? 'KAVRUM BULUCU' : 'COFFEE FINDER'}</span>
+          <span className={styles.heroEyebrow}>{locale === 'tr' ? 'KAHVE PROFİLİ TESTİ' : 'COFFEE PROFILE TEST'}</span>
           <h1 id="quiz-hero-title" className={styles.heroTitle}>
-            {locale === 'tr' ? 'Mükemmel Profilini' : 'Find Your Perfect'}<br />
-            {locale === 'tr' ? 'Keşfet' : 'Flavor Profile'}
+            {locale === 'tr' ? 'Size Uygun Kahveyi' : 'Discover Your'}<br />
+            {locale === 'tr' ? 'Keşfedin' : 'Perfect Coffee'}
           </h1>
           <p className={styles.heroSub}>{activeT.subtitle}</p>
         </div>
