@@ -167,6 +167,49 @@
   font-size: 13px;
 }
 
+/* Bean Specifications Panel */
+.beanSpecs {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.beanSpecsTitle {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #444444;
+  margin: 0 0 16px 0;
+}
+
+.beanSpecGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px 24px;
+}
+
+.beanSpecItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.beanSpecLabel {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #999999;
+}
+
+.beanSpecValue {
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
 /* Sharp Purchase Option Cards */
 .purchaseOptions {
   display: flex;

@@ -24,6 +24,9 @@ interface CoffeeProduct {
   imageUrl: string;
   videoUrl: string;
   isActive: boolean;
+  process?: string;
+  body?: string;
+  acidity?: string;
 }
 
 interface CoffeeBagProps {
@@ -537,6 +540,8 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
       acidity: 'Acidity',
       sweetness: 'Sweetness',
       body: 'Body',
+      process: 'Process',
+      beanSpecsTitle: 'Bean Specifications',
       addToCart: 'Add to Cart',
       outOfStock: 'Out of Stock',
       onlyXLeft: 'Only {n} left in stock',
@@ -565,6 +570,8 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
       acidity: 'Asidite',
       sweetness: 'Tatlılık',
       body: 'Gövde',
+      process: 'İşlem',
+      beanSpecsTitle: 'Çekirdek Özellikleri',
       addToCart: 'Sepete Ekle',
       outOfStock: 'Stokta Yok',
       onlyXLeft: 'Stokta sadece {n} adet kaldı',
@@ -890,17 +897,88 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
                   >
                     {coffee.stock === 0 ? t.outOfStock : t.addToCart}
                   </button>
+
+                  {(coffee.process || coffee.body || coffee.acidity || coffee.varietal || coffee.altitude) && (
+                    <div className={styles.beanSpecs}>
+                      <h3 className={styles.beanSpecsTitle}>{t.beanSpecsTitle}</h3>
+                      <div className={styles.beanSpecGrid}>
+                        {coffee.varietal && (
+                          <div className={styles.beanSpecItem}>
+                            <span className={styles.beanSpecLabel}>{t.varietal}</span>
+                            <span className={styles.beanSpecValue}>{coffee.varietal}</span>
+                          </div>
+                        )}
+                        {coffee.altitude && (
+                          <div className={styles.beanSpecItem}>
+                            <span className={styles.beanSpecLabel}>{t.altitude}</span>
+                            <span className={styles.beanSpecValue}>{coffee.altitude}</span>
+                          </div>
+                        )}
+                        {coffee.process && (
+                          <div className={styles.beanSpecItem}>
+                            <span className={styles.beanSpecLabel}>{t.process}</span>
+                            <span className={styles.beanSpecValue}>{coffee.process}</span>
+                          </div>
+                        )}
+                        {coffee.body && (
+                          <div className={styles.beanSpecItem}>
+                            <span className={styles.beanSpecLabel}>{t.body}</span>
+                            <span className={styles.beanSpecValue}>{coffee.body}</span>
+                          </div>
+                        )}
+                        {coffee.acidity && (
+                          <div className={styles.beanSpecItem}>
+                            <span className={styles.beanSpecLabel}>{t.acidity}</span>
+                            <span className={styles.beanSpecValue}>{coffee.acidity}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </>
               ) : (
                 <div className={styles.equipmentSpecs}>
                   <p className={styles.priceVal} style={{ fontSize: '1.1em' }}>
-                    {locale === 'tr' ? 'Fiyat için iletişime geçin' : 'Contact us for pricing'}
+                    {coffee.price > 0
+                      ? (locale === 'tr' ? `${coffee.price} TL` : `₺${coffee.price}`)
+                      : (locale === 'tr' ? 'Fiyat için iletişime geçin' : 'Contact us for pricing')}
                   </p>
                   <ul className={styles.equipmentSpecList}>
                     {coffee.tastingNotes.split(',').map((spec, i) => (
                       <li key={i}>{spec.trim()}</li>
                     ))}
                   </ul>
+
+                  {coffee.price > 0 && (
+                    <>
+                      <div className={styles.quantitySection}>
+                        <label className={styles.quantityLabel}>Quantity</label>
+                        <div className={styles.qtyBox}>
+                          <button onClick={decrement} className={styles.qtyBtn} disabled={qty <= 1} aria-label="Decrease quantity">–</button>
+                          <span className={styles.qtyVal}>{qty}</span>
+                          <button onClick={increment} className={styles.qtyBtn} disabled={qty >= coffee.stock} aria-label="Increase quantity">+</button>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => addToCart({
+                          id: coffee.id,
+                          name: coffee.name,
+                          price: coffee.price,
+                          category: coffee.category,
+                          stock: coffee.stock,
+                          emoji: style.emoji,
+                          bagColor: style.bagColor,
+                          notes: [],
+                          imageUrl: coffee.imageUrl,
+                        }, qty)}
+                        className={styles.addToCartBtn}
+                        disabled={coffee.stock === 0}
+                      >
+                        {coffee.stock === 0 ? t.outOfStock : t.addToCart}
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
 
