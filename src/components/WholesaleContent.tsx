@@ -52,6 +52,8 @@ export default function WholesaleContent({ locale }: WholesaleContentProps) {
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const translations = {
     en: {
@@ -106,8 +108,10 @@ export default function WholesaleContent({ locale }: WholesaleContentProps) {
       labelMessage: 'TELL US MORE *',
       phMessage: 'Tell us about your project/business',
       btnSubmit: 'SUBMIT',
+      btnSubmitting: 'SENDING...',
       successMsg: 'Thank you! Your inquiry has been sent. Our wholesale team will get in touch with you shortly.',
-      errorMsg: 'Please fill out all required fields.'
+      errorMsg: 'Please fill out all required fields.',
+      submitErrorMsg: 'Something went wrong sending your inquiry. Please try again or contact us directly.'
     },
     tr: {
       heroLabel: 'TOPTAN KAHVE ÇÖZÜMLERİ',
@@ -161,21 +165,41 @@ export default function WholesaleContent({ locale }: WholesaleContentProps) {
       labelMessage: 'BİZE DETAYLARDAN BAHSEDİN *',
       phMessage: 'Projeniz veya işletmeniz hakkında bilgi verin',
       btnSubmit: 'GÖNDER',
+      btnSubmitting: 'GÖNDERİLİYOR...',
       successMsg: 'Teşekkürler! Talebiniz iletildi. Toptan satış ekibimiz en kısa sürede sizinle iletişime geçecektir.',
-      errorMsg: 'Lütfen tüm zorunlu alanları doldurun.'
+      errorMsg: 'Lütfen tüm zorunlu alanları doldurun.',
+      submitErrorMsg: 'Talebiniz gönderilirken bir sorun oluştu. Lütfen tekrar deneyin veya bizimle doğrudan iletişime geçin.'
     }
   };
 
   const t = locale === 'tr' ? translations.tr : translations.en;
   const linkPrefix = locale === 'tr' ? '' : '/en';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.city || !formData.message) {
       alert(t.errorMsg);
       return;
     }
-    setSubmitted(true);
+
+    setSubmitError('');
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/wholesale', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...formData, locale }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to send inquiry.');
+      }
+      setSubmitted(true);
+    } catch {
+      setSubmitError(t.submitErrorMsg);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -428,7 +452,13 @@ export default function WholesaleContent({ locale }: WholesaleContentProps) {
                 />
               </div>
 
-              <button type="submit" className={styles.submitBtn}>{t.btnSubmit}</button>
+              {submitError && (
+                <p style={{ color: '#c0392b', fontSize: '13px', marginTop: '-8px' }}>{submitError}</p>
+              )}
+
+              <button type="submit" className={styles.submitBtn} disabled={isSubmitting}>
+                {isSubmitting ? t.btnSubmitting : t.btnSubmit}
+              </button>
 
             </form>
           )}

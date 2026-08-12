@@ -39,12 +39,13 @@ function getProductId(id: string): string {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { items, shippingDetails, cardDetails, isWholesale, locale } = body as {
+    const { items, shippingDetails, cardDetails, isWholesale, locale, cargoProviderId } = body as {
       items: CheckoutItem[];
       shippingDetails: ShippingDetails;
       cardDetails: CardDetails;
       isWholesale?: boolean;
       locale?: string;
+      cargoProviderId?: string;
     };
 
     // ── 1. Input validation ──────────────────────────────────────
@@ -150,7 +151,29 @@ export async function POST(request: Request) {
       mappedItems.push({ id: product.id, name: product.name, quantity: item.quantity, price: priceToUse });
     }
 
-    const shippingFee = isWholesale ? 0 : (calculatedSubtotal >= 2000 ? 0 : 35);
+    // ── 2b. Shipping fee — server-side source of truth, never trust a client-sent fee ──
+    let shippingFee = 0;
+    let cargoProviderName = '';
+    if (!isWholesale) {
+      const shippingSettings = await db.shippingSettings.findUnique({ where: { id: 1 } });
+      if (shippingSettings?.enabled) {
+        if (!cargoProviderId) {
+          return NextResponse.json(
+            { success: false, error: 'Please select a shipping method.' },
+            { status: 400 }
+          );
+        }
+        const provider = await db.cargoProvider.findUnique({ where: { id: cargoProviderId } });
+        if (!provider || !provider.isActive) {
+          return NextResponse.json(
+            { success: false, error: 'Selected shipping method is no longer available.' },
+            { status: 400 }
+          );
+        }
+        shippingFee = provider.fee;
+        cargoProviderName = provider.name;
+      }
+    }
     const totalAmount = calculatedSubtotal + shippingFee;
 
     // ── 3. Build iyzico payment request ─────────────────────────
@@ -257,6 +280,7 @@ export async function POST(request: Request) {
           paymentId: paymentResult.paymentId ?? '',
           subtotal: calculatedSubtotal,
           shippingFee,
+          cargoProviderName,
           totalAmount,
           status: 'pending',
           paymentStatus: 'captured',

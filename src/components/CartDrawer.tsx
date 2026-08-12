@@ -58,10 +58,6 @@ export default function CartDrawer() {
     };
   }, [isCartOpen, setIsCartOpen]);
 
-  const FREE_THRESHOLD = 500;
-  const progress = Math.min((cartTotal / FREE_THRESHOLD) * 100, 100);
-  const remaining = FREE_THRESHOLD - cartTotal;
-
   const drawerVariants = {
     hidden: isMobile ? { y: '100%', opacity: 1 } : { opacity: 0, y: -16, scale: 0.95 },
     visible: isMobile ? { y: 0, opacity: 1 } : { opacity: 1, y: 0, scale: 1 },
@@ -131,24 +127,6 @@ export default function CartDrawer() {
               </button>
             </div>
 
-            {/* Free-shipping meter */}
-            {cartItems.length > 0 && (
-              <div className={styles.meter}>
-                <span className={cartTotal >= FREE_THRESHOLD ? styles.meterSuccess : styles.meterAlert}>
-                  {cartTotal >= FREE_THRESHOLD
-                    ? (isTr ? 'Ücretsiz kargo açıldı! 🚚' : 'Free delivery unlocked 🚚')
-                    : (isTr ? `Ücretsiz kargo için ${remaining} TL kaldı` : `₺${remaining} away from free delivery`)}
-                </span>
-                <div className={styles.meterTrack}>
-                  <motion.div
-                    className={styles.meterFill}
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.5, ease: 'easeOut', delay: 0.15 }}
-                  />
-                </div>
-              </div>
-            )}
 
             {/* Items body */}
             <div className={styles.body}>

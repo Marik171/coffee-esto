@@ -16,6 +16,7 @@ model Order {
   paymentId         String      @default("")
   subtotal          Float
   shippingFee       Float
+  cargoProviderName String      @default("")
   totalAmount       Float
   status            String      @default("pending")
   paymentStatus     String      @default("awaiting")
@@ -29,6 +30,22 @@ model Order {
   customer          Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
 
   @@index([customerId])
+}
+
+// Singleton row (id always 1) toggling whether checkout charges shipping at all.
+model ShippingSettings {
+  id      Int     @id @default(1)
+  enabled Boolean @default(false)
+}
+
+model CargoProvider {
+  id        String   @id @default(uuid())
+  name      String
+  fee       Float
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model OrderItem {

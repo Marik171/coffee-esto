@@ -34,7 +34,7 @@ const welcomeTranslations = {
       'Düzenli teslimatlar ve kahvelerde %10 üye indirimi için abone olun',
     ],
     buttonLabel: 'Alışverişe başla',
-    buttonHref: 'https://coffeesto.com/coffee',
+    buttonHref: 'https://coffeeesto.com/coffee',
   },
   en: {
     subject: 'Welcome to Coffee Esto',
@@ -49,7 +49,7 @@ const welcomeTranslations = {
       'Subscribe for regular deliveries and a 10% member discount on coffee',
     ],
     buttonLabel: 'Start shopping',
-    buttonHref: 'https://coffeesto.com/en/coffee',
+    buttonHref: 'https://coffeeesto.com/en/coffee',
   },
 };
 
@@ -283,7 +283,7 @@ export async function sendOwnerNewOrderNotification(order: OrderEmailDetails): P
       </table>
     </div>
 
-    ${button('View in admin panel', 'https://coffeesto.com/admin/orders')}
+    ${button('View in admin panel', 'https://coffeeesto.com/admin/orders')}
   `;
 
   await sendEmail({
@@ -366,6 +366,94 @@ export async function sendContactFormNotification(details: {
       heroTitle,
       bodyHtml,
       locale: isTr ? 'tr' : 'en',
+    }),
+  });
+}
+
+export async function sendWholesaleInquiryNotification(details: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  city: string;
+  zip?: string;
+  company?: string;
+  website?: string;
+  message: string;
+  locale?: string;
+}): Promise<void> {
+  const ownerEmail = getOwnerEmail();
+  if (!ownerEmail) {
+    console.error('[emails] OWNER_EMAIL is not configured — skipping wholesale inquiry notification.');
+    return;
+  }
+
+  // The owner is Turkish — always notify in Turkish regardless of which
+  // language the visitor filled out the form in.
+  const fullName = `${details.firstName} ${details.lastName}`.trim();
+  const labelName = 'İsim';
+  const labelEmail = 'E-posta';
+  const labelPhone = 'Telefon';
+  const labelCity = 'Şehir';
+  const labelZip = 'Posta Kodu';
+  const labelCompany = 'Şirket';
+  const labelWebsite = 'Web Sitesi';
+  const replyButtonLabel = `${fullName} kişisine yanıt ver`;
+  const subject = `Yeni toptan satış talebi — ${fullName}`;
+  const heroEyebrow = 'TOPTAN SATIŞ TALEBİ';
+  const heroTitle = `${fullName} toptan satış formu gönderdi`;
+
+  const safeName = escapeHtml(fullName);
+  const safeEmail = escapeHtml(details.email);
+  const safePhone = details.phone ? escapeHtml(details.phone) : undefined;
+  const safeCity = escapeHtml(details.city);
+  const safeZip = details.zip ? escapeHtml(details.zip) : undefined;
+  const safeCompany = details.company ? escapeHtml(details.company) : undefined;
+  const safeWebsite = details.website ? escapeHtml(details.website) : undefined;
+  const safeMessage = escapeHtml(details.message);
+  const replyToUri = encodeURIComponent(details.email);
+
+  const row = (label: string, value?: string) =>
+    value
+      ? `<tr>
+          <td style="padding: 4px 0; color: ${colors.warmMid}; width: 90px;">${label}</td>
+          <td style="padding: 4px 0; color: ${colors.warmText};">${value}</td>
+        </tr>`
+      : '';
+
+  const bodyHtml = `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size: 14px; margin-bottom: 20px;">
+      ${row(labelName, safeName)}
+      <tr>
+        <td style="padding: 4px 0; color: ${colors.warmMid};">${labelEmail}</td>
+        <td style="padding: 4px 0; color: ${colors.warmText};">
+          <a href="mailto:${replyToUri}" style="color: ${colors.orange}; text-decoration: none;">${safeEmail}</a>
+        </td>
+      </tr>
+      ${row(labelPhone, safePhone)}
+      ${row(labelCity, safeCity)}
+      ${row(labelZip, safeZip)}
+      ${row(labelCompany, safeCompany)}
+      ${row(labelWebsite, safeWebsite)}
+    </table>
+
+    <div style="background-color: ${colors.sand}; border-radius: 12px; padding: 20px 24px;">
+      <p style="margin: 0; font-size: 14px; line-height: 1.7; color: ${colors.warmText}; white-space: pre-line;">${safeMessage}</p>
+    </div>
+
+    ${button(replyButtonLabel.replace(/[<>&"']/g, ''), `mailto:${replyToUri}`)}
+  `;
+
+  await sendEmail({
+    to: [{ email: ownerEmail }],
+    subject,
+    replyTo: { email: details.email, name: fullName },
+    htmlContent: renderEmailLayout({
+      preheader: details.message.slice(0, 100),
+      heroEyebrow,
+      heroTitle,
+      bodyHtml,
+      locale: 'tr',
     }),
   });
 }

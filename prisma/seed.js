@@ -196,7 +196,7 @@ const newProducts = [
     varietal: 'Heirloom Typica',
     roastLevel: 35,
     tastingNotes: 'Bergamot, Citrus, Tea Notes',
-    description: 'Traditional washed Sidamo profile displaying sweet bergamot, lemon-lime citrus, and a black tea-like body.',
+    description: 'Traditional natural-processed Sidamo profile displaying sweet bergamot, lemon-lime citrus, and a black tea-like body.',
     price: 325.00,
     wholesalePrice: 1190.00,
     stock: 100,

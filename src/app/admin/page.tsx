@@ -21,6 +21,7 @@ interface CoffeeProduct {
   price: number; price1kg: number; stock: number; imageUrl: string; videoUrl: string; isActive: boolean;
 }
 interface Category { id: string; slug: string; label: string; productCount?: number; }
+interface CargoProvider { id: string; name: string; fee: number; isActive: boolean; sortOrder: number; }
 
 /* ── Helpers ───────────────────────────────────────────────────── */
 const emptyProduct = (): Partial<CoffeeProduct> => ({
@@ -58,7 +59,7 @@ export default function AdminDashboardPage() {
   const contentTrRef = useRef<HTMLDivElement>(null);
   const contentEnRef = useRef<HTMLDivElement>(null);
 
-  const [activeTab, setActiveTab] = useState<'orders' | 'inventory' | 'categories' | 'customers' | 'blog'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'inventory' | 'categories' | 'customers' | 'blog' | 'shipping'>('orders');
 
   // Blog CMS
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
@@ -101,6 +102,13 @@ export default function AdminDashboardPage() {
   const [editCatLabel, setEditCatLabel] = useState('');
   const [showCatModal, setShowCatModal] = useState(false);
 
+  // Shipping settings + cargo providers
+  const [shippingEnabled, setShippingEnabled] = useState(false);
+  const [cargoProviders, setCargoProviders] = useState<CargoProvider[]>([]);
+  const [showProviderModal, setShowProviderModal] = useState(false);
+  const [editingProvider, setEditingProvider] = useState<CargoProvider | null>(null);
+  const [providerForm, setProviderForm] = useState({ name: '', fee: 0 });
+
   // Shared UI
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -137,6 +145,23 @@ export default function AdminDashboardPage() {
       if (d.success) setCategories(d.data);
       else setErrorMsg(d.error);
     } catch { setErrorMsg('Network error loading categories.'); }
+    finally { setIsLoading(false); }
+  };
+
+  const fetchShippingSettings = async () => {
+    setIsLoading(true); setErrorMsg('');
+    try {
+      const [settingsRes, providersRes] = await Promise.all([
+        fetch('/api/admin/shipping-settings'),
+        fetch('/api/admin/cargo-providers'),
+      ]);
+      const settingsData = await settingsRes.json();
+      const providersData = await providersRes.json();
+      if (settingsData.success) setShippingEnabled(settingsData.data.enabled);
+      else setErrorMsg(settingsData.error);
+      if (providersData.success) setCargoProviders(providersData.data);
+      else setErrorMsg(providersData.error);
+    } catch { setErrorMsg('Network error loading shipping settings.'); }
     finally { setIsLoading(false); }
   };
 
@@ -297,6 +322,7 @@ export default function AdminDashboardPage() {
       else if (activeTab === 'inventory') { fetchProducts(); fetchCategories(); }
       else if (activeTab === 'categories') fetchCategories();
       else if (activeTab === 'blog') fetchBlogPosts();
+      else if (activeTab === 'shipping') fetchShippingSettings();
     });
   }, [activeTab]);
 
@@ -307,7 +333,7 @@ export default function AdminDashboardPage() {
   };
 
   /* ── Tab reset helper ──────────────────────────────────────── */
-  const switchTab = (tab: 'orders' | 'inventory' | 'categories' | 'customers' | 'blog') => {
+  const switchTab = (tab: 'orders' | 'inventory' | 'categories' | 'customers' | 'blog' | 'shipping') => {
     setActiveTab(tab);
     setSelectedOrder(null);
     setSelectedProduct(null);
@@ -315,6 +341,8 @@ export default function AdminDashboardPage() {
     setShowCatModal(false);
     setSelectedBlogPost(null);
     setIsAddingBlogPost(false);
+    setShowProviderModal(false);
+    setEditingProvider(null);
     setErrorMsg('');
   };
 
@@ -484,6 +512,86 @@ export default function AdminDashboardPage() {
     finally { setActionLoading(false); }
   };
 
+  /* ── Shipping settings + cargo provider CRUD ──────────────────── */
+  const handleToggleShipping = async (enabled: boolean) => {
+    setActionLoading(true); setErrorMsg('');
+    try {
+      const res = await fetch('/api/admin/shipping-settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled }),
+      });
+      const d = await res.json();
+      if (!d.success) throw new Error(d.error);
+      setShippingEnabled(d.data.enabled);
+    } catch (err: unknown) { setErrorMsg(err instanceof Error ? err.message : 'An unexpected error occurred.'); }
+    finally { setActionLoading(false); }
+  };
+
+  const handleAddProvider = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setActionLoading(true); setErrorMsg('');
+    try {
+      const res = await fetch('/api/admin/cargo-providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: providerForm.name, fee: providerForm.fee }),
+      });
+      const d = await res.json();
+      if (!d.success) throw new Error(d.error);
+      setShowProviderModal(false);
+      setProviderForm({ name: '', fee: 0 });
+      fetchShippingSettings();
+    } catch (err: unknown) { setErrorMsg(err instanceof Error ? err.message : 'An unexpected error occurred.'); }
+    finally { setActionLoading(false); }
+  };
+
+  const handleUpdateProvider = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProvider) return;
+    setActionLoading(true); setErrorMsg('');
+    try {
+      const res = await fetch('/api/admin/cargo-providers', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: editingProvider.id, name: providerForm.name, fee: providerForm.fee }),
+      });
+      const d = await res.json();
+      if (!d.success) throw new Error(d.error);
+      setEditingProvider(null);
+      setShowProviderModal(false);
+      fetchShippingSettings();
+    } catch (err: unknown) { setErrorMsg(err instanceof Error ? err.message : 'An unexpected error occurred.'); }
+    finally { setActionLoading(false); }
+  };
+
+  const handleToggleProviderActive = async (provider: CargoProvider) => {
+    setActionLoading(true); setErrorMsg('');
+    try {
+      const res = await fetch('/api/admin/cargo-providers', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: provider.id, isActive: !provider.isActive }),
+      });
+      const d = await res.json();
+      if (!d.success) throw new Error(d.error);
+      fetchShippingSettings();
+    } catch (err: unknown) { setErrorMsg(err instanceof Error ? err.message : 'An unexpected error occurred.'); }
+    finally { setActionLoading(false); }
+  };
+
+  const handleDeleteProvider = async (id: string) => {
+    if (!confirm('Delete this cargo provider?')) return;
+    setActionLoading(true); setErrorMsg('');
+    try {
+      const res = await fetch(`/api/admin/cargo-providers?id=${id}`, { method: 'DELETE' });
+      const d = await res.json();
+      if (!d.success) throw new Error(d.error);
+      fetchShippingSettings();
+    } catch (err: unknown) { setErrorMsg(err instanceof Error ? err.message : 'An unexpected error occurred.'); }
+    finally { setActionLoading(false); }
+  };
+
   /* ── KPIs + filtered orders ─────────────────────────────────── */
   const grossRevenue = orders.filter(o => o.payment_status === 'captured').reduce((a, o) => a + o.totalAmount, 0);
   const pendingFulfillments = orders.filter(o => o.fulfillment_status === 'not_fulfilled' || o.fulfillment_status === 'roasting').length;
@@ -555,6 +663,9 @@ export default function AdminDashboardPage() {
           </button>
           <button onClick={() => switchTab('blog')} className={`${styles.navItem} ${activeTab === 'blog' ? styles.navItemActive : ''}`}>
             📰 Blog CMS
+          </button>
+          <button onClick={() => switchTab('shipping')} className={`${styles.navItem} ${activeTab === 'shipping' ? styles.navItemActive : ''}`}>
+            🚚 Shipping
           </button>
           <Link href="/coffee" className={styles.navItem}>☕️ View Storefront</Link>
           <Link href="/" className={styles.navItem}>🏠 Homepage</Link>
@@ -806,6 +917,80 @@ export default function AdminDashboardPage() {
                 </div>
               ) : (
                 <div className={styles.emptyRegistry}><span className={styles.emptyIcon}>🏷️</span><h3>No Categories</h3></div>
+              )}
+            </section>
+          </>
+        )}
+        {/* ───── Tab: Shipping ───── */}
+        {activeTab === 'shipping' && (
+          <>
+            <header className={styles.header}>
+              <h1 className={styles.pageTitle}>Shipping Settings</h1>
+              <div className={styles.headerActions}>
+                <button
+                  onClick={() => { setShowProviderModal(true); setEditingProvider(null); setProviderForm({ name: '', fee: 0 }); setErrorMsg(''); }}
+                  className={styles.addBtn}
+                >➕ Add Cargo Provider</button>
+                <button onClick={fetchShippingSettings} className={styles.refreshBtn}>🔄 Refresh</button>
+              </div>
+            </header>
+            {errorMsg && <div className={styles.errorBanner} role="alert"><span>⚠️ {errorMsg}</span></div>}
+
+            <section className={styles.tableCard} style={{ marginBottom: 24 }}>
+              <div className={styles.checkboxBox}>
+                <input
+                  type="checkbox"
+                  id="shipping-enabled"
+                  checked={shippingEnabled}
+                  disabled={actionLoading}
+                  onChange={(e) => handleToggleShipping(e.target.checked)}
+                />
+                <label htmlFor="shipping-enabled">
+                  Charge shipping costs at checkout {shippingEnabled ? '(customers pick a cargo provider and pay its fee)' : '(shipping is currently free for all orders)'}
+                </label>
+              </div>
+            </section>
+
+            <section className={styles.tableCard}>
+              {isLoading ? (
+                <div className={styles.loadingBox}><span className={styles.loadingSpinner}>🚚</span><p>Loading cargo providers...</p></div>
+              ) : cargoProviders.length > 0 ? (
+                <div className={styles.tableWrapper}>
+                  <table className={styles.ordersTable}>
+                    <thead><tr><th>Provider</th><th>Fee</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody>
+                      {cargoProviders.map(provider => (
+                        <tr key={provider.id} className={styles.orderRow}>
+                          <td style={{ fontWeight: 600 }}>{provider.name}</td>
+                          <td>₺{provider.fee.toFixed(2)}</td>
+                          <td>
+                            <span className={`${styles.badge} ${provider.isActive ? styles.status_captured : styles.status_pending}`}>
+                              {provider.isActive ? 'Active' : 'Disabled'}
+                            </span>
+                          </td>
+                          <td>
+                            <div className={styles.actionCell}>
+                              <button
+                                onClick={() => { setEditingProvider(provider); setProviderForm({ name: provider.name, fee: provider.fee }); setShowProviderModal(true); }}
+                                className={styles.editIconBtn}
+                              >✏️ Edit</button>
+                              <button
+                                onClick={() => handleToggleProviderActive(provider)}
+                                className={styles.editIconBtn}
+                              >{provider.isActive ? '⏸️ Disable' : '▶️ Enable'}</button>
+                              <button
+                                onClick={() => handleDeleteProvider(provider.id)}
+                                className={styles.deleteIconBtn}
+                              >🗑️ Delete</button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className={styles.emptyRegistry}><span className={styles.emptyIcon}>🚚</span><h3>No Cargo Providers</h3></div>
               )}
             </section>
           </>
@@ -1157,6 +1342,43 @@ export default function AdminDashboardPage() {
               </div>
               <button type="submit" className={styles.opActionBtn} disabled={actionLoading}>
                 {actionLoading ? 'Creating...' : '🏷️ Create Category'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* Modal: Add/Edit Cargo Provider                              */}
+      {/* ═══════════════════════════════════════════════════════════ */}
+      {showProviderModal && activeTab === 'shipping' && (
+        <div className={styles.modalBackdrop} onClick={() => { setShowProviderModal(false); setEditingProvider(null); }}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()} role="dialog" aria-labelledby="provider-modal-title">
+            <div className={styles.modalHeader}>
+              <h2 id="provider-modal-title" className={styles.modalTitle}>{editingProvider ? 'Edit Cargo Provider' : 'New Cargo Provider'}</h2>
+              <button onClick={() => { setShowProviderModal(false); setEditingProvider(null); }} className={styles.closeBtn}>✕</button>
+            </div>
+            {errorMsg && <div className={styles.errorBanner}><span>⚠️ {errorMsg}</span></div>}
+            <form onSubmit={editingProvider ? handleUpdateProvider : handleAddProvider} className={styles.modalForm}>
+              <div className={styles.inputBox}>
+                <label htmlFor="provider-name">Provider Name</label>
+                <input
+                  id="provider-name" type="text" required autoFocus
+                  value={providerForm.name}
+                  onChange={e => setProviderForm(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="e.g. Yurtici Kargo, Aras Kargo"
+                />
+              </div>
+              <div className={styles.inputBox}>
+                <label htmlFor="provider-fee">Shipping Fee (₺)</label>
+                <input
+                  id="provider-fee" type="number" required min={0} step="0.01"
+                  value={providerForm.fee}
+                  onChange={e => setProviderForm(prev => ({ ...prev, fee: parseFloat(e.target.value) || 0 }))}
+                />
+              </div>
+              <button type="submit" className={styles.opActionBtn} disabled={actionLoading}>
+                {actionLoading ? 'Saving...' : (editingProvider ? '🚚 Save Provider' : '🚚 Create Provider')}
               </button>
             </form>
           </div>
