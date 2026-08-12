@@ -9,10 +9,10 @@ export const metadata: Metadata = {
   title: 'Nitelikli Kahve Satın Al — Coffee Esto Roastery',
   description: 'Taze kavrulmuş tek kökenli ve espresso harmanı kahve kataloğumuzu inceleyin. Etik kaynaklı ve sipariş üzerine taze kavrulmuş.',
   alternates: {
-    canonical: 'https://coffeesto.com/coffee',
+    canonical: 'https://coffeeesto.com/coffee',
     languages: {
-      'en-US': 'https://coffeesto.com/en/coffee',
-      'tr-TR': 'https://coffeesto.com/coffee',
+      'en-US': 'https://coffeeesto.com/en/coffee',
+      'tr-TR': 'https://coffeeesto.com/coffee',
     },
   },
 };

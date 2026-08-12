@@ -6,10 +6,10 @@ export const metadata: Metadata = {
   title: 'Alışveriş Sepeti — Coffee Esto Roastery',
   description: 'Sepetinizdeki ürünleri görüntüleyin, adetleri güncelleyin ve ödemeye geçin.',
   alternates: {
-    canonical: 'https://coffeesto.com/cart',
+    canonical: 'https://coffeeesto.com/cart',
     languages: {
-      'en-US': 'https://coffeesto.com/en/cart',
-      'tr-TR': 'https://coffeesto.com/cart',
+      'en-US': 'https://coffeeesto.com/en/cart',
+      'tr-TR': 'https://coffeeesto.com/cart',
     },
   },
 };

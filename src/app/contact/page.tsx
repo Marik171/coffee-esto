@@ -6,10 +6,10 @@ export const metadata: Metadata = {
   title: 'İletişim — Coffee Esto Roastery',
   description: 'Bizimle iletişime geçin. Ofis ve kavurmahanemizin bilgileri, telefon, e-posta detayları ve mesaj formu.',
   alternates: {
-    canonical: 'https://coffeesto.com/contact',
+    canonical: 'https://coffeeesto.com/contact',
     languages: {
-      'en-US': 'https://coffeesto.com/en/contact',
-      'tr-TR': 'https://coffeesto.com/contact',
+      'en-US': 'https://coffeeesto.com/en/contact',
+      'tr-TR': 'https://coffeeesto.com/contact',
     },
   },
 };

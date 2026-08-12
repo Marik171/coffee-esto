@@ -8,10 +8,10 @@ export const metadata: Metadata = {
   title: 'Mükemmel Kahve Kavurmunu Bul — Coffee Esto Roastery',
   description: 'Sabah demleme yönteminize en uygun tek kökenli taze kahve çekirdeklerini bulmak için hızlı e-eşleşme testimizi çözün.',
   alternates: {
-    canonical: 'https://coffeesto.com/quiz',
+    canonical: 'https://coffeeesto.com/quiz',
     languages: {
-      'en-US': 'https://coffeesto.com/en/quiz',
-      'tr-TR': 'https://coffeesto.com/quiz',
+      'en-US': 'https://coffeeesto.com/en/quiz',
+      'tr-TR': 'https://coffeeesto.com/quiz',
     },
   },
 };

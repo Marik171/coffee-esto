@@ -9,10 +9,10 @@ export const metadata: Metadata = {
   title: 'Buy Specialty Coffee Online — Coffee Esto Roastery',
   description: 'Browse our catalog of freshly roasted single origins and espresso blends. Sourced ethically and roasted to order.',
   alternates: {
-    canonical: 'https://coffeesto.com/en/coffee',
+    canonical: 'https://coffeeesto.com/en/coffee',
     languages: {
-      'en-US': 'https://coffeesto.com/en/coffee',
-      'tr-TR': 'https://coffeesto.com/coffee',
+      'en-US': 'https://coffeeesto.com/en/coffee',
+      'tr-TR': 'https://coffeeesto.com/coffee',
     },
   },
 };

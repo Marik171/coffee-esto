@@ -12,10 +12,10 @@ export const metadata: Metadata = {
   title: 'Coffee Esto Roastery — Small-Batch Specialty Roastery',
   description: 'Freshly roasted, direct-trade specialty coffee. Sourced from single-origin farms and shipped straight to your door from our İstanbul roastery.',
   alternates: {
-    canonical: 'https://coffeesto.com/en',
+    canonical: 'https://coffeeesto.com/en',
     languages: {
-      'en-US': 'https://coffeesto.com/en',
-      'tr-TR': 'https://coffeesto.com',
+      'en-US': 'https://coffeeesto.com/en',
+      'tr-TR': 'https://coffeeesto.com',
     },
   },
 };

@@ -12,10 +12,10 @@ export const metadata: Metadata = {
   title: 'Coffee Esto Roastery — Taze Nitelikli Kahve Kavurmahanesi',
   description: 'Taze kavrulmuş, doğrudan ticaret nitelikli kahveler. Tek kökenli çiftliklerden tedarik edilip İstanbul kavurmahanemizden kapınıza gönderilir.',
   alternates: {
-    canonical: 'https://coffeesto.com',
+    canonical: 'https://coffeeesto.com',
     languages: {
-      'en-US': 'https://coffeesto.com/en',
-      'tr-TR': 'https://coffeesto.com',
+      'en-US': 'https://coffeeesto.com/en',
+      'tr-TR': 'https://coffeeesto.com',
     },
   },
 };

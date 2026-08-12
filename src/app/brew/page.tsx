@@ -8,10 +8,10 @@ export const metadata: Metadata = {
   title: 'İnteraktif Kahve Demleme Rehberleri — Coffee Esto Roastery',
   description: 'Evde V60 Pour Over, French Press veya Aeropress ile kahve demlemeyi öğrenin. Adım adım demleme asistanı kronometremizi deneyin.',
   alternates: {
-    canonical: 'https://coffeesto.com/brew',
+    canonical: 'https://coffeeesto.com/brew',
     languages: {
-      'en-US': 'https://coffeesto.com/en/brew',
-      'tr-TR': 'https://coffeesto.com/brew',
+      'en-US': 'https://coffeeesto.com/en/brew',
+      'tr-TR': 'https://coffeeesto.com/brew',
     },
   },
 };

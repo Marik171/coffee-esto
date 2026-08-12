@@ -6,10 +6,10 @@ export const metadata: Metadata = {
   title: 'Kavurmahanemizi Ziyaret Edin — Coffee Esto Roastery',
   description: 'Kartal, İstanbul\'daki ana kavurmahanemizi ve kafemizi ziyaret etmek için yol tarifleri, çalışma saatleri ve ulaşım bilgilerini bulun.',
   alternates: {
-    canonical: 'https://coffeesto.com/location',
+    canonical: 'https://coffeeesto.com/location',
     languages: {
-      'en-US': 'https://coffeesto.com/en/location',
-      'tr-TR': 'https://coffeesto.com/location',
+      'en-US': 'https://coffeeesto.com/en/location',
+      'tr-TR': 'https://coffeeesto.com/location',
     },
   },
 };

@@ -8,10 +8,10 @@ export const metadata: Metadata = {
   title: 'Find Your Perfect Coffee Roast — Coffee Esto Roastery',
   description: 'Take our coffee matcher quiz to find the perfect single-origin roasted beans for your morning brewing method.',
   alternates: {
-    canonical: 'https://coffeesto.com/en/quiz',
+    canonical: 'https://coffeeesto.com/en/quiz',
     languages: {
-      'en-US': 'https://coffeesto.com/en/quiz',
-      'tr-TR': 'https://coffeesto.com/quiz',
+      'en-US': 'https://coffeeesto.com/en/quiz',
+      'tr-TR': 'https://coffeeesto.com/quiz',
     },
   },
 };
