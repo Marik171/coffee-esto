@@ -11,7 +11,7 @@ import styles from '../app/coffee/coffee.module.css';
 import { localizeProduct } from '../lib/localize';
 
 const COFFEE_CATEGORY_SLUGS = ['single-origin', 'espresso', 'filter', 'turkish', 'signature-blend'];
-const EQUIPMENT_CATEGORY_SLUGS = ['espresso-machines', 'coffee-grinders', 'filter-brewing-equipment', 'small-bar-equipment', 'barista-accessories', 'cleaning-products'];
+const EQUIPMENT_CATEGORY_SLUGS = ['coffee-grinders', 'filter-brewing-equipment', 'small-bar-equipment', 'barista-accessories', 'cleaning-products', 'espresso-machines'];
 
 interface CoffeeProduct {
   id: string;
@@ -588,7 +588,8 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
                   </span>
                   <div className={styles.filterTags}>
                     {categories
-                      .filter(cat => EQUIPMENT_CATEGORY_SLUGS.includes(cat.slug))
+                      .filter(cat => EQUIPMENT_CATEGORY_SLUGS.includes(cat.slug) && cat.slug !== 'barista-accessories')
+                      .sort((a, b) => EQUIPMENT_CATEGORY_SLUGS.indexOf(a.slug) - EQUIPMENT_CATEGORY_SLUGS.indexOf(b.slug))
                       .map(cat => (
                         <button
                           key={cat.slug}
@@ -691,7 +692,11 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
                       <h3 className={styles.cardName}>{coffee.name}</h3>
                       <span className={styles.cardPrice}>
                         {!coffeeCategories.includes(coffee.category) ? (
-                          locale === 'tr' ? 'Fiyat için iletişime geçin' : 'Contact for pricing'
+                          coffee.price > 0 ? (
+                            locale === 'tr' ? `${coffee.price} TL` : `₺${coffee.price}`
+                          ) : (
+                            locale === 'tr' ? 'Fiyat için iletişime geçin' : 'Contact for pricing'
+                          )
                         ) : isSubscriber ? (
                           <>
                             <span style={{ textDecoration: 'line-through', opacity: 0.5, marginRight: '8px' }}>

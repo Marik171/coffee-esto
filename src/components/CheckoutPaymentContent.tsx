@@ -45,6 +45,24 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
   const [emailMe, setEmailMe] = useState(false);
   const [textMe, setTextMe] = useState(false);
   const [sameAsBilling, setSameAsBilling] = useState(true);
+  const [cargoProviders, setCargoProviders] = useState<{ id: string; name: string; fee: number }[]>([]);
+  const [shippingEnabled, setShippingEnabled] = useState(false);
+  const [selectedCargoProviderId, setSelectedCargoProviderId] = useState('');
+
+  useEffect(() => {
+    fetch('/api/shipping')
+      .then((res) => res.json())
+      .then((d) => {
+        if (d.success) {
+          setShippingEnabled(d.data.enabled);
+          setCargoProviders(d.data.providers);
+          if (d.data.enabled && d.data.providers.length > 0) {
+            setSelectedCargoProviderId(d.data.providers[0].id);
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const t = {
     en: {
@@ -64,13 +82,13 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       company: 'Company (optional)',
       address: 'Address',
       apartment: 'Apartment, suite, etc. (optional)',
-      city: 'City',
-      state: 'State',
+      city: 'District',
+      state: 'Province',
       zip: 'ZIP code',
       phone: 'Phone (optional)',
       textNews: 'Text me with news and offers',
       shippingMethod: 'Shipping method',
-      shippingMethodInfo: 'Enter your shipping address to view available shipping methods.',
+      shippingMethodInfo: 'Shipping is free on this order.',
       payment: 'Payment',
       paymentNote: 'All transactions are secure and encrypted.',
       creditCard: 'Credit card',
@@ -97,6 +115,8 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       expiryErr: 'Please enter a valid expiry date.',
       cvvErr: 'Please enter a valid security code.',
       freeShipping: 'Free',
+      selectShippingErr: 'Please select a shipping method.',
+      noProvidersErr: 'Shipping is temporarily unavailable. Please contact us to complete your order.',
     },
     tr: {
       cancel: 'Sepete dön',
@@ -115,13 +135,13 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       company: 'Şirket (isteğe bağlı)',
       address: 'Adres',
       apartment: 'Daire, suit, vb. (isteğe bağlı)',
-      city: 'Şehir',
-      state: 'İlçe',
+      city: 'İlçe',
+      state: 'İl',
       zip: 'Posta Kodu',
       phone: 'Telefon (isteğe bağlı)',
       textNews: 'SMS ile haber ve kampanya al',
       shippingMethod: 'Kargo yöntemi',
-      shippingMethodInfo: 'Kargo seçeneklerini görmek için teslimat adresinizi girin.',
+      shippingMethodInfo: 'Bu siparişte kargo ücretsizdir.',
       payment: 'Ödeme',
       paymentNote: 'Tüm işlemler güvenli ve şifreli.',
       creditCard: 'Kredi kartı',
@@ -148,6 +168,8 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       expiryErr: 'Lütfen geçerli bir son kullanma tarihi girin.',
       cvvErr: 'Lütfen geçerli bir güvenlik kodu girin.',
       freeShipping: 'Ücretsiz',
+      selectShippingErr: 'Lütfen bir kargo yöntemi seçin.',
+      noProvidersErr: 'Kargo seçenekleri şu anda kullanılamıyor. Siparişinizi tamamlamak için lütfen bizimle iletişime geçin.',
     },
   }[locale === 'tr' ? 'tr' : 'en'];
 
@@ -293,7 +315,9 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
   const subtotal = isWholesale
     ? wholesaleItems.reduce((acc, item) => acc + item.wholesalePrice * item.quantity, 0)
     : cartTotal;
-  const shippingFee = isWholesale ? 0 : (subtotal >= 2000 || subtotal === 0 ? 0 : 35);
+  const selectedCargoProvider = cargoProviders.find((p) => p.id === selectedCargoProviderId);
+  const requiresShippingSelection = !isWholesale && shippingEnabled && cargoProviders.length > 0 && !selectedCargoProvider;
+  const shippingFee = (!isWholesale && shippingEnabled && selectedCargoProvider) ? selectedCargoProvider.fee : 0;
   const grandTotal = subtotal + shippingFee;
   const totalQty = itemsToRender.reduce((acc: number, item: any) => acc + item.quantity, 0);
 
@@ -330,6 +354,7 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
     if (!email || !firstName || !lastName || !address || !city || !zipCode) {
       setErrorMessage(t.validationErr); return;
     }
+    if (requiresShippingSelection) { setErrorMessage(t.selectShippingErr); return; }
     if (cardNumber.replace(/\s/g, '').length < 15) { setErrorMessage(t.cardErr); return; }
     if (cardExpiry.replace(/[\s/]/g, '').length < 4) { setErrorMessage(t.expiryErr); return; }
     if (cardCvv.length < 3) { setErrorMessage(t.cvvErr); return; }
@@ -345,6 +370,7 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
           isSubscriber,
           shippingDetails: { email, fullName: `${firstName} ${lastName}`, address, city, zipCode, phone },
           cardDetails: { cardHolderName: cardName, cardNumber, expireMonth: parts[0], expireYear: parts[1], cvc: cardCvv },
+          cargoProviderId: selectedCargoProviderId || undefined,
           locale,
         }),
       });
@@ -455,11 +481,12 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
                       </div>
                       <div className={styles.pickupAddressText}>
                         <strong>Coffee Esto Roastery</strong>
-                        <span>Rasimpaşa Mahallesi, Moda Caddesi No:12</span>
-                        <span>Kadıköy, İstanbul 34714, Türkiye</span>
+                        <span>Topselvi Mahallesi, Kubilay Caddesi</span>
+                        <span>Şht. Ahmet Yalçın Sk. 3/a</span>
+                        <span>34873 Kartal/İstanbul, Türkiye</span>
                         <span className={styles.pickupHours}>Mon–Sat 08:00–20:00 &nbsp;·&nbsp; Sun 09:00–18:00</span>
                         <a
-                          href="https://maps.google.com/?q=Moda+Caddesi+Kadikoy+Istanbul"
+                          href="https://maps.app.goo.gl/ja48oQk66ieujCGc8"
                           target="_blank"
                           rel="noopener noreferrer"
                           className={styles.pickupDirections}
@@ -471,13 +498,13 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
                     <div className={styles.pickupMapWrapper}>
                       <iframe
                         title="Coffee Esto Roastery Location"
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3011.417!2d29.0302!3d40.9869!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cab7a7a8d6c37d%3A0x3b5b5b5b5b5b5b5b!2sModa%20Caddesi%2C%20Kad%C4%B1k%C3%B6y%2C%20%C4%B0stanbul!5e0!3m2!1sen!2str!4v1700000000000"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3015.781920088112!2d29.211596076140864!3d40.89859842617103!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cac55245d4a5c3%3A0x23927209a8c7020a!2sThe%20Coffee%20Esto%20Roastery!5e0!3m2!1sen!2s!4v1786534563880!5m2!1sen!2s"
                         width="100%"
                         height="260"
                         style={{ border: 0, borderRadius: '8px', display: 'block' }}
                         allowFullScreen
                         loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
+                        referrerPolicy="strict-origin-when-cross-origin"
                       />
                     </div>
                   </div>
@@ -585,12 +612,35 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
               </section>
 
               {/* Shipping Method */}
-              <section className={styles.formSection}>
-                <h2 className={styles.sectionTitle}>{t.shippingMethod}</h2>
-                <div className={styles.shippingMethodBox}>
-                  <p>{t.shippingMethodInfo}</p>
-                </div>
-              </section>
+              {!isWholesale && (
+                <section className={styles.formSection}>
+                  <h2 className={styles.sectionTitle}>{t.shippingMethod}</h2>
+                  {shippingEnabled && cargoProviders.length > 0 ? (
+                    <div className={styles.shippingMethodBox}>
+                      {cargoProviders.map((provider) => (
+                        <label key={provider.id} className={styles.radioRow}>
+                          <input
+                            type="radio"
+                            name="cargoProvider"
+                            checked={selectedCargoProviderId === provider.id}
+                            onChange={() => setSelectedCargoProviderId(provider.id)}
+                          />
+                          <span>{provider.name}</span>
+                          <span style={{ marginLeft: 'auto' }}>₺{provider.fee.toFixed(2)}</span>
+                        </label>
+                      ))}
+                    </div>
+                  ) : shippingEnabled ? (
+                    <div className={styles.shippingMethodBox}>
+                      <p>{t.noProvidersErr}</p>
+                    </div>
+                  ) : (
+                    <div className={styles.shippingMethodBox}>
+                      <p>{t.shippingMethodInfo}</p>
+                    </div>
+                  )}
+                </section>
+              )}
 
               {/* Payment */}
               <section className={styles.formSection}>
@@ -716,8 +766,10 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
               </div>
               <div className={styles.totalRow}>
                 <span>{t.shipping}</span>
-                <span className={shippingFee === 0 && subtotal > 0 ? '' : styles.shippingCalcText}>
-                  {shippingFee === 0 && subtotal > 0 ? t.freeShipping : shippingFee > 0 ? `₺${shippingFee.toFixed(2)}` : t.shippingCalc}
+                <span className={shippingFee === 0 && subtotal > 0 && !requiresShippingSelection ? '' : styles.shippingCalcText}>
+                  {requiresShippingSelection
+                    ? t.selectShippingErr
+                    : shippingFee === 0 && subtotal > 0 ? t.freeShipping : shippingFee > 0 ? `₺${shippingFee.toFixed(2)}` : t.shippingCalc}
                 </span>
               </div>
               <div className={styles.grandTotalRow}>
