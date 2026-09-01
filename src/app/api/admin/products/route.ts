@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
+import { invalidateCache } from '@/lib/cache';
 
 export async function GET() {
   try {
@@ -60,6 +61,8 @@ export async function POST(request: Request) {
       },
     });
 
+    invalidateCache('products');
+
     return NextResponse.json({ success: true, data: newProduct, error: null });
   } catch (error) {
     console.error('Failed to create product:', error);
@@ -106,6 +109,8 @@ export async function PUT(request: Request) {
       },
     });
 
+    invalidateCache('products');
+
     return NextResponse.json({ success: true, data: updated, error: null });
   } catch (error) {
     console.error('Failed to update product:', error);
@@ -134,6 +139,8 @@ export async function DELETE(request: Request) {
       where: { id },
       data: { isActive: false },
     });
+
+    invalidateCache('products');
 
     return NextResponse.json({ success: true, error: null });
   } catch (error) {

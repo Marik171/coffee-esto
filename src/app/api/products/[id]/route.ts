@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
+import { getCached, setCached } from '@/lib/cache';
 
 export async function GET(
   request: Request,
@@ -8,9 +9,20 @@ export async function GET(
   try {
     const resolvedParams = await params;
     const { id } = resolvedParams;
+    const cleanId = id.trim().toLowerCase();
+
+    const cacheKey = `product_${cleanId}`;
+    const cached = getCached(cacheKey);
+    if (cached) {
+      return NextResponse.json({
+        success: true,
+        data: cached,
+        error: null,
+      });
+    }
 
     const product = await db.product.findUnique({
-      where: { id: id.trim().toLowerCase() },
+      where: { id: cleanId },
     });
 
     if (!product || !product.isActive) {
@@ -19,6 +31,8 @@ export async function GET(
         { status: 404 }
       );
     }
+
+    setCached(cacheKey, product, 60);
 
     return NextResponse.json({
       success: true,

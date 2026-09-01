@@ -1,20 +1,20 @@
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
+import { invalidateCache } from '@/lib/cache';
 
-/** GET /api/admin/categories — returns all categories */
+/** GET /api/admin/categories — returns all categories with single-query counts */
 export async function GET() {
   try {
-    const categories = await db.category.findMany({
-      orderBy: { label: 'asc' },
-    });
+    const [categories, counts] = await Promise.all([
+      db.category.findMany({ orderBy: { label: 'asc' } }),
+      db.product.groupBy({ by: ['category'], _count: { id: true } }),
+    ]);
 
-    // Attach product count per category
-    const withCounts = await Promise.all(
-      categories.map(async (cat) => {
-        const count = await db.product.count({ where: { category: cat.slug } });
-        return { ...cat, productCount: count };
-      })
-    );
+    const countMap = Object.fromEntries(counts.map((c) => [c.category, c._count.id]));
+    const withCounts = categories.map((cat) => ({
+      ...cat,
+      productCount: countMap[cat.slug] || 0,
+    }));
 
     return NextResponse.json({ success: true, data: withCounts, error: null });
   } catch (error) {
@@ -39,7 +39,8 @@ export async function POST(request: Request) {
     }
 
     // Auto-generate slug from label
-    const slug = label.trim()
+    const slug = label
+      .trim()
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '');
@@ -55,6 +56,8 @@ export async function POST(request: Request) {
     const category = await db.category.create({
       data: { slug, label: label.trim() },
     });
+
+    invalidateCache('categories');
 
     return NextResponse.json({ success: true, data: category, error: null });
   } catch (error) {
@@ -82,6 +85,8 @@ export async function PUT(request: Request) {
       where: { id },
       data: { label: label.trim() },
     });
+
+    invalidateCache('categories');
 
     return NextResponse.json({ success: true, data: updated, error: null });
   } catch (error) {
@@ -124,6 +129,8 @@ export async function DELETE(request: Request) {
     }
 
     await db.category.delete({ where: { id } });
+    invalidateCache('categories');
+
     return NextResponse.json({ success: true, error: null });
   } catch (error) {
     console.error('Failed to delete category:', error);

@@ -212,3 +212,32 @@ model Review {
   @@index([productId])
   @@index([customerId])
 }
+
+model EmailSettings {
+  id            Int      @id @default(1)
+  provider      String   @default("smtp")
+  smtpHost      String   @default("smtp.mailtrap.io")
+  smtpPort      Int      @default(587)
+  smtpUser      String   @default("")
+  smtpPass      String   @default("")
+  fromEmail     String   @default("orders@grainandgrind.com")
+  fromName      String   @default("Coffee Esto Roastery")
+  resendApiKey  String   @default("")
+  templatesJson String   @default("{}")
+  updatedAt     DateTime @updatedAt
+}
+
+model StorefrontSettings {
+  id                  Int      @id @default(1)
+  announcementEnabled Boolean  @default(true)
+  announcementTextTr  String   @default("☕ 2.000 TL ve üzeri tüm siparişlerde Kargo ÜCRETSİZ!")
+  announcementTextEn  String   @default("☕ Free Shipping on all orders over ₺2,000!")
+  announcementBg      String   @default("linear-gradient(90deg, #2a170c 0%, #4a2817 100%)")
+  announcementLink    String   @default("/coffee")
+  spotlightProductId  String   @default("ethiopia")
+  holidayModeEnabled  Boolean  @default(false)
+  holidayNoticeTr     String   @default("")
+  holidayNoticeEn     String   @default("")
+  updatedAt           DateTime @updatedAt
+}
+

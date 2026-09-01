@@ -386,6 +386,7 @@ const DEFAULT_STYLE = {
 interface CoffeeDetailContentProps {
   id: string;
   locale?: string;
+  initialProduct?: any;
 }
 
 interface CustomerData {
@@ -412,12 +413,14 @@ interface ReviewStats {
   distribution: Record<number, number>;
 }
 
-export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: CoffeeDetailContentProps) {
+export default function CoffeeDetailContent({ id: coffeeId, locale = 'en', initialProduct }: CoffeeDetailContentProps) {
   const { addToCart, refreshUserStatus } = useCart();
-  const [coffee, setCoffee] = useState<CoffeeProduct | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [qty, setQty] = useState(1);
-  const [inView, setInView] = useState(false);
+  const [coffee, setCoffee] = useState<CoffeeProduct | null>(() =>
+    initialProduct ? localizeProduct(initialProduct, locale) : null
+  );
+  const [isLoading, setIsLoading] = useState(() => !initialProduct);
+  const [qty, setQty] = useState(() => (initialProduct ? Math.min(1, initialProduct.stock) : 1));
+  const [inView, setInView] = useState(() => Boolean(initialProduct));
   const [tiltStyle, setTiltStyle] = useState<React.CSSProperties>({});
   const [size, setSize] = useState('250g');
   const [grindType, setGrindType] = useState(locale === 'tr' ? 'Çekirdek (Öğütülmemiş)' : 'Whole Bean');
@@ -595,6 +598,7 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
   };
 
   useEffect(() => {
+    if (initialProduct) return;
     const fetchProduct = async () => {
       try {
         setIsLoading(true);
@@ -612,7 +616,7 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en' }: Cof
       }
     };
     fetchProduct();
-  }, [coffeeId]);
+  }, [coffeeId, initialProduct, locale]);
 
   const fetchReviews = async (productId: string) => {
     try {

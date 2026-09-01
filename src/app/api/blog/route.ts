@@ -1,15 +1,28 @@
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
+import { getCached, setCached } from '@/lib/cache';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const category = searchParams.get('category');
+    const category = searchParams.get('category') || 'all';
+
+    const cacheKey = `blog_${category}`;
+    const cached = getCached(cacheKey);
+    if (cached) {
+      return NextResponse.json({
+        success: true,
+        data: cached,
+        error: null,
+      });
+    }
 
     const posts = await db.blogPost.findMany({
-      where: category ? { category } : {},
+      where: category !== 'all' ? { category } : {},
       orderBy: { createdAt: 'desc' },
     });
+
+    setCached(cacheKey, posts, 60);
 
     return NextResponse.json({
       success: true,

@@ -284,22 +284,30 @@ const DEFAULT_STYLE = {
 
 interface CoffeeCatalogContentProps {
   locale?: string;
+  initialProducts?: any[];
+  initialCategories?: any[];
 }
 
 const coffeeCategories = ['single-origin', 'signature-blend', 'limited-edition', 'filter', 'espresso', 'turkish'];
 
-function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
+function CoffeeCatalogInner({
+  locale = 'en',
+  initialProducts,
+  initialCategories,
+}: CoffeeCatalogContentProps) {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get('category'); // Read bento tags link queries
   const { isSubscriber } = useCart();
 
-  const [coffees, setCoffees] = useState<CoffeeProduct[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [coffees, setCoffees] = useState<CoffeeProduct[]>(() =>
+    initialProducts ? initialProducts.map((p: any) => localizeProduct(p, locale)) : []
+  );
+  const [categories, setCategories] = useState<Category[]>(() => initialCategories || []);
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCoffee, setSelectedCoffee] = useState<CoffeeProduct | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => !(initialProducts && initialProducts.length > 0));
 
   const gridRef = useRef<HTMLDivElement | null>(null);
   const heroRef = useRef<HTMLDivElement | null>(null);
@@ -389,8 +397,11 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
     }
   }, [categoryParam]);
 
-  // Fetch products + categories from SQLite
+  // Fetch products + categories if not pre-rendered on server
   useEffect(() => {
+    if (initialProducts && initialProducts.length > 0 && initialCategories && initialCategories.length > 0) {
+      return;
+    }
     const loadData = async () => {
       try {
         setIsLoading(true);
@@ -408,7 +419,7 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
       }
     };
     loadData();
-  }, []);
+  }, [initialProducts, initialCategories, locale]);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -861,7 +872,11 @@ function CoffeeCatalogInner({ locale = 'en' }: CoffeeCatalogContentProps) {
   );
 }
 
-export default function CoffeeCatalogContent({ locale = 'en' }: CoffeeCatalogContentProps) {
+export default function CoffeeCatalogContent({
+  locale = 'en',
+  initialProducts,
+  initialCategories,
+}: CoffeeCatalogContentProps) {
   return (
     <Suspense fallback={
       <div className={styles.loadingWrapper}>
@@ -869,7 +884,11 @@ export default function CoffeeCatalogContent({ locale = 'en' }: CoffeeCatalogCon
         <p>{locale === 'tr' ? 'Katalog ürünleri hazırlanıyor...' : 'Brewing catalog items...'}</p>
       </div>
     }>
-      <CoffeeCatalogInner locale={locale} />
+      <CoffeeCatalogInner
+        locale={locale}
+        initialProducts={initialProducts}
+        initialCategories={initialCategories}
+      />
     </Suspense>
   );
 }

@@ -4,31 +4,31 @@
 // full-bleed photo with a magazine-style caption bar underneath.
 
 const palette = {
-  espresso: '#1a0e07',
-  roast: '#2c1a0e',
-  cream: '#fdf8f0',
-  parchment: '#ede5d0',
-  sand: '#f5ead8',
-  amber: '#c9963a',
-  orange: '#e84d00',
-  warmWhite: '#f5ede0',
-  warmMuted: '#a08060',
-  warmText: '#2a1a0e',
-  warmMid: '#6b4e30',
+  espresso: '#09090b',
+  roast: '#18181b',
+  cream: '#fafafa',
+  parchment: '#e4e4e7',
+  sand: '#f4f4f5',
+  amber: '#09090b',
+  orange: '#09090b',
+  warmWhite: '#ffffff',
+  warmMuted: '#a1a1aa',
+  warmText: '#27272a',
+  warmMid: '#71717a',
 };
 
-const fontDisplay = "'Playfair Display', Georgia, 'Times New Roman', serif";
-const fontBody = "'DM Sans', Helvetica, Arial, sans-serif";
+const fontDisplay = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+const fontBody = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
 export function button(label: string, href: string): string {
   return `
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 28px 0;">
       <tr>
-        <td align="center" bgcolor="${palette.orange}" style="border-radius: 50px;">
+        <td align="center" bgcolor="#09090b" style="border-radius: 9999px;">
           <a href="${href}" target="_blank"
-            style="display: inline-block; padding: 14px 34px; font-family: ${fontBody}; font-size: 13px;
-                   font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: ${palette.cream};
-                   text-decoration: none; border-radius: 50px; background-color: ${palette.orange}; border: 1px solid ${palette.orange};">
+            style="display: inline-block; padding: 13px 32px; font-family: ${fontBody}; font-size: 13px;
+                   font-weight: 700; letter-spacing: 0.05em; color: #ffffff;
+                   text-decoration: none; border-radius: 9999px; background-color: #09090b; border: 1px solid #09090b;">
             ${label}
           </a>
         </td>
@@ -38,7 +38,7 @@ export function button(label: string, href: string): string {
 }
 
 export function divider(): string {
-  return `<div style="height: 1px; background-color: ${palette.parchment}; margin: 28px 0;"></div>`;
+  return `<div style="height: 1px; background-color: #e4e4e7; margin: 28px 0;"></div>`;
 }
 
 interface LayoutOptions {
@@ -60,62 +60,87 @@ export function renderEmailLayout({
   locale = 'tr',
 }: LayoutOptions): string {
   const isEn = locale === 'en';
-  const logoSubtitle = isEn ? 'C O F F E E &nbsp; R O A S T E R Y' : 'K A H V E &nbsp; K A V U R M A &nbsp; E V İ';
+  const logoSubtitle = isEn ? 'SPECIALTY COFFEE ROASTERS • İSTANBUL' : 'NİTELİKLİ KAHVE KAVURMAHANE • İSTANBUL';
   const addressLabel = isEn
-    ? 'Coffee Esto Roastery &middot; Topselvi Mh, Kartal, İstanbul, Turkey'
-    : 'Coffee Esto Roastery &middot; Topselvi Mh, Kartal, İstanbul, Türkiye';
+    ? 'Coffee Esto Roastery Atelier &middot; Topselvi Mh, Kartal, İstanbul, Turkey'
+    : 'Coffee Esto Roastery Atelier &middot; Topselvi Mh, Kartal, İstanbul, Türkiye';
   const copyrightLabel = isEn
     ? `&copy; ${new Date().getFullYear()} Coffee Esto Roastery. All rights reserved.`
     : `&copy; ${new Date().getFullYear()} Coffee Esto Roastery. Tüm hakları saklıdır.`;
+  const managePrefLabel = isEn ? 'Manage Preferences' : 'Tercihleri Yönet';
+  const unsubscribeLabel = isEn ? 'Unsubscribe' : 'Abonelikten Çık';
+
+  // Anti-spillover sequence: 90+ zero-width non-breaking spaces so email clients don't bleed body text into inbox snippet
+  const antiSpillover = '&#847;&zwnj;&nbsp;'.repeat(30);
 
   return `
 <!DOCTYPE html>
-<html lang="${locale}">
+<html lang="${locale}" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="supported-color-schemes" content="light dark" />
   <title>Coffee Esto</title>
+  <style>
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+    @media (prefers-color-scheme: dark) {
+      body, .email-bg { background-color: #09090b !important; }
+      .email-card { background-color: #121215 !important; border-color: #27272a !important; }
+      .email-title { color: #ffffff !important; }
+      .email-body { color: #d4d4d8 !important; }
+      .email-muted { color: #a1a1aa !important; }
+      .email-divider { background-color: #27272a !important; }
+    }
+  </style>
 </head>
 <body style="margin: 0; padding: 0; background-color: ${palette.cream}; font-family: ${fontBody}; -webkit-font-smoothing: antialiased;">
-  <!-- Preheader (hidden preview text) -->
-  <div style="display: none; max-height: 0; overflow: hidden; opacity: 0;">
-    ${preheader}
+  <!-- Preheader with anti-spillover padding -->
+  <div style="display: none; max-height: 0px; overflow: hidden; opacity: 0; font-size: 1px; line-height: 1px; color: #ffffff;">
+    ${preheader}${antiSpillover}
   </div>
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: ${palette.cream};">
+  <table role="presentation" class="email-bg" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: ${palette.cream}; table-layout: fixed;">
     <tr>
-      <td align="center" style="padding: 40px 16px;">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
-          style="width: 100%; max-width: 600px; background-color: #ffffff; border: 1px solid ${palette.parchment}; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(26,14,7,0.04);">
+      <td align="center" style="padding: 36px 12px;">
+        <!--[if (gte mso 9)|(IE)]>
+        <table width="580" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td>
+        <![endif]-->
+        <table role="presentation" class="email-card" width="100%" cellpadding="0" cellspacing="0" border="0"
+          style="width: 100%; max-width: 580px; background-color: #ffffff; border: 1px solid ${palette.parchment}; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.04);">
 
-          <!-- Masthead (Header) -->
+          <!-- Masthead / Header with Brand Logo -->
           <tr>
-            <td align="center" style="padding: 36px 24px 20px;">
-              <span style="font-family: ${fontDisplay}; font-size: 26px; font-weight: 700; letter-spacing: 0.15em; color: ${palette.espresso};">
-                C O F F E E &nbsp; E S T O
-              </span>
-              <div style="margin-top: 6px; font-family: ${fontBody}; font-size: 9px; font-weight: 600; letter-spacing: 0.25em;
-                          text-transform: uppercase; color: ${palette.warmMid};">
-                ${logoSubtitle}
-              </div>
+            <td align="center" style="padding: 28px 24px 20px; background-color: #ffffff; border-bottom: 1px solid ${palette.parchment};">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center">
+                    <img src="https://coffeeesto.com/images/logo.png" alt="Coffee Esto Logo" width="44" height="44"
+                      style="display: block; width: 44px; height: 44px; object-fit: contain; margin-bottom: 8px; border-radius: 8px;"
+                      onerror="this.style.display='none'" />
+                    <span class="email-title" style="font-family: ${fontDisplay}; font-size: 18px; font-weight: 800; letter-spacing: 0.18em; color: ${palette.espresso}; text-transform: uppercase;">
+                      COFFEE ESTO
+                    </span>
+                    <div class="email-muted" style="margin-top: 4px; font-family: ${fontBody}; font-size: 9.5px; font-weight: 700; letter-spacing: 0.15em;
+                                text-transform: uppercase; color: ${palette.warmMid};">
+                      ${logoSubtitle}
+                    </div>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
-          
-          <!-- Elegant header thin divider -->
-          <tr>
-            <td align="center">
-              <div style="height: 1px; background-color: ${palette.parchment}; width: 85%;"></div>
-            </td>
-          </tr>
 
-          <!-- Editorial text banner (No Image) -->
+          <!-- Editorial text banner -->
           <tr>
-            <td align="center" style="padding: 28px 40px 12px;">
-              <p style="margin: 0 0 6px; font-family: ${fontBody}; font-size: 11px; font-weight: 700;
-                        letter-spacing: 0.18em; text-transform: uppercase; color: ${palette.amber};">
+            <td align="left" style="padding: 28px 32px 10px;">
+              <p style="margin: 0 0 6px; font-family: ${fontBody}; font-size: 10.5px; font-weight: 800;
+                        letter-spacing: 0.15em; text-transform: uppercase; color: ${palette.warmMid};">
                 ${heroEyebrow}
               </p>
-              <h1 style="margin: 0; font-family: ${fontDisplay}; font-size: 28px; font-weight: 700; line-height: 1.3; color: ${palette.espresso};">
+              <h1 class="email-title" style="margin: 0; font-family: ${fontDisplay}; font-size: 22px; font-weight: 800; line-height: 1.3; color: ${palette.espresso}; letter-spacing: -0.01em;">
                 ${heroTitle}
               </h1>
             </td>
@@ -123,28 +148,35 @@ export function renderEmailLayout({
 
           <!-- Body content -->
           <tr>
-            <td style="padding: 16px 40px 32px; font-family: ${fontBody}; font-size: 15px; line-height: 1.7; color: ${palette.warmText};">
+            <td class="email-body" style="padding: 10px 32px 30px; font-family: ${fontBody}; font-size: 14px; line-height: 1.7; color: ${palette.warmText};">
               ${bodyHtml}
             </td>
           </tr>
 
-          <!-- Footer -->
+          <!-- Footer with CAN-SPAM / KVKK Compliance & Preferences -->
           <tr>
-            <td style="padding: 0 40px 36px;">
-              <div style="height: 1px; background-color: ${palette.parchment}; margin-bottom: 24px;"></div>
-              <p style="margin: 0 0 6px; font-family: ${fontBody}; font-size: 13px; color: ${palette.warmMid};">
+            <td style="padding: 24px 32px 30px; background-color: #fafafa; border-top: 1px solid ${palette.parchment};">
+              <p class="email-muted" style="margin: 0 0 6px; font-family: ${fontBody}; font-size: 12px; color: ${palette.warmMid};">
                 ${addressLabel}
               </p>
-              <p style="margin: 0 0 16px; font-family: ${fontBody}; font-size: 13px; color: ${palette.warmMid};">
-                <a href="mailto:thecoffeeesto@gmail.com" style="color: ${palette.orange}; text-decoration: none; font-weight: 600;">thecoffeeesto@gmail.com</a>
-                &nbsp;&middot;&nbsp; +90 553 605 31 83
+              <p class="email-muted" style="margin: 0 0 12px; font-family: ${fontBody}; font-size: 12px; color: ${palette.warmMid};">
+                <a href="mailto:thecoffeeesto@gmail.com" style="color: ${palette.espresso}; text-decoration: underline; font-weight: 600;">thecoffeeesto@gmail.com</a>
+                &nbsp;&middot;&nbsp; +90 553 605 31 83 &nbsp;&middot;&nbsp; <a href="https://coffeeesto.com" style="color: ${palette.espresso}; text-decoration: none; font-weight: 600;">coffeeesto.com</a>
               </p>
-              <p style="margin: 0; font-family: ${fontBody}; font-size: 11px; color: ${palette.warmMuted};">
-                ${copyrightLabel}
+              <p style="margin: 0 0 10px; font-family: ${fontBody}; font-size: 11px; color: ${palette.warmMuted}; line-height: 1.5;">
+                Heat-sealed in Istanbul with one-way degassing valves. Roasted to order in small batches.
+              </p>
+              <p style="margin: 0; font-family: ${fontBody}; font-size: 10.5px; color: ${palette.warmMuted};">
+                ${copyrightLabel} &nbsp;&middot;&nbsp; 
+                <a href="https://coffeeesto.com/account/preferences" style="color: ${palette.warmMid}; text-decoration: underline;">${managePrefLabel}</a> &nbsp;&middot;&nbsp;
+                <a href="https://coffeeesto.com/account/preferences?optout=all" style="color: ${palette.warmMid}; text-decoration: underline;">${unsubscribeLabel}</a>
               </p>
             </td>
           </tr>
         </table>
+        <!--[if (gte mso 9)|(IE)]>
+        </td></tr></table>
+        <![endif]-->
       </td>
     </tr>
   </table>

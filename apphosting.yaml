@@ -8,7 +8,7 @@
 env:
   # Plain (non-secret) runtime config
   - variable: ADMIN_EMAIL
-    value: admin@grainandgrind.com
+    value: thecoffeeesto@gmail.com
     availability:
       - BUILD
       - RUNTIME
@@ -137,6 +137,12 @@ env:
 
   - variable: BREVO_API_KEY
     secret: BREVO_API_KEY
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: CRON_SECRET
+    secret: CRON_SECRET
     availability:
       - BUILD
       - RUNTIME

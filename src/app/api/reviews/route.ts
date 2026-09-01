@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { verifyToken } from '@/lib/auth';
 import { cookies } from 'next/headers';
+import { getCached, setCached, invalidateCache } from '@/lib/cache';
 
 /* ─────────────────────────────────────────────────────────────
    GET /api/reviews?productId=xxx
@@ -17,6 +18,16 @@ export async function GET(request: Request) {
         { success: false, error: 'productId query parameter is required.' },
         { status: 400 }
       );
+    }
+
+    const cacheKey = `reviews_${productId}`;
+    const cached = getCached(cacheKey);
+    if (cached) {
+      return NextResponse.json({
+        success: true,
+        data: cached,
+        error: null,
+      });
     }
 
     const reviews = await db.review.findMany({
@@ -60,12 +71,16 @@ export async function GET(request: Request) {
       };
     });
 
+    const resultData = {
+      reviews: safeReviews,
+      stats: { total, avgRating, distribution },
+    };
+
+    setCached(cacheKey, resultData, 60);
+
     return NextResponse.json({
       success: true,
-      data: {
-        reviews: safeReviews,
-        stats: { total, avgRating, distribution },
-      },
+      data: resultData,
       error: null,
     });
   } catch (error) {
@@ -189,6 +204,8 @@ export async function POST(request: Request) {
         body: reviewBody.trim(),
       },
     });
+
+    invalidateCache(`reviews_${productId.trim().toLowerCase()}`);
 
     return NextResponse.json({
       success: true,

@@ -15,6 +15,19 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState<any[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+  const [storefrontSettings, setStorefrontSettings] = useState<any>(null);
+
+  // Fetch storefront announcement settings
+  useEffect(() => {
+    fetch('/api/storefront-settings')
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success && json.data) {
+          setStorefrontSettings(json.data);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Fetch products on mount or when search is clicked
   useEffect(() => {
@@ -158,15 +171,33 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
   return (
     <header className={headerClass}>
       {/* 1. Black Top Announcement Bar */}
-      <div className={styles.announcementBar}>
-        <div className={styles.announcementInner}>
-          <div className={styles.announcementLeft}>
-            {/* Order Ahead removed */}
-          </div>
-          <div className={styles.announcementCenter}>
-            <span>{t.shippingPromo}</span>
-          </div>
-          <div className={styles.announcementRight}>
+      {storefrontSettings?.announcementEnabled !== false && (
+        <div
+          className={styles.announcementBar}
+          style={storefrontSettings?.announcementBg ? { background: storefrontSettings.announcementBg } : undefined}
+        >
+          <div className={styles.announcementInner}>
+            <div className={styles.announcementLeft}>
+              {/* Order Ahead removed */}
+            </div>
+            <div className={styles.announcementCenter}>
+              {storefrontSettings?.announcementLink ? (
+                <Link href={storefrontSettings.announcementLink} style={{ color: 'inherit', textDecoration: 'none' }}>
+                  <span>
+                    {locale === 'tr'
+                      ? storefrontSettings?.announcementTextTr || t.shippingPromo
+                      : storefrontSettings?.announcementTextEn || t.shippingPromo}
+                  </span>
+                </Link>
+              ) : (
+                <span>
+                  {locale === 'tr'
+                    ? storefrontSettings?.announcementTextTr || t.shippingPromo
+                    : storefrontSettings?.announcementTextEn || t.shippingPromo}
+                </span>
+              )}
+            </div>
+            <div className={styles.announcementRight}>
             <button type="button" onClick={() => setIsSearchOpen(true)} className={styles.searchBtn}>
               <span className={styles.searchText}>{t.search}</span>
               <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" className={styles.searchIcon}>
@@ -185,6 +216,7 @@ export default function Navbar({ locale = 'tr' }: { locale?: string }) {
           </div>
         </div>
       </div>
+      )}
 
       {/* 2. White Main Brand Bar */}
       <div className={styles.brandBar}>

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
+import { invalidateCache } from '@/lib/cache';
 
 /** GET /api/admin/blog — returns all blog posts */
 export async function GET() {
@@ -48,6 +49,8 @@ export async function POST(request: Request) {
       },
     });
 
+    invalidateCache('blog_');
+
     return NextResponse.json({ success: true, data: post, error: null });
   } catch (error) {
     console.error('Failed to create blog post:', error);
@@ -91,6 +94,8 @@ export async function PUT(request: Request) {
       },
     });
 
+    invalidateCache('blog_');
+
     return NextResponse.json({ success: true, data: updated, error: null });
   } catch (error) {
     console.error('Failed to update blog post:', error);
@@ -115,6 +120,8 @@ export async function DELETE(request: Request) {
     }
 
     await db.blogPost.delete({ where: { id } });
+
+    invalidateCache('blog_');
 
     return NextResponse.json({ success: true, data: { id }, error: null });
   } catch (error) {
