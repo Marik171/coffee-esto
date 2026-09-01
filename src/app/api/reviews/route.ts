@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     }
 
     const reviews = await db.review.findMany({
-      where: { productId },
+      where: { productId, isHidden: false },
       orderBy: { createdAt: 'desc' },
       include: {
         customer: {

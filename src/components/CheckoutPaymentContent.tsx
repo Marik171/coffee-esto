@@ -41,6 +41,9 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
   const [wholesaleItems, setWholesaleItems] = useState<any[]>([]);
   const [stockIssue, setStockIssue] = useState('');
   const [discountCode, setDiscountCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountAmount: number } | null>(null);
+  const [couponError, setCouponError] = useState('');
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [deliveryMode, setDeliveryMode] = useState<'ship' | 'pickup'>('ship');
   const [emailMe, setEmailMe] = useState(false);
   const [textMe, setTextMe] = useState(false);
@@ -117,6 +120,9 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       freeShipping: 'Free',
       selectShippingErr: 'Please select a shipping method.',
       noProvidersErr: 'Shipping is temporarily unavailable. Please contact us to complete your order.',
+      applying: 'Applying...',
+      remove: 'Remove',
+      discountLabel: 'Discount',
     },
     tr: {
       cancel: 'Sepete dön',
@@ -170,6 +176,9 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       freeShipping: 'Ücretsiz',
       selectShippingErr: 'Lütfen bir kargo yöntemi seçin.',
       noProvidersErr: 'Kargo seçenekleri şu anda kullanılamıyor. Siparişinizi tamamlamak için lütfen bizimle iletişime geçin.',
+      applying: 'Uygulanıyor...',
+      remove: 'Kaldır',
+      discountLabel: 'İndirim',
     },
   }[locale === 'tr' ? 'tr' : 'en'];
 
@@ -318,8 +327,29 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
   const selectedCargoProvider = cargoProviders.find((p) => p.id === selectedCargoProviderId);
   const requiresShippingSelection = !isWholesale && shippingEnabled && cargoProviders.length > 0 && !selectedCargoProvider;
   const shippingFee = (!isWholesale && shippingEnabled && selectedCargoProvider) ? selectedCargoProvider.fee : 0;
-  const grandTotal = subtotal + shippingFee;
+  const discountAmount = appliedCoupon?.discountAmount ?? 0;
+  const grandTotal = Math.max(subtotal - discountAmount, 0) + shippingFee;
   const totalQty = itemsToRender.reduce((acc: number, item: any) => acc + item.quantity, 0);
+
+  // Debounced abandoned-cart snapshot — fires once the customer has entered
+  // a valid email and hasn't yet completed checkout.
+  useEffect(() => {
+    if (isWholesale || isSubmitting || !email.includes('@') || itemsToRender.length === 0) return;
+    const timer = setTimeout(() => {
+      fetch('/api/cart/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          name: `${firstName} ${lastName}`.trim(),
+          items: itemsToRender.map((item: any) => ({ name: item.name, quantity: item.quantity, price: item.price })),
+          subtotal,
+          locale,
+        }),
+      }).catch(() => {});
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [email, firstName, lastName, itemsToRender, subtotal, isWholesale, isSubmitting, locale]);
 
   useEffect(() => {
     const len = isWholesale ? wholesaleItems.length : cartItems.length;
@@ -348,6 +378,36 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
     setCardCvv(e.target.value.replace(/\D/g, '').substring(0, 4));
   };
 
+  const handleApplyCoupon = async () => {
+    if (!discountCode.trim()) return;
+    setCouponError('');
+    setIsApplyingCoupon(true);
+    try {
+      const res = await fetch('/api/coupons/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: discountCode, subtotal }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setCouponError(data.error || 'Invalid coupon code.');
+        setAppliedCoupon(null);
+      } else {
+        setAppliedCoupon({ code: data.data.code, discountAmount: data.data.discountAmount });
+      }
+    } catch {
+      setCouponError('Failed to apply coupon.');
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setDiscountCode('');
+    setCouponError('');
+  };
+
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
@@ -371,6 +431,7 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
           shippingDetails: { email, fullName: `${firstName} ${lastName}`, address, city, zipCode, phone },
           cardDetails: { cardHolderName: cardName, cardNumber, expireMonth: parts[0], expireYear: parts[1], cvc: cardCvv },
           cargoProviderId: selectedCargoProviderId || undefined,
+          couponCode: appliedCoupon?.code || undefined,
           locale,
         }),
       });
@@ -753,17 +814,33 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
               </div>
             ))}
 
-            <div className={styles.discountRow}>
-              <input type="text" placeholder={t.discount} value={discountCode}
-                onChange={(e) => setDiscountCode(e.target.value)} className={styles.discountInput} />
-              <button type="button" className={styles.applyBtn}>{t.apply}</button>
-            </div>
+            {appliedCoupon ? (
+              <div className={styles.discountRow}>
+                <span>{appliedCoupon.code}</span>
+                <button type="button" className={styles.applyBtn} onClick={handleRemoveCoupon}>{t.remove}</button>
+              </div>
+            ) : (
+              <div className={styles.discountRow}>
+                <input type="text" placeholder={t.discount} value={discountCode}
+                  onChange={(e) => setDiscountCode(e.target.value)} className={styles.discountInput} />
+                <button type="button" className={styles.applyBtn} disabled={isApplyingCoupon || !discountCode.trim()} onClick={handleApplyCoupon}>
+                  {isApplyingCoupon ? t.applying : t.apply}
+                </button>
+              </div>
+            )}
+            {couponError && <div style={{ color: '#b3261e', fontSize: '0.8rem', marginTop: '-0.5rem' }}>{couponError}</div>}
 
             <div className={styles.totalsBlock}>
               <div className={styles.totalRow}>
                 <span>{t.subtotal}</span>
                 <span>₺{subtotal.toFixed(2)}</span>
               </div>
+              {discountAmount > 0 && (
+                <div className={styles.totalRow}>
+                  <span>{t.discountLabel}</span>
+                  <span>-₺{discountAmount.toFixed(2)}</span>
+                </div>
+              )}
               <div className={styles.totalRow}>
                 <span>{t.shipping}</span>
                 <span className={shippingFee === 0 && subtotal > 0 && !requiresShippingSelection ? '' : styles.shippingCalcText}>

@@ -22,6 +22,14 @@ interface CoffeeProduct {
 }
 interface Category { id: string; slug: string; label: string; productCount?: number; }
 interface CargoProvider { id: string; name: string; fee: number; isActive: boolean; sortOrder: number; }
+interface Coupon {
+  id: string; code: string; type: string; value: number; minOrderAmount: number;
+  maxUses: number | null; usedCount: number; expiresAt: string | null; isActive: boolean;
+}
+interface Review {
+  id: string; productId: string; productName: string; customerName: string; customerEmail: string;
+  rating: number; title: string; body: string; isHidden: boolean; createdAt: string;
+}
 
 /* ── Helpers ───────────────────────────────────────────────────── */
 const emptyProduct = (): Partial<CoffeeProduct> => ({
@@ -271,6 +279,48 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
     confirmDeleteCategory: 'Delete this category?',
     confirmDeleteProvider: 'Delete this cargo provider?',
     linkUrlPrompt: 'Enter link URL:',
+
+    navCoupons: 'Coupons',
+    navReviews: 'Reviews',
+    couponsTitle: 'Discount Coupons',
+    addCoupon: 'Add Coupon',
+    colCode: 'Code',
+    colDiscount: 'Discount',
+    colMinOrder: 'Min. Order',
+    colUses: 'Uses',
+    colExpires: 'Expires',
+    noExpiry: 'No expiry',
+    unlimited: 'Unlimited',
+    loadingCoupons: 'Loading coupons...',
+    noCoupons: 'No Coupons Yet',
+    editCoupon: 'Edit Coupon',
+    newCoupon: 'New Coupon',
+    couponCode: 'Coupon Code',
+    couponCodePlaceholder: 'e.g. WELCOME10',
+    discountType: 'Discount Type',
+    percentOff: 'Percentage off',
+    fixedOff: 'Fixed amount off (₺)',
+    discountValue: 'Discount Value',
+    minOrderAmount: 'Minimum Order Amount (₺)',
+    maxUses: 'Max Uses',
+    maxUsesPlaceholder: 'Leave empty for unlimited',
+    expiresAt: 'Expiry Date',
+    saveCoupon: 'Save Coupon',
+    createCoupon: 'Create Coupon',
+    confirmDeleteCoupon: 'Delete this coupon?',
+
+    reviewsTitle: 'Review Moderation',
+    colProduct: 'Product',
+    colCustomer: 'Customer',
+    colRating: 'Rating',
+    colReview: 'Review',
+    colVisibility: 'Visibility',
+    visible: 'Visible',
+    hide: 'Hide',
+    show: 'Show',
+    loadingReviews: 'Loading reviews...',
+    noReviews: 'No Reviews Yet',
+    confirmDeleteReview: 'Delete this review permanently?',
   },
   tr: {
     brandTag: 'Ticaret Merkezi',
@@ -483,6 +533,48 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
     confirmDeleteCategory: 'Bu kategoriyi sil?',
     confirmDeleteProvider: 'Bu kargo firmasını sil?',
     linkUrlPrompt: 'Bağlantı adresi girin (URL):',
+
+    navCoupons: 'Kuponlar',
+    navReviews: 'Yorumlar',
+    couponsTitle: 'İndirim Kuponları',
+    addCoupon: 'Kupon Ekle',
+    colCode: 'Kod',
+    colDiscount: 'İndirim',
+    colMinOrder: 'Min. Sipariş',
+    colUses: 'Kullanım',
+    colExpires: 'Son Kullanma',
+    noExpiry: 'Süresiz',
+    unlimited: 'Sınırsız',
+    loadingCoupons: 'Kuponlar yükleniyor...',
+    noCoupons: 'Henüz Kupon Yok',
+    editCoupon: 'Kuponu Düzenle',
+    newCoupon: 'Yeni Kupon',
+    couponCode: 'Kupon Kodu',
+    couponCodePlaceholder: 'Örn: WELCOME10',
+    discountType: 'İndirim Türü',
+    percentOff: 'Yüzde indirim',
+    fixedOff: 'Sabit tutar indirim (₺)',
+    discountValue: 'İndirim Değeri',
+    minOrderAmount: 'Minimum Sipariş Tutarı (₺)',
+    maxUses: 'Maksimum Kullanım',
+    maxUsesPlaceholder: 'Sınırsız için boş bırakın',
+    expiresAt: 'Son Kullanma Tarihi',
+    saveCoupon: 'Kuponu Kaydet',
+    createCoupon: 'Kupon Oluştur',
+    confirmDeleteCoupon: 'Bu kuponu sil?',
+
+    reviewsTitle: 'Yorum Denetimi',
+    colProduct: 'Ürün',
+    colCustomer: 'Müşteri',
+    colRating: 'Puan',
+    colReview: 'Yorum',
+    colVisibility: 'Görünürlük',
+    visible: 'Görünür',
+    hide: 'Gizle',
+    show: 'Göster',
+    loadingReviews: 'Yorumlar yükleniyor...',
+    noReviews: 'Henüz Yorum Yok',
+    confirmDeleteReview: 'Bu yorumu kalıcı olarak sil?',
   },
 };
 
@@ -506,7 +598,7 @@ export default function AdminDashboardPage() {
   const contentTrRef = useRef<HTMLDivElement>(null);
   const contentEnRef = useRef<HTMLDivElement>(null);
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'inventory' | 'categories' | 'customers' | 'blog' | 'shipping'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'inventory' | 'categories' | 'customers' | 'blog' | 'shipping' | 'coupons' | 'reviews'>('overview');
 
   // Blog CMS
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
@@ -555,6 +647,17 @@ export default function AdminDashboardPage() {
   const [showProviderModal, setShowProviderModal] = useState(false);
   const [editingProvider, setEditingProvider] = useState<CargoProvider | null>(null);
   const [providerForm, setProviderForm] = useState({ name: '', fee: 0 });
+
+  // Coupons
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [showCouponModal, setShowCouponModal] = useState(false);
+  const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);
+  const [couponForm, setCouponForm] = useState({
+    code: '', type: 'percent', value: 10, minOrderAmount: 0, maxUses: '', expiresAt: '', isActive: true,
+  });
+
+  // Reviews
+  const [reviews, setReviews] = useState<Review[]>([]);
 
   // Shared UI
   const [isLoading, setIsLoading] = useState(false);
@@ -621,6 +724,28 @@ export default function AdminDashboardPage() {
       if (providersData.success) setCargoProviders(providersData.data);
       else setErrorMsg(providersData.error);
     } catch { setErrorMsg('Network error loading shipping settings.'); }
+    finally { setIsLoading(false); }
+  };
+
+  const fetchCoupons = async () => {
+    setIsLoading(true); setErrorMsg('');
+    try {
+      const res = await fetch('/api/admin/coupons');
+      const d = await res.json();
+      if (d.success) setCoupons(d.data);
+      else setErrorMsg(d.error);
+    } catch { setErrorMsg('Network error loading coupons.'); }
+    finally { setIsLoading(false); }
+  };
+
+  const fetchReviews = async () => {
+    setIsLoading(true); setErrorMsg('');
+    try {
+      const res = await fetch('/api/admin/reviews');
+      const d = await res.json();
+      if (d.success) setReviews(d.data);
+      else setErrorMsg(d.error);
+    } catch { setErrorMsg('Network error loading reviews.'); }
     finally { setIsLoading(false); }
   };
 
@@ -783,6 +908,8 @@ export default function AdminDashboardPage() {
       else if (activeTab === 'categories') fetchCategories();
       else if (activeTab === 'blog') fetchBlogPosts();
       else if (activeTab === 'shipping') fetchShippingSettings();
+      else if (activeTab === 'coupons') fetchCoupons();
+      else if (activeTab === 'reviews') fetchReviews();
     });
   }, [activeTab]);
 
@@ -793,7 +920,7 @@ export default function AdminDashboardPage() {
   };
 
   /* ── Tab reset helper ──────────────────────────────────────── */
-  const switchTab = (tab: 'overview' | 'orders' | 'inventory' | 'categories' | 'customers' | 'blog' | 'shipping') => {
+  const switchTab = (tab: 'overview' | 'orders' | 'inventory' | 'categories' | 'customers' | 'blog' | 'shipping' | 'coupons' | 'reviews') => {
     setActiveTab(tab);
     setSelectedOrder(null);
     setSelectedProduct(null);
@@ -803,6 +930,8 @@ export default function AdminDashboardPage() {
     setIsAddingBlogPost(false);
     setShowProviderModal(false);
     setEditingProvider(null);
+    setShowCouponModal(false);
+    setEditingCoupon(null);
     setErrorMsg('');
   };
 
@@ -1052,6 +1181,109 @@ export default function AdminDashboardPage() {
     finally { setActionLoading(false); }
   };
 
+  const handleAddCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setActionLoading(true); setErrorMsg('');
+    try {
+      const res = await fetch('/api/admin/coupons', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: couponForm.code, type: couponForm.type, value: couponForm.value,
+          minOrderAmount: couponForm.minOrderAmount,
+          maxUses: couponForm.maxUses === '' ? null : Number(couponForm.maxUses),
+          expiresAt: couponForm.expiresAt || null,
+          isActive: couponForm.isActive,
+        }),
+      });
+      const d = await res.json();
+      if (!d.success) throw new Error(d.error);
+      setShowCouponModal(false);
+      fetchCoupons();
+    } catch (err: unknown) { setErrorMsg(err instanceof Error ? err.message : 'An unexpected error occurred.'); }
+    finally { setActionLoading(false); }
+  };
+
+  const handleUpdateCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCoupon) return;
+    setActionLoading(true); setErrorMsg('');
+    try {
+      const res = await fetch('/api/admin/coupons', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editingCoupon.id,
+          code: couponForm.code, type: couponForm.type, value: couponForm.value,
+          minOrderAmount: couponForm.minOrderAmount,
+          maxUses: couponForm.maxUses === '' ? null : Number(couponForm.maxUses),
+          expiresAt: couponForm.expiresAt || null,
+          isActive: couponForm.isActive,
+        }),
+      });
+      const d = await res.json();
+      if (!d.success) throw new Error(d.error);
+      setEditingCoupon(null);
+      setShowCouponModal(false);
+      fetchCoupons();
+    } catch (err: unknown) { setErrorMsg(err instanceof Error ? err.message : 'An unexpected error occurred.'); }
+    finally { setActionLoading(false); }
+  };
+
+  const handleToggleCouponActive = async (coupon: Coupon) => {
+    setActionLoading(true); setErrorMsg('');
+    try {
+      const res = await fetch('/api/admin/coupons', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: coupon.id, isActive: !coupon.isActive }),
+      });
+      const d = await res.json();
+      if (!d.success) throw new Error(d.error);
+      fetchCoupons();
+    } catch (err: unknown) { setErrorMsg(err instanceof Error ? err.message : 'An unexpected error occurred.'); }
+    finally { setActionLoading(false); }
+  };
+
+  const handleDeleteCoupon = async (id: string) => {
+    if (!confirm(t.confirmDeleteCoupon)) return;
+    setActionLoading(true); setErrorMsg('');
+    try {
+      const res = await fetch(`/api/admin/coupons?id=${id}`, { method: 'DELETE' });
+      const d = await res.json();
+      if (!d.success) throw new Error(d.error);
+      fetchCoupons();
+    } catch (err: unknown) { setErrorMsg(err instanceof Error ? err.message : 'An unexpected error occurred.'); }
+    finally { setActionLoading(false); }
+  };
+
+  const handleToggleReviewHidden = async (review: Review) => {
+    setActionLoading(true); setErrorMsg('');
+    try {
+      const res = await fetch('/api/admin/reviews', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: review.id, isHidden: !review.isHidden }),
+      });
+      const d = await res.json();
+      if (!d.success) throw new Error(d.error);
+      fetchReviews();
+    } catch (err: unknown) { setErrorMsg(err instanceof Error ? err.message : 'An unexpected error occurred.'); }
+    finally { setActionLoading(false); }
+  };
+
+  const handleDeleteReview = async (id: string) => {
+    if (!confirm(t.confirmDeleteReview)) return;
+    setActionLoading(true); setErrorMsg('');
+    try {
+      const res = await fetch(`/api/admin/reviews?id=${id}`, { method: 'DELETE' });
+      const d = await res.json();
+      if (!d.success) throw new Error(d.error);
+      fetchReviews();
+    } catch (err: unknown) { setErrorMsg(err instanceof Error ? err.message : 'An unexpected error occurred.'); }
+    finally { setActionLoading(false); }
+  };
+
   /* ── KPIs + filtered orders ─────────────────────────────────── */
   const grossRevenue = orders.filter(o => o.payment_status === 'captured').reduce((a, o) => a + o.totalAmount, 0);
   const pendingFulfillments = orders.filter(o => o.fulfillment_status === 'not_fulfilled' || o.fulfillment_status === 'roasting').length;
@@ -1208,6 +1440,12 @@ export default function AdminDashboardPage() {
           </button>
           <button onClick={() => switchTab('shipping')} className={`${styles.navItem} ${activeTab === 'shipping' ? styles.navItemActive : ''}`}>
             🚚 {t.navShipping}
+          </button>
+          <button onClick={() => switchTab('coupons')} className={`${styles.navItem} ${activeTab === 'coupons' ? styles.navItemActive : ''}`}>
+            🎟️ {t.navCoupons}
+          </button>
+          <button onClick={() => switchTab('reviews')} className={`${styles.navItem} ${activeTab === 'reviews' ? styles.navItemActive : ''}`}>
+            ⭐ {t.navReviews}
           </button>
           <Link href="/coffee" className={styles.navItem}>☕️ {t.navStorefront}</Link>
           <Link href="/" className={styles.navItem}>🏠 {t.navHomepage}</Link>
@@ -1622,6 +1860,150 @@ export default function AdminDashboardPage() {
             </section>
           </>
         )}
+        {/* ───── Tab: Coupons ───── */}
+        {activeTab === 'coupons' && (
+          <>
+            <header className={styles.header}>
+              <h1 className={styles.pageTitle}>{t.couponsTitle}</h1>
+              <div className={styles.headerActions}>
+                <button
+                  onClick={() => {
+                    setShowCouponModal(true); setEditingCoupon(null);
+                    setCouponForm({ code: '', type: 'percent', value: 10, minOrderAmount: 0, maxUses: '', expiresAt: '', isActive: true });
+                    setErrorMsg('');
+                  }}
+                  className={styles.addBtn}
+                >➕ {t.addCoupon}</button>
+                <button onClick={fetchCoupons} className={styles.refreshBtn}>🔄 {t.refresh}</button>
+              </div>
+            </header>
+            {errorMsg && <div className={styles.errorBanner} role="alert"><span>⚠️ {errorMsg}</span></div>}
+
+            <section className={styles.tableCard}>
+              {isLoading ? (
+                <div className={styles.loadingBox}><span className={styles.loadingSpinner}>🎟️</span><p>{t.loadingCoupons}</p></div>
+              ) : coupons.length > 0 ? (
+                <div className={styles.tableWrapper}>
+                  <table className={styles.ordersTable}>
+                    <thead>
+                      <tr>
+                        <th>{t.colCode}</th><th>{t.colDiscount}</th><th>{t.colMinOrder}</th>
+                        <th>{t.colUses}</th><th>{t.colExpires}</th><th>{t.colStatus}</th><th>{t.colActions}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {coupons.map(coupon => (
+                        <tr key={coupon.id} className={styles.orderRow}>
+                          <td style={{ fontWeight: 600 }}>{coupon.code}</td>
+                          <td>{coupon.type === 'percent' ? `${coupon.value}%` : `₺${coupon.value.toFixed(2)}`}</td>
+                          <td>₺{coupon.minOrderAmount.toFixed(2)}</td>
+                          <td>{coupon.usedCount}{coupon.maxUses !== null ? ` / ${coupon.maxUses}` : ` / ${t.unlimited}`}</td>
+                          <td>{coupon.expiresAt ? new Date(coupon.expiresAt).toLocaleDateString() : t.noExpiry}</td>
+                          <td>
+                            <span className={`${styles.badge} ${coupon.isActive ? styles.status_captured : styles.status_pending}`}>
+                              {coupon.isActive ? t.active : t.disabled}
+                            </span>
+                          </td>
+                          <td>
+                            <div className={styles.actionCell}>
+                              <button
+                                onClick={() => {
+                                  setEditingCoupon(coupon);
+                                  setCouponForm({
+                                    code: coupon.code, type: coupon.type, value: coupon.value,
+                                    minOrderAmount: coupon.minOrderAmount,
+                                    maxUses: coupon.maxUses === null ? '' : String(coupon.maxUses),
+                                    expiresAt: coupon.expiresAt ? coupon.expiresAt.slice(0, 10) : '',
+                                    isActive: coupon.isActive,
+                                  });
+                                  setShowCouponModal(true);
+                                }}
+                                className={styles.editIconBtn}
+                              >✏️ {t.edit}</button>
+                              <button
+                                onClick={() => handleToggleCouponActive(coupon)}
+                                className={styles.editIconBtn}
+                              >{coupon.isActive ? `⏸️ ${t.disable}` : `▶️ ${t.enable}`}</button>
+                              <button
+                                onClick={() => handleDeleteCoupon(coupon.id)}
+                                className={styles.deleteIconBtn}
+                              >🗑️ {t.delete}</button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className={styles.emptyRegistry}><span className={styles.emptyIcon}>🎟️</span><h3>{t.noCoupons}</h3></div>
+              )}
+            </section>
+          </>
+        )}
+
+        {/* ───── Tab: Reviews ───── */}
+        {activeTab === 'reviews' && (
+          <>
+            <header className={styles.header}>
+              <h1 className={styles.pageTitle}>{t.reviewsTitle}</h1>
+              <div className={styles.headerActions}>
+                <button onClick={fetchReviews} className={styles.refreshBtn}>🔄 {t.refresh}</button>
+              </div>
+            </header>
+            {errorMsg && <div className={styles.errorBanner} role="alert"><span>⚠️ {errorMsg}</span></div>}
+
+            <section className={styles.tableCard}>
+              {isLoading ? (
+                <div className={styles.loadingBox}><span className={styles.loadingSpinner}>⭐</span><p>{t.loadingReviews}</p></div>
+              ) : reviews.length > 0 ? (
+                <div className={styles.tableWrapper}>
+                  <table className={styles.ordersTable}>
+                    <thead>
+                      <tr>
+                        <th>{t.colProduct}</th><th>{t.colCustomer}</th><th>{t.colRating}</th>
+                        <th>{t.colReview}</th><th>{t.colVisibility}</th><th>{t.colActions}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {reviews.map(review => (
+                        <tr key={review.id} className={styles.orderRow}>
+                          <td style={{ fontWeight: 600 }}>{review.productName}</td>
+                          <td>{review.customerName}</td>
+                          <td>{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</td>
+                          <td style={{ maxWidth: 320 }}>
+                            <strong>{review.title}</strong>
+                            <div style={{ fontSize: '0.85em', opacity: 0.8 }}>{review.body}</div>
+                          </td>
+                          <td>
+                            <span className={`${styles.badge} ${!review.isHidden ? styles.status_captured : styles.status_pending}`}>
+                              {review.isHidden ? t.hidden : t.visible}
+                            </span>
+                          </td>
+                          <td>
+                            <div className={styles.actionCell}>
+                              <button
+                                onClick={() => handleToggleReviewHidden(review)}
+                                className={styles.editIconBtn}
+                              >{review.isHidden ? `👁️ ${t.show}` : `🙈 ${t.hide}`}</button>
+                              <button
+                                onClick={() => handleDeleteReview(review.id)}
+                                className={styles.deleteIconBtn}
+                              >🗑️ {t.delete}</button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className={styles.emptyRegistry}><span className={styles.emptyIcon}>⭐</span><h3>{t.noReviews}</h3></div>
+              )}
+            </section>
+          </>
+        )}
+
         {/* ───── Tab: Blog CMS ───── */}
         {activeTab === 'blog' && (
           <>
@@ -2006,6 +2388,89 @@ export default function AdminDashboardPage() {
               </div>
               <button type="submit" className={styles.opActionBtn} disabled={actionLoading}>
                 {actionLoading ? t.saving : (editingProvider ? `🚚 ${t.saveProvider}` : `🚚 ${t.createProvider}`)}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════ */}
+      {/* Modal: Add/Edit Coupon                                      */}
+      {/* ═══════════════════════════════════════════════════════════ */}
+      {showCouponModal && activeTab === 'coupons' && (
+        <div className={styles.modalBackdrop} onClick={() => { setShowCouponModal(false); setEditingCoupon(null); }}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()} role="dialog" aria-labelledby="coupon-modal-title">
+            <div className={styles.modalHeader}>
+              <h2 id="coupon-modal-title" className={styles.modalTitle}>{editingCoupon ? t.editCoupon : t.newCoupon}</h2>
+              <button onClick={() => { setShowCouponModal(false); setEditingCoupon(null); }} className={styles.closeBtn}>✕</button>
+            </div>
+            {errorMsg && <div className={styles.errorBanner}><span>⚠️ {errorMsg}</span></div>}
+            <form onSubmit={editingCoupon ? handleUpdateCoupon : handleAddCoupon} className={styles.modalForm}>
+              <div className={styles.inputBox}>
+                <label htmlFor="coupon-code">{t.couponCode}</label>
+                <input
+                  id="coupon-code" type="text" required autoFocus
+                  value={couponForm.code}
+                  onChange={e => setCouponForm(prev => ({ ...prev, code: e.target.value }))}
+                  placeholder={t.couponCodePlaceholder}
+                />
+              </div>
+              <div className={styles.inputBox}>
+                <label htmlFor="coupon-type">{t.discountType}</label>
+                <select
+                  id="coupon-type"
+                  value={couponForm.type}
+                  onChange={e => setCouponForm(prev => ({ ...prev, type: e.target.value }))}
+                >
+                  <option value="percent">{t.percentOff}</option>
+                  <option value="fixed">{t.fixedOff}</option>
+                </select>
+              </div>
+              <div className={styles.inputBox}>
+                <label htmlFor="coupon-value">{t.discountValue}</label>
+                <input
+                  id="coupon-value" type="number" required min={0}
+                  max={couponForm.type === 'percent' ? 100 : undefined}
+                  step="0.01"
+                  value={couponForm.value}
+                  onChange={e => setCouponForm(prev => ({ ...prev, value: parseFloat(e.target.value) || 0 }))}
+                />
+              </div>
+              <div className={styles.inputBox}>
+                <label htmlFor="coupon-min-order">{t.minOrderAmount}</label>
+                <input
+                  id="coupon-min-order" type="number" min={0} step="0.01"
+                  value={couponForm.minOrderAmount}
+                  onChange={e => setCouponForm(prev => ({ ...prev, minOrderAmount: parseFloat(e.target.value) || 0 }))}
+                />
+              </div>
+              <div className={styles.inputBox}>
+                <label htmlFor="coupon-max-uses">{t.maxUses}</label>
+                <input
+                  id="coupon-max-uses" type="number" min={1}
+                  value={couponForm.maxUses}
+                  onChange={e => setCouponForm(prev => ({ ...prev, maxUses: e.target.value }))}
+                  placeholder={t.maxUsesPlaceholder}
+                />
+              </div>
+              <div className={styles.inputBox}>
+                <label htmlFor="coupon-expires">{t.expiresAt}</label>
+                <input
+                  id="coupon-expires" type="date"
+                  value={couponForm.expiresAt}
+                  onChange={e => setCouponForm(prev => ({ ...prev, expiresAt: e.target.value }))}
+                />
+              </div>
+              <div className={styles.checkboxBox}>
+                <input
+                  type="checkbox" id="coupon-active"
+                  checked={couponForm.isActive}
+                  onChange={e => setCouponForm(prev => ({ ...prev, isActive: e.target.checked }))}
+                />
+                <label htmlFor="coupon-active">{t.active}</label>
+              </div>
+              <button type="submit" className={styles.opActionBtn} disabled={actionLoading}>
+                {actionLoading ? t.saving : (editingCoupon ? `🎟️ ${t.saveCoupon}` : `🎟️ ${t.createCoupon}`)}
               </button>
             </form>
           </div>

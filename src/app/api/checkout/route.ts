@@ -4,6 +4,7 @@ import db from '@/lib/db';
 import { createPayment, Iyzipay } from '@/lib/iyzipay';
 import { verifyToken } from '@/lib/auth';
 import { sendOrderConfirmationEmail, sendOwnerNewOrderNotification, sendLowStockAlert } from '@/lib/emails';
+import { validateCoupon } from '@/lib/coupons';
 
 const LOW_STOCK_THRESHOLD = 5;
 
@@ -41,13 +42,14 @@ function getProductId(id: string): string {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { items, shippingDetails, cardDetails, isWholesale, locale, cargoProviderId } = body as {
+    const { items, shippingDetails, cardDetails, isWholesale, locale, cargoProviderId, couponCode } = body as {
       items: CheckoutItem[];
       shippingDetails: ShippingDetails;
       cardDetails: CardDetails;
       isWholesale?: boolean;
       locale?: string;
       cargoProviderId?: string;
+      couponCode?: string;
     };
 
     // ── 1. Input validation ──────────────────────────────────────
@@ -176,7 +178,24 @@ export async function POST(request: Request) {
         cargoProviderName = provider.name;
       }
     }
-    const totalAmount = calculatedSubtotal + shippingFee;
+    // ── 2c. Coupon — server-side validation, never trust a client-computed discount ──
+    let discountAmount = 0;
+    let appliedCouponCode = '';
+    let appliedCouponId: string | null = null;
+    if (couponCode && couponCode.trim()) {
+      const couponResult = await validateCoupon(couponCode, calculatedSubtotal);
+      if (!couponResult.valid) {
+        return NextResponse.json(
+          { success: false, error: couponResult.error ?? 'Invalid coupon code.' },
+          { status: 400 }
+        );
+      }
+      discountAmount = couponResult.discountAmount;
+      appliedCouponCode = couponResult.coupon!.code;
+      appliedCouponId = couponResult.coupon!.id;
+    }
+
+    const totalAmount = calculatedSubtotal - discountAmount + shippingFee;
 
     // ── 3. Build iyzico payment request ─────────────────────────
     const orderId = `ESTO-${Date.now().toString(36).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000).toString(16).toUpperCase()}`;
@@ -283,6 +302,8 @@ export async function POST(request: Request) {
           subtotal: calculatedSubtotal,
           shippingFee,
           cargoProviderName,
+          couponCode: appliedCouponCode,
+          discountAmount,
           totalAmount,
           status: 'pending',
           paymentStatus: 'captured',
@@ -305,7 +326,11 @@ export async function POST(request: Request) {
           data: { stock: { decrement: qty } },
         })
       ),
+      ...(appliedCouponId ? [db.coupon.update({ where: { id: appliedCouponId }, data: { usedCount: { increment: 1 } } })] : []),
     ]);
+
+    // Cart converted to an order — stop any pending abandoned-cart reminder for this email.
+    await db.abandonedCart.deleteMany({ where: { email: shippingDetails.email } }).catch(() => {});
 
     let detectedLocale = locale;
     if (!detectedLocale) {
@@ -349,6 +374,8 @@ export async function POST(request: Request) {
         orderId: newOrder.id,
         subtotal: newOrder.subtotal,
         shippingFee: newOrder.shippingFee,
+        discountAmount: newOrder.discountAmount,
+        couponCode: newOrder.couponCode,
         totalAmount: newOrder.totalAmount,
         email: newOrder.email,
         paymentId: paymentResult.paymentId,

@@ -17,6 +17,8 @@ model Order {
   subtotal          Float
   shippingFee       Float
   cargoProviderName String      @default("")
+  couponCode        String      @default("")
+  discountAmount    Float       @default(0)
   totalAmount       Float
   status            String      @default("pending")
   paymentStatus     String      @default("awaiting")
@@ -77,6 +79,38 @@ model Product {
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+// Percent- or fixed-amount discount codes, redeemable at checkout.
+model Coupon {
+  id             String    @id @default(uuid())
+  code           String    @unique
+  type           String    // "percent" | "fixed"
+  value          Float     // percent (0-100) or fixed TRY amount
+  minOrderAmount Float     @default(0)
+  maxUses        Int?      // null = unlimited
+  usedCount      Int       @default(0)
+  expiresAt      DateTime?
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+// Snapshot of a checkout-in-progress cart, captured once an email is known.
+// A scheduled job emails a reminder if it's never converted into an Order.
+model AbandonedCart {
+  id             String    @id @default(uuid())
+  email          String
+  name           String    @default("")
+  items          Json
+  subtotal       Float
+  locale         String    @default("tr")
+  reminderSentAt DateTime?
+  recovered      Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([email])
 }
 
 model Category {
@@ -170,6 +204,7 @@ model Review {
   rating     Int      // 1–5
   title      String   @default("")
   body       String
+  isHidden   Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

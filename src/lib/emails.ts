@@ -346,6 +346,49 @@ export async function sendLowStockAlert(products: { id: string; name: string; st
   });
 }
 
+export async function sendAbandonedCartEmail(cart: {
+  email: string;
+  name?: string;
+  items: { name: string; quantity: number; price: number }[];
+  subtotal: number;
+  locale?: string;
+}): Promise<void> {
+  const isTr = cart.locale !== 'en';
+  const firstName = cart.name?.trim().split(/\s+/)[0];
+  const safeFirstName = firstName ? escapeHtml(firstName) : undefined;
+  const greeting = safeFirstName ? (isTr ? `Merhaba ${safeFirstName},` : `Hi ${safeFirstName},`) : (isTr ? 'Merhaba,' : 'Hi there,');
+  const checkoutUrl = `https://coffeeesto.com${isTr ? '' : '/en'}/checkout/payment`;
+
+  const bodyHtml = `
+    <p style="margin: 0 0 20px; font-size: 15px; line-height: 1.7; color: ${colors.warmMid};">
+      ${greeting} ${isTr
+        ? 'sepetinizde sizi bekleyen ürünler var. Siparişinizi tamamlamak ister misiniz?'
+        : 'you left some items in your cart. Would you like to finish your order?'}
+    </p>
+
+    <div style="background-color: ${colors.sand}; border-radius: 12px; padding: 20px 24px;">
+      ${renderItemsTable(cart.items, isTr ? 'tr' : 'en')}
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top: 10px; border-top: 1px solid ${colors.parchment}; padding-top: 8px;">
+        ${renderTotalsRow(isTr ? 'Ara Toplam' : 'Subtotal', `${cart.subtotal.toFixed(2)} TRY`, true)}
+      </table>
+    </div>
+
+    ${button(isTr ? 'Siparişi Tamamla' : 'Complete your order', checkoutUrl)}
+  `;
+
+  await sendEmail({
+    to: [{ email: cart.email, name: cart.name }],
+    subject: isTr ? 'Sepetinizde ürünler sizi bekliyor' : 'You left something in your cart',
+    htmlContent: renderEmailLayout({
+      preheader: isTr ? 'Siparişinizi tamamlamayı unutmayın' : "Don't forget to complete your order",
+      heroEyebrow: isTr ? 'SEPETİNİZ SİZİ BEKLİYOR' : 'YOUR CART IS WAITING',
+      heroTitle: isTr ? 'Siparişinizi tamamlayın' : 'Complete your order',
+      bodyHtml,
+      locale: isTr ? 'tr' : 'en',
+    }),
+  });
+}
+
 export async function sendContactFormNotification(details: {
   name: string;
   email: string;
