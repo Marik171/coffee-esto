@@ -193,6 +193,22 @@ const translations: Record<string, Record<string, { name: string; origin: string
       process: 'Doğal', body: 'Orta', acidity: 'Canlı',
     }
   },
+  'ethiopia-yirgacheffe': {
+    en: {
+      name: 'Ethiopia Yirgacheffe',
+      origin: 'Yirgacheffe, Ethiopia',
+      tastingNotes: 'Mixed Berries, Milk Chocolate, Sweet Lemon',
+      description: 'A vibrant washed Yirgacheffe lot with a balanced, lively cup — layered mixed-berry fruit, creamy milk chocolate, and a bright, sweet lemon finish.',
+      process: 'Washed', body: 'Medium', acidity: 'Lively',
+    },
+    tr: {
+      name: 'Etiyopya Yirgacheffe',
+      origin: 'Yirgacheffe, Etiyopya',
+      tastingNotes: 'Karışık Meyveler, Sütlü Çikolata, Tatlı Limon',
+      description: 'Dengeli ve canlı bir fincan sunan yıkanmış Yirgacheffe lotu — katmanlı karışık meyve tatları, kremsi sütlü çikolata ve parlak, tatlı limon bitişiyle öne çıkar.',
+      process: 'Yıkanmış', body: 'Orta', acidity: 'Canlı',
+    }
+  },
   'brazil-cerrado': {
     en: {
       name: 'Brazil Cerrado',
