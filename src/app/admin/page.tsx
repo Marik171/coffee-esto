@@ -62,6 +62,7 @@ function fmtConfirmDeactivateProduct(lang: Lang, id: string): string {
 const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
   en: {
     brandTag: 'Commerce Core',
+    navOverview: 'Overview',
     navOrders: 'Orders Queue',
     navInventory: 'Coffee Inventory',
     navCategories: 'Categories',
@@ -72,6 +73,17 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
     navHomepage: 'Homepage',
     signOut: 'Sign Out',
     refresh: 'Refresh',
+    exportCsv: 'Export CSV',
+
+    overviewTitle: 'Overview',
+    last7DaysRevenue: 'Last 7 Days Revenue',
+    lowStockItems: 'Low Stock Items',
+    bestSellers: 'Best-Selling Products',
+    lowStockAlert: 'Low Stock Alert',
+    noSalesYet: 'No sales yet.',
+    noLowStock: 'All products are well stocked.',
+    unitsSold: 'units sold',
+    revenueLabel: 'Revenue',
 
     ordersTitle: 'Orders Administration',
     netRevenue: 'Net Revenue',
@@ -262,6 +274,7 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
   },
   tr: {
     brandTag: 'Ticaret Merkezi',
+    navOverview: 'Genel Bakış',
     navOrders: 'Sipariş Kuyruğu',
     navInventory: 'Kahve Stoku',
     navCategories: 'Kategoriler',
@@ -272,6 +285,17 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
     navHomepage: 'Ana Sayfa',
     signOut: 'Çıkış Yap',
     refresh: 'Yenile',
+    exportCsv: 'CSV Olarak İndir',
+
+    overviewTitle: 'Genel Bakış',
+    last7DaysRevenue: 'Son 7 Gün Gelir',
+    lowStockItems: 'Düşük Stoklu Ürünler',
+    bestSellers: 'En Çok Satan Ürünler',
+    lowStockAlert: 'Düşük Stok Uyarısı',
+    noSalesYet: 'Henüz satış yok.',
+    noLowStock: 'Tüm ürünlerin stoğu yeterli.',
+    unitsSold: 'adet satıldı',
+    revenueLabel: 'Gelir',
 
     ordersTitle: 'Sipariş Yönetimi',
     netRevenue: 'Net Gelir',
@@ -482,7 +506,7 @@ export default function AdminDashboardPage() {
   const contentTrRef = useRef<HTMLDivElement>(null);
   const contentEnRef = useRef<HTMLDivElement>(null);
 
-  const [activeTab, setActiveTab] = useState<'orders' | 'inventory' | 'categories' | 'customers' | 'blog' | 'shipping'>('orders');
+  const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'inventory' | 'categories' | 'customers' | 'blog' | 'shipping'>('overview');
 
   // Blog CMS
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
@@ -753,7 +777,8 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     requestAnimationFrame(() => {
-      if (activeTab === 'orders' || activeTab === 'customers') fetchOrders();
+      if (activeTab === 'overview') { fetchOrders(); fetchProducts(); }
+      else if (activeTab === 'orders' || activeTab === 'customers') fetchOrders();
       else if (activeTab === 'inventory') { fetchProducts(); fetchCategories(); }
       else if (activeTab === 'categories') fetchCategories();
       else if (activeTab === 'blog') fetchBlogPosts();
@@ -768,7 +793,7 @@ export default function AdminDashboardPage() {
   };
 
   /* ── Tab reset helper ──────────────────────────────────────── */
-  const switchTab = (tab: 'orders' | 'inventory' | 'categories' | 'customers' | 'blog' | 'shipping') => {
+  const switchTab = (tab: 'overview' | 'orders' | 'inventory' | 'categories' | 'customers' | 'blog' | 'shipping') => {
     setActiveTab(tab);
     setSelectedOrder(null);
     setSelectedProduct(null);
@@ -1071,6 +1096,85 @@ export default function AdminDashboardPage() {
 
   const repeatCustomers = customers.filter(c => c.orderCount > 1).length;
 
+  /* ── Overview: best sellers, low stock, 7-day revenue trend ───── */
+  const bestSellers = Object.values(
+    orders
+      .filter(o => o.payment_status === 'captured')
+      .flatMap(o => o.items)
+      .reduce((acc, item) => {
+        if (!acc[item.id]) acc[item.id] = { id: item.id, name: item.name, qty: 0, revenue: 0 };
+        acc[item.id].qty += item.quantity;
+        acc[item.id].revenue += item.price * item.quantity;
+        return acc;
+      }, {} as Record<string, { id: string; name: string; qty: number; revenue: number }>)
+  ).sort((a, b) => b.qty - a.qty).slice(0, 5);
+
+  const lowStockProducts = products
+    .filter(p => p.isActive && p.stock <= 5)
+    .sort((a, b) => a.stock - b.stock)
+    .slice(0, 6);
+
+  const last7Days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - i));
+    return d.toISOString().slice(0, 10);
+  });
+  const revenueByDay = last7Days.map(day => ({
+    day,
+    total: orders
+      .filter(o => o.payment_status === 'captured' && o.createdAt.slice(0, 10) === day)
+      .reduce((a, o) => a + o.totalAmount, 0),
+  }));
+  const maxDayRevenue = Math.max(1, ...revenueByDay.map(d => d.total));
+
+  /* ── CSV export ──────────────────────────────────────────────── */
+  const toCsvCell = (v: string | number): string => {
+    const s = String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+
+  const downloadCsv = (filename: string, rows: (string | number)[][]) => {
+    const csv = rows.map(row => row.map(toCsvCell).join(',')).join('\r\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const exportOrdersCsv = () => {
+    const header = ['Order ID', 'Date', 'Email', 'Phone', 'Address', 'Subtotal', 'Shipping', 'Total', 'Status', 'Payment', 'Fulfillment', 'Tracking', 'Carrier', 'Items'];
+    const rows = filteredOrders.map(o => [
+      o.id,
+      new Date(o.createdAt).toISOString(),
+      o.email,
+      o.phone,
+      o.address,
+      o.subtotal.toFixed(2),
+      o.shippingFee.toFixed(2),
+      o.totalAmount.toFixed(2),
+      o.status,
+      o.payment_status,
+      o.fulfillment_status,
+      o.trackingNumber,
+      o.shippingProvider,
+      o.items.map(i => `${i.name} x${i.quantity}`).join('; '),
+    ]);
+    downloadCsv(`orders-${new Date().toISOString().slice(0, 10)}.csv`, [header, ...rows]);
+  };
+
+  const exportInventoryCsv = () => {
+    const header = ['Product ID', 'Name', 'Category', 'Price', '1kg Price', 'Stock', 'Roast Level', 'Active'];
+    const rows = products.map(p => [
+      p.id, p.name, p.category, p.price.toFixed(2), p.price1kg.toFixed(2), p.stock, p.roastLevel, p.isActive ? 'yes' : 'no',
+    ]);
+    downloadCsv(`inventory-${new Date().toISOString().slice(0, 10)}.csv`, [header, ...rows]);
+  };
+
   /* ── Render ──────────────────────────────────────────────────── */
   return (
     <div className={styles.adminWrapper}>
@@ -1084,6 +1188,9 @@ export default function AdminDashboardPage() {
           <span className={styles.adminTag}>{t.brandTag}</span>
         </div>
         <nav className={styles.sidebarNav}>
+          <button onClick={() => switchTab('overview')} className={`${styles.navItem} ${activeTab === 'overview' ? styles.navItemActive : ''}`}>
+            📊 {t.navOverview}
+          </button>
           <button onClick={() => switchTab('orders')} className={`${styles.navItem} ${activeTab === 'orders' ? styles.navItemActive : ''}`}>
             📦 {t.navOrders}
           </button>
@@ -1120,12 +1227,87 @@ export default function AdminDashboardPage() {
       {/* ── Main ── */}
       <main className={styles.mainContent}>
 
+        {/* ───── Tab: Overview ───── */}
+        {activeTab === 'overview' && (
+          <>
+            <header className={styles.header}>
+              <h1 className={styles.pageTitle}>{t.overviewTitle}</h1>
+              <button onClick={() => { fetchOrders(); fetchProducts(); }} className={styles.refreshBtn}>🔄 {t.refresh}</button>
+            </header>
+            {errorMsg && <div className={styles.errorBanner} role="alert"><span>⚠️ {errorMsg}</span></div>}
+            <section className={styles.kpiGrid}>
+              <div className={styles.kpiCard}><span className={styles.kpiLabel}>{t.netRevenue}</span><span className={styles.kpiVal}>₺{grossRevenue.toFixed(2)}</span></div>
+              <div className={styles.kpiCard}><span className={styles.kpiLabel}>{t.totalOrders}</span><span className={styles.kpiVal}>{orders.length}</span></div>
+              <div className={styles.kpiCard}><span className={styles.kpiLabel}>{t.lowStockItems}</span><span className={styles.kpiVal} style={{ color: lowStockProducts.length > 0 ? '#ff3601' : '#4aa57f' }}>{lowStockProducts.length}</span></div>
+              <div className={styles.kpiCard}><span className={styles.kpiLabel}>{t.awaitingPayment}</span><span className={styles.kpiVal} style={{ color: pendingPayments > 0 ? '#e5c158' : '#4aa57f' }}>{pendingPayments}</span></div>
+            </section>
+
+            <section className={styles.tableCard} style={{ marginBottom: 24, padding: '20px 24px' }}>
+              <h3 className={styles.blockTitle} style={{ marginBottom: 16 }}>{t.last7DaysRevenue}</h3>
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 140 }}>
+                {revenueByDay.map(d => (
+                  <div key={d.day} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 11, color: 'var(--admin-text-muted)' }}>₺{d.total.toFixed(0)}</span>
+                    <div style={{
+                      width: '100%', maxWidth: 36,
+                      height: Math.max(4, (d.total / maxDayRevenue) * 96),
+                      background: 'var(--admin-gold)', borderRadius: 4,
+                    }} />
+                    <span style={{ fontSize: 11, color: 'var(--admin-text-muted)' }}>
+                      {new Date(d.day).toLocaleDateString(lang === 'tr' ? 'tr-TR' : 'en-US', { weekday: 'short' })}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+              <section className={styles.tableCard} style={{ padding: '20px 24px' }}>
+                <h3 className={styles.blockTitle} style={{ marginBottom: 16 }}>{t.bestSellers}</h3>
+                {bestSellers.length > 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {bestSellers.map((p, i) => (
+                      <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>#{i + 1} <strong>{p.name}</strong></span>
+                        <span style={{ color: 'var(--admin-text-muted)', fontSize: 13 }}>{p.qty} {t.unitsSold} · ₺{p.revenue.toFixed(0)}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ color: 'var(--admin-text-muted)' }}>{t.noSalesYet}</p>
+                )}
+              </section>
+
+              <section className={styles.tableCard} style={{ padding: '20px 24px' }}>
+                <h3 className={styles.blockTitle} style={{ marginBottom: 16 }}>{t.lowStockAlert}</h3>
+                {lowStockProducts.length > 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {lowStockProducts.map(p => (
+                      <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>{p.name}</span>
+                        <span style={{ color: p.stock === 0 ? '#ff3601' : '#e5c158', fontWeight: 700, fontSize: 13 }}>
+                          {p.stock === 0 ? `⚠ ${t.out}` : `${p.stock}`}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ color: 'var(--admin-text-muted)' }}>{t.noLowStock}</p>
+                )}
+              </section>
+            </div>
+          </>
+        )}
+
         {/* ───── Tab: Orders ───── */}
         {activeTab === 'orders' && (
           <>
             <header className={styles.header}>
               <h1 className={styles.pageTitle}>{t.ordersTitle}</h1>
-              <button onClick={fetchOrders} className={styles.refreshBtn}>🔄 {t.refresh}</button>
+              <div className={styles.headerActions}>
+                <button onClick={exportOrdersCsv} className={styles.addBtn}>⬇️ {t.exportCsv}</button>
+                <button onClick={fetchOrders} className={styles.refreshBtn}>🔄 {t.refresh}</button>
+              </div>
             </header>
             {errorMsg && <div className={styles.errorBanner} role="alert"><span>⚠️ {errorMsg}</span></div>}
             <section className={styles.kpiGrid}>
@@ -1251,6 +1433,7 @@ export default function AdminDashboardPage() {
               <h1 className={styles.pageTitle}>{t.inventoryTitle}</h1>
               <div className={styles.headerActions}>
                 <button onClick={openAddProduct} className={styles.addBtn}>➕ {t.addRoast}</button>
+                <button onClick={exportInventoryCsv} className={styles.addBtn}>⬇️ {t.exportCsv}</button>
                 <button onClick={fetchProducts} className={styles.refreshBtn}>🔄 {t.refresh}</button>
               </div>
             </header>

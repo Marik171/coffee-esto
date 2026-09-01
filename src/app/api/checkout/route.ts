@@ -3,7 +3,9 @@ import { cookies } from 'next/headers';
 import db from '@/lib/db';
 import { createPayment, Iyzipay } from '@/lib/iyzipay';
 import { verifyToken } from '@/lib/auth';
-import { sendOrderConfirmationEmail, sendOwnerNewOrderNotification } from '@/lib/emails';
+import { sendOrderConfirmationEmail, sendOwnerNewOrderNotification, sendLowStockAlert } from '@/lib/emails';
+
+const LOW_STOCK_THRESHOLD = 5;
 
 interface CheckoutItem {
   id: string;
@@ -322,9 +324,23 @@ export async function POST(request: Request) {
       locale: detectedLocale,
     };
 
+    // Only alert when a product crosses the threshold on this order (was above it,
+    // is now at or below it) — avoids re-sending the same alert on every subsequent order.
+    const newlyLowStock = Array.from(requestedTotals.entries())
+      .map(([baseId, qty]) => {
+        const before = productMap.get(baseId);
+        if (!before) return null;
+        const after = before.stock - qty;
+        return before.stock > LOW_STOCK_THRESHOLD && after <= LOW_STOCK_THRESHOLD
+          ? { id: before.id, name: before.name, stock: Math.max(after, 0) }
+          : null;
+      })
+      .filter((p): p is { id: string; name: string; stock: number } => p !== null);
+
     await Promise.all([
       sendOrderConfirmationEmail(orderEmailDetails),
       sendOwnerNewOrderNotification(orderEmailDetails),
+      ...(newlyLowStock.length > 0 ? [sendLowStockAlert(newlyLowStock)] : []),
     ]);
 
     return NextResponse.json({

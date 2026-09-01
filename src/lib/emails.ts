@@ -299,6 +299,53 @@ export async function sendOwnerNewOrderNotification(order: OrderEmailDetails): P
   });
 }
 
+export async function sendLowStockAlert(products: { id: string; name: string; stock: number }[]): Promise<void> {
+  const ownerEmail = getOwnerEmail();
+  if (!ownerEmail) {
+    console.error('[emails] OWNER_EMAIL is not configured — skipping low-stock alert.');
+    return;
+  }
+  if (products.length === 0) return;
+
+  const rows = products
+    .map(
+      (p) => `
+        <tr>
+          <td style="padding: 10px 0; border-top: 1px solid ${colors.parchment}; font-size: 14px; color: ${colors.warmText};">
+            ${escapeHtml(p.name)}
+            <span style="display: block; font-size: 12px; color: ${colors.warmMid}; margin-top: 2px;">${escapeHtml(p.id)}</span>
+          </td>
+          <td style="padding: 10px 0; border-top: 1px solid ${colors.parchment}; font-size: 14px; font-weight: 700; color: ${p.stock === 0 ? colors.orange : colors.warmText}; text-align: right; white-space: nowrap;">
+            ${p.stock === 0 ? 'Tükendi' : `${p.stock} adet kaldı`}
+          </td>
+        </tr>
+      `
+    )
+    .join('');
+
+  const bodyHtml = `
+    <p style="margin: 0 0 20px; font-size: 15px; line-height: 1.7; color: ${colors.warmMid};">
+      Aşağıdaki ürünlerin stoğu kritik seviyeye düştü. Kavurma/tedarik planlamanızı buna göre yapabilirsiniz.
+    </p>
+    <div style="background-color: ${colors.sand}; border-radius: 12px; padding: 8px 24px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table>
+    </div>
+    ${button('Envanteri Yönet', 'https://coffeeesto.com/admin')}
+  `;
+
+  await sendEmail({
+    to: [{ email: ownerEmail }],
+    subject: `Stok uyarısı — ${products.length} ürün kritik seviyede`,
+    htmlContent: renderEmailLayout({
+      preheader: `${products.map((p) => p.name).join(', ')} stoğu azaldı`,
+      heroEyebrow: 'STOK UYARISI',
+      heroTitle: 'Stok kritik seviyede',
+      bodyHtml,
+      locale: 'tr',
+    }),
+  });
+}
+
 export async function sendContactFormNotification(details: {
   name: string;
   email: string;
