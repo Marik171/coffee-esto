@@ -344,11 +344,11 @@ const POPULAR_TASTING_NOTES = [
 ];
 
 const ROAST_PRESETS = [
-  { name: 'Light', value: 20, desc: 'Cinnamon & Bright' },
-  { name: 'Med-Light', value: 40, desc: 'Sweet & Fruity' },
-  { name: 'Medium', value: 60, desc: 'Balanced Caramel' },
-  { name: 'Med-Dark', value: 80, desc: 'Rich Chocolate' },
-  { name: 'Dark', value: 95, desc: 'Smoky & Intense' },
+  { nameEn: 'Light', nameTr: 'Açık', value: 20, desc: 'Cinnamon & Bright' },
+  { nameEn: 'Med-Light', nameTr: 'Orta-Açık', value: 40, desc: 'Sweet & Fruity' },
+  { nameEn: 'Medium', nameTr: 'Orta', value: 60, desc: 'Balanced Caramel' },
+  { nameEn: 'Med-Dark', nameTr: 'Orta-Koyu', value: 80, desc: 'Rich Chocolate' },
+  { nameEn: 'Dark', nameTr: 'Koyu', value: 95, desc: 'Smoky & Intense' },
 ];
 
 /* ── Types ────────────────────────────────────────────────────── */
@@ -501,6 +501,8 @@ function fmtDate(dateStr: string): string {
 /* ── Translations ─────────────────────────────────────────────── */
 const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
   en: {
+    uploadFailed: 'Upload failed',
+    unknownError: 'Unknown error',
     brandName: 'ESTO ROASTERY',
     brandTag: 'Specialty Roastery Admin',
     navSectionMain: 'Store Catalog',
@@ -776,8 +778,131 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
 
     confirmDelete: 'Are you sure you want to delete this item? This action cannot be undone.',
     confirmDeactivate: 'Deactivate this product? It will be hidden from the storefront catalog.',
+
+    // Shared UI
+    reset: 'Reset',
+    cancel: 'Cancel',
+    close: 'Close',
+    done: 'Done',
+    save: 'Save',
+    liveLabel: 'Live',
+    coffeeTypesFilterTitle: 'Coffee Types',
+    gearCategoriesFilterTitle: 'Gear Categories',
+    lightRoastPct: 'Light (10%)',
+    mediumRoastPct: 'Medium (50%)',
+    darkRoastPct: 'Dark (100%)',
+    noReviewsRecorded: 'No customer reviews recorded.',
+    outOfStockBadge: 'Out of Stock',
+    soldOutBadge: 'Sold Out',
+    unitsSuffix: 'units',
+    inStockSuffix: 'in stock',
+    showingLabel: 'Showing',
+    coffeeRoastsWord: 'coffee roasts',
+    gearSkusWord: 'machinery & gear SKUs',
+    roastPctSuffix: 'Roast',
+    noPhoneFallback: 'No phone',
+    itemsSuffix: 'items',
+    ordersSuffix: 'orders',
+    viewOrdersBtn: 'View Orders →',
+    configuredCourierProviders: 'Configured Courier Providers',
+    activePromoCodesLabel: 'Active Promotional Codes',
+    offSuffix: 'OFF',
+    minOrderShortLabel: 'Min Order:',
+    usesShortLabel: 'Uses:',
+    expiresPrefix: 'Expires',
+    coffeeRoastFallback: 'Coffee Roast',
+    reviewerFallback: 'Customer',
+    publishedJournalStories: 'Published Journal Stories',
+    urlIdentifierHint: '(URL identifier)',
+    newCategoryBtn: '+ New Category',
+    terroirSensoryProfile: 'Terroir & Sensory Profile',
+    technicalSpecifications: 'Technical Specifications',
+    originRoastFlavorHint: 'Origin, roast meter & flavor notes',
+    specsAndDetailsHint: 'Specs and details',
+    typeNoteAndPressEnter: 'Type note and press Enter (e.g. Jasmine)...',
+    addAnotherNote: 'Add another note...',
+    removeChangeImage: 'Remove & Change Image',
+    uploadingImageText: 'Uploading image...',
+    dropImageHere: 'Drop image file here or click to browse',
+    orPasteCustomLink: '(Or paste custom web link)',
+    pickFromLibrary: 'Pick from Roastery Image Library',
+    packsWord: 'Packs',
+    equipmentWord: 'Equipment',
+    showInCatalogSubtitle: 'When enabled, customers can discover and purchase this item in storefront.',
+    categoryFallback: 'Category',
+    specialtyCoffeeRoastNamePlaceholder: 'Specialty Coffee Roast Name',
+    machineryGearSkuPlaceholder: 'Machinery & Gear SKU',
+    terroirRegionFallback: 'Terroir Region',
+    highAltitudeFallback: 'High Altitude',
+    livePreviewUpdatesText: 'Updates in real-time as you type, select roast profiles, and attach artwork.',
+    activeInStorefront: 'Active in Storefront',
+    hiddenFromStorefront: 'Hidden from Storefront',
+    productsSuffix: 'products',
+    noPhoneProvided: 'No phone provided',
+    standardDeliveryAddress: 'Standard Delivery Address',
+    qtyLabel: 'Qty:',
+    editCargoCarrier: 'Edit Cargo Carrier',
+    addCargoCarrier: 'Add Cargo Carrier',
+    editDiscountCoupon: 'Edit Discount Coupon',
+    newDiscountCoupon: 'New Discount Coupon',
+    editJournalStory: 'Edit Journal Story',
+    writeJournalStory: 'Write Journal Story',
+    thermalLabelSubtitle: 'Print high-resolution 4x6" thermal adhesive stickers for coffee pouches.',
+    pouch250gOption: '250 Grams (Retail Pouch)',
+    pouch1kgOption: '1,000 Grams / 1kg (Barista Bag)',
+    roastsInCatalogSuffix: 'roasts in catalog',
+    machinesAndGearSuffix: 'machines & gear',
+    activeVelocity: 'Active Velocity',
+    viewAllOrdersBtn: 'View All Orders →',
+    viewDetailsArrow: 'View Details →',
+
+    // Product Modal
+    tabOverviewAll: 'Overview & All',
+    tabBasicsPricing: 'Basics & Pricing',
+    tabRoastSensory: 'Roast & Sensory',
+    tabSpecs: 'Specs',
+    tabPhotosMedia: 'Photos & Media',
+    productDetailsPricing: 'Product Details & Pricing',
+    coreCatalogParams: 'Core catalog parameters',
+    tastingNotesChips: 'Tasting Notes (Chips)',
+    pressEnterOrComma: 'Press Enter or comma to add',
+    quickAdd: 'Quick add:',
+    productMediaArtwork: 'Product Media & Artwork',
+    highResPhotography: 'High-res photography',
+    supportsFormats: 'Supports WebP, PNG, JPG (High Resolution)',
+    imageUrlLabel: 'Image URL',
+    coffeeStoryFarmerNotes: 'Coffee Story & Farmer Notes',
+    livePreviewColon: 'Live Preview:',
+
+    // Storefront
+    liveStorefrontPreview: 'Live Storefront Preview',
+    liveAnnouncementPreview: 'Live Storefront Announcement Bar Preview:',
+
+    // Coupons Modal
+    discountTypeLabel: 'Discount Type',
+    valueLabel: 'Value',
+    minOrderAmountLabel: 'Min Order Amount (₺)',
+    maxUsesOptional: 'Max Uses (Optional)',
+    leaveEmptyUnlimited: 'Leave empty for unlimited',
+    expiryDateOptional: 'Expiry Date (Optional)',
+
+    // Blog Modal
+    articleContentTr: 'Article Content (Turkish)',
+    articleContentEn: 'Article Content (English)',
+    blogCategoryLabel: 'Category',
+    blogCatCulture: 'Coffee Culture',
+    blogCatBrewing: 'Brewing Guides',
+    blogCatOrigin: 'Origin Stories',
+    blogCatNews: 'Roastery News',
+    coverImageUrl: 'Cover Image URL',
+    pasteImageUrlPlaceholder: 'Paste image URL...',
+
+    // Thermal Label Modal
+    pouchNetWeightLabel: 'Pouch Net Weight',
   },
   tr: {
+    uploadFailed: 'Yükleme başarısız oldu',
+    unknownError: 'Bilinmeyen hata',
     brandName: 'ESTO ROASTERY',
     brandTag: 'Özel Kahve Kavurma Yönetimi',
     navSectionMain: 'Mağaza Kataloğu',
@@ -1053,7 +1178,135 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
 
     confirmDelete: 'Bu öğeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
     confirmDeactivate: 'Bu ürünü devre dışı bırakmak istediğinizden emin misiniz?',
+
+    // Shared UI
+    reset: 'Sıfırla',
+    cancel: 'İptal',
+    close: 'Kapat',
+    done: 'Tamam',
+    save: 'Kaydet',
+    liveLabel: 'Canlı',
+    coffeeTypesFilterTitle: 'Kahve Türleri',
+    gearCategoriesFilterTitle: 'Ekipman Kategorileri',
+    lightRoastPct: 'Açık (10%)',
+    mediumRoastPct: 'Orta (50%)',
+    darkRoastPct: 'Koyu (100%)',
+    noReviewsRecorded: 'Kayıtlı müşteri yorumu bulunmuyor.',
+    outOfStockBadge: 'Tükendi',
+    soldOutBadge: 'Tükendi',
+    unitsSuffix: 'adet',
+    inStockSuffix: 'stokta',
+    showingLabel: 'Gösterilen',
+    coffeeRoastsWord: 'kahve çekirdeği',
+    gearSkusWord: 'ekipman SKU',
+    roastPctSuffix: 'Kavurma',
+    noPhoneFallback: 'Telefon yok',
+    itemsSuffix: 'ürün',
+    ordersSuffix: 'sipariş',
+    viewOrdersBtn: 'Siparişleri Gör →',
+    configuredCourierProviders: 'Tanımlı Kargo Firmaları',
+    activePromoCodesLabel: 'Aktif Kupon Kodları',
+    offSuffix: 'İNDİRİM',
+    minOrderShortLabel: 'Min. Sipariş:',
+    usesShortLabel: 'Kullanım:',
+    expiresPrefix: 'Son Geçerlilik',
+    coffeeRoastFallback: 'Kahve Çekirdeği',
+    reviewerFallback: 'Kahvesever Müşteri',
+    publishedJournalStories: 'Yayınlanan Blog Yazıları',
+    urlIdentifierHint: '(URL tanımlayıcı)',
+    newCategoryBtn: '+ Yeni Kategori',
+    terroirSensoryProfile: 'Bölge & Duyusal Profil',
+    technicalSpecifications: 'Teknik Özellikler',
+    originRoastFlavorHint: 'Köken, kavurma seviyesi & tadım notları',
+    specsAndDetailsHint: 'Özellikler ve detaylar',
+    typeNoteAndPressEnter: 'Not yazın ve Enter tuşuna basın (örn. Yasemin)...',
+    addAnotherNote: 'Başka bir not ekleyin...',
+    removeChangeImage: 'Kaldır & Görseli Değiştir',
+    uploadingImageText: 'Görsel yükleniyor...',
+    dropImageHere: 'Görseli buraya sürükleyin veya tıklayın',
+    orPasteCustomLink: '(Veya özel web bağlantısı yapıştırın)',
+    pickFromLibrary: 'Kavurmahane Görsel Kütüphanesinden Seçin',
+    packsWord: 'Paketler',
+    equipmentWord: 'Ekipman',
+    showInCatalogSubtitle: 'Etkinleştirildiğinde müşteriler bu ürünü mağazada görebilir ve satın alabilir.',
+    categoryFallback: 'Kategori',
+    specialtyCoffeeRoastNamePlaceholder: 'Nitelikli Kahve İsmi',
+    machineryGearSkuPlaceholder: 'Ekipman / Makine SKU',
+    terroirRegionFallback: 'Bölge',
+    highAltitudeFallback: 'Yüksek Rakım',
+    livePreviewUpdatesText: 'Yazdıkça, kavurma profili seçtikçe ve görsel ekledikçe anlık güncellenir.',
+    activeInStorefront: 'Mağazada Aktif',
+    hiddenFromStorefront: 'Mağazadan Gizli',
+    productsSuffix: 'ürün',
+    noPhoneProvided: 'Telefon numarası girilmedi',
+    standardDeliveryAddress: 'Standart Teslimat Adresi',
+    qtyLabel: 'Adet:',
+    editCargoCarrier: 'Kargo Firmasını Düzenle',
+    addCargoCarrier: 'Kargo Firması Ekle',
+    editDiscountCoupon: 'İndirim Kuponunu Düzenle',
+    newDiscountCoupon: 'Yeni İndirim Kuponu',
+    editJournalStory: 'Blog Yazısını Düzenle',
+    writeJournalStory: 'Yeni Blog Yazısı',
+    thermalLabelSubtitle: 'Kahve paketleri için yüksek çözünürlüklü 4x6" termal etiket yazdırın.',
+    pouch250gOption: '250 Gram (Perakende Paket)',
+    pouch1kgOption: '1.000 Gram / 1kg (Barista Paketi)',
+    roastsInCatalogSuffix: 'kataloğa kayıtlı çekirdek',
+    machinesAndGearSuffix: 'makine & ekipman',
+    activeVelocity: 'Aktif Hız',
+    viewAllOrdersBtn: 'Tüm Siparişleri Gör →',
+    viewDetailsArrow: 'Detayları Gör →',
+
+    // Product Modal
+    tabOverviewAll: 'Genel Bakış & Tümü',
+    tabBasicsPricing: 'Temel Bilgiler & Fiyat',
+    tabRoastSensory: 'Kavurma & Duyusal',
+    tabSpecs: 'Özellikler',
+    tabPhotosMedia: 'Fotoğraflar & Medya',
+    productDetailsPricing: 'Ürün Bilgileri & Fiyat',
+    coreCatalogParams: 'Temel katalog bilgileri',
+    tastingNotesChips: 'Tadım Notları (Etiketler)',
+    pressEnterOrComma: 'Eklemek için Enter veya virgül tuşuna basın',
+    quickAdd: 'Hızlı ekle:',
+    productMediaArtwork: 'Ürün Görselleri',
+    highResPhotography: 'Yüksek çözünürlüklü fotoğraf',
+    supportsFormats: 'WebP, PNG, JPG destekler (Yüksek Çözünürlük)',
+    imageUrlLabel: 'Görsel URL',
+    coffeeStoryFarmerNotes: 'Kahve Hikayesi & Çiftçi Notları',
+    livePreviewColon: 'Canlı Önizleme:',
+
+    // Storefront
+    liveStorefrontPreview: 'Canlı Mağaza Önizlemesi',
+    liveAnnouncementPreview: 'Canlı Duyuru Bandı Önizlemesi:',
+
+    // Coupons Modal
+    discountTypeLabel: 'İndirim Türü',
+    valueLabel: 'Değer',
+    minOrderAmountLabel: 'Min. Sipariş Tutarı (₺)',
+    maxUsesOptional: 'Maks. Kullanım (İsteğe Bağlı)',
+    leaveEmptyUnlimited: 'Sınırsız için boş bırakın',
+    expiryDateOptional: 'Son Kullanma Tarihi (İsteğe Bağlı)',
+
+    // Blog Modal
+    articleContentTr: 'Makale İçeriği (Türkçe)',
+    articleContentEn: 'Makale İçeriği (İngilizce)',
+    blogCategoryLabel: 'Kategori',
+    blogCatCulture: 'Kahve Kültürü',
+    blogCatBrewing: 'Demleme Rehberleri',
+    blogCatOrigin: 'Köken Hikayeleri',
+    blogCatNews: 'Kavurmahane Haberleri',
+    coverImageUrl: 'Kapak Görseli URL',
+    pasteImageUrlPlaceholder: 'Görsel URL yapıştırın...',
+
+    // Thermal Label Modal
+    pouchNetWeightLabel: 'Paket Net Ağırlığı',
   },
+};
+
+const BLOG_CATEGORY_LABELS: Record<string, Record<Lang, string>> = {
+  culture: { en: 'Coffee Culture', tr: 'Kahve Kültürü' },
+  brew: { en: 'Brewing Guides', tr: 'Demleme Rehberleri' },
+  origins: { en: 'Origin Stories', tr: 'Köken Hikayeleri' },
+  news: { en: 'Roastery News', tr: 'Kavurmahane Haberleri' },
 };
 
 export default function AdminDashboardPage() {
@@ -1673,7 +1926,7 @@ export default function AdminDashboardPage() {
       if (!d.success) throw new Error(d.error);
       setProdForm((prev) => ({ ...prev, imageUrl: d.data.url }));
     } catch (err: unknown) {
-      setErrorMsg(`Upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setErrorMsg(`${t.uploadFailed}: ${err instanceof Error ? err.message : t.unknownError}`);
     } finally {
       setUploadingImage(false);
     }
@@ -2266,7 +2519,7 @@ export default function AdminDashboardPage() {
                   </div>
                   <div className={styles.kpiValue}>{coffeeProducts.filter((p) => p.isActive).length}</div>
                   <div className={styles.kpiFooter}>
-                    <span>{coffeeProducts.length} roasts in catalog</span>
+                    <span>{coffeeProducts.length} {t.roastsInCatalogSuffix}</span>
                   </div>
                 </div>
 
@@ -2277,7 +2530,7 @@ export default function AdminDashboardPage() {
                   </div>
                   <div className={styles.kpiValue}>{equipmentProducts.filter((p) => p.isActive).length}</div>
                   <div className={styles.kpiFooter}>
-                    <span>{equipmentProducts.length} machines & gear</span>
+                    <span>{equipmentProducts.length} {t.machinesAndGearSuffix}</span>
                   </div>
                 </div>
               </div>
@@ -2288,7 +2541,7 @@ export default function AdminDashboardPage() {
                   <div className={styles.cardTitleRow}>
                     <h3 className={styles.cardTitle}>{t.last7DaysRevenue}</h3>
                     <span className={styles.kpiTrendPositive} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <TrendingUpIcon size={14} /> Active Velocity
+                      <TrendingUpIcon size={14} /> {t.activeVelocity}
                     </span>
                   </div>
 
@@ -2339,7 +2592,7 @@ export default function AdminDashboardPage() {
                 <div style={{ padding: '18px 22px', borderBottom: '1px solid var(--ad-border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <h3 className={styles.cardTitle}>{t.recentOrders}</h3>
                   <button onClick={() => switchTab('orders')} className={styles.ghostBtn}>
-                    View All Orders →
+                    {t.viewAllOrdersBtn}
                   </button>
                 </div>
 
@@ -2416,13 +2669,13 @@ export default function AdminDashboardPage() {
                     }}
                     className={styles.filterResetBtn}
                   >
-                    Reset
+                    {t.reset}
                   </button>
                 </div>
 
                 {/* Filter 1: Coffee Categories */}
                 <div className={styles.filterSection}>
-                  <span className={styles.filterSectionTitle}>Coffee Types</span>
+                  <span className={styles.filterSectionTitle}>{t.coffeeTypesFilterTitle}</span>
                   <div className={styles.filterOptionList}>
                     <label className={styles.filterCheckboxRow}>
                       <input
@@ -2509,9 +2762,9 @@ export default function AdminDashboardPage() {
                     className={styles.roastRangeSlider}
                   />
                   <div className={styles.sliderLabels}>
-                    <span>Light (10%)</span>
-                    <span>Medium (50%)</span>
-                    <span>Dark (100%)</span>
+                    <span>{t.lightRoastPct}</span>
+                    <span>{t.mediumRoastPct}</span>
+                    <span>{t.darkRoastPct}</span>
                   </div>
                 </div>
               </aside>
@@ -2538,7 +2791,7 @@ export default function AdminDashboardPage() {
                     </div>
 
                     <span style={{ fontSize: '13px', color: 'var(--ad-text-muted)' }}>
-                      Showing <strong>{filteredCoffee.length}</strong> coffee roasts
+                      {t.showingLabel} <strong>{filteredCoffee.length}</strong> {t.coffeeRoastsWord}
                     </span>
                   </div>
 
@@ -2589,7 +2842,7 @@ export default function AdminDashboardPage() {
                                 isOut ? styles.badgeOutOfStock : isLow ? styles.badgeLowStock : styles.badgeInStock
                               }`}
                             >
-                              {isOut ? 'Sold Out' : `${p.stock} in stock`}
+                              {isOut ? t.soldOutBadge : `${p.stock} ${t.inStockSuffix}`}
                             </span>
                           </div>
 
@@ -2604,7 +2857,7 @@ export default function AdminDashboardPage() {
                               {[1, 2, 3, 4, 5].map((dot) => (
                                 <span key={dot} className={`${styles.roastDot} ${dot <= dotsCount ? styles.roastDotFilled : ''}`} />
                               ))}
-                              <span className={styles.roastMeterText}>{p.roastLevel || 50}% Roast</span>
+                              <span className={styles.roastMeterText}>{p.roastLevel || 50}% {t.roastPctSuffix}</span>
                             </div>
 
                             <div className={styles.productCardPrices}>
@@ -2684,7 +2937,7 @@ export default function AdminDashboardPage() {
                               </td>
                               <td>
                                 <span className={`${styles.statusBadge} ${p.stock <= 0 ? styles.statusCanceled : p.stock <= 5 ? styles.statusPending : styles.statusActive}`}>
-                                  {p.stock <= 0 ? 'Out of Stock' : `${p.stock} units`}
+                                  {p.stock <= 0 ? t.outOfStockBadge : `${p.stock} ${t.unitsSuffix}`}
                                 </span>
                               </td>
                               <td>
@@ -2728,7 +2981,7 @@ export default function AdminDashboardPage() {
               {/* Equipment Filter Sidebar */}
               <aside className={styles.filterSidebar}>
                 <div className={styles.filterHeader}>
-                  <span className={styles.filterTitle}>Gear Categories</span>
+                  <span className={styles.filterTitle}>{t.gearCategoriesFilterTitle}</span>
                   <button
                     onClick={() => {
                       setEquipmentCategoryFilter('all');
@@ -2737,7 +2990,7 @@ export default function AdminDashboardPage() {
                     }}
                     className={styles.filterResetBtn}
                   >
-                    Reset
+                    {t.reset}
                   </button>
                 </div>
 
@@ -2832,7 +3085,7 @@ export default function AdminDashboardPage() {
                     </div>
 
                     <span style={{ fontSize: '13px', color: 'var(--ad-text-muted)' }}>
-                      Showing <strong>{filteredEquipment.length}</strong> machinery & gear SKUs
+                      {t.showingLabel} <strong>{filteredEquipment.length}</strong> {t.gearSkusWord}
                     </span>
                   </div>
 
@@ -2882,7 +3135,7 @@ export default function AdminDashboardPage() {
                                 isOut ? styles.badgeOutOfStock : isLow ? styles.badgeLowStock : styles.badgeInStock
                               }`}
                             >
-                              {isOut ? 'Sold Out' : `${p.stock} units`}
+                              {isOut ? t.soldOutBadge : `${p.stock} ${t.unitsSuffix}`}
                             </span>
                           </div>
 
@@ -2957,7 +3210,7 @@ export default function AdminDashboardPage() {
                               <td style={{ fontWeight: 700 }}>{fmtCurrency(p.price)}</td>
                               <td>
                                 <span className={`${styles.statusBadge} ${p.stock <= 0 ? styles.statusCanceled : p.stock <= 5 ? styles.statusPending : styles.statusActive}`}>
-                                  {p.stock <= 0 ? 'Out of Stock' : `${p.stock} units`}
+                                  {p.stock <= 0 ? t.outOfStockBadge : `${p.stock} ${t.unitsSuffix}`}
                                 </span>
                               </td>
                               <td>
@@ -3045,12 +3298,12 @@ export default function AdminDashboardPage() {
                             <td>
                               <div style={{ fontWeight: 600 }}>{ord.email}</div>
                               <div style={{ fontSize: '11px', color: 'var(--ad-text-muted)' }}>
-                                {ord.phone || 'No phone'}
+                                {ord.phone || t.noPhoneFallback}
                               </div>
                             </td>
                             <td>
                               <span style={{ fontSize: '12px', color: 'var(--ad-text-body)' }}>
-                                {ord.items?.length || 0} items
+                                {ord.items?.length || 0} {t.itemsSuffix}
                               </span>
                             </td>
                             <td style={{ fontWeight: 700 }}>{fmtCurrency(ord.totalAmount)}</td>
@@ -3133,7 +3386,7 @@ export default function AdminDashboardPage() {
                   <table className={styles.dataTable}>
                     <thead>
                       <tr>
-                        <th>Customer</th>
+                        <th>{t.colCustomer}</th>
                         <th>{t.phone}</th>
                         <th>{t.colOrdersCount}</th>
                         <th>{t.colLifetimeSpend}</th>
@@ -3150,7 +3403,7 @@ export default function AdminDashboardPage() {
                           </td>
                           <td>{cust.phone}</td>
                           <td>
-                            <strong>{cust.count}</strong> orders
+                            <strong>{cust.count}</strong> {t.ordersSuffix}
                           </td>
                           <td style={{ fontWeight: 700, color: 'var(--ad-primary)' }}>
                             {fmtCurrency(cust.spend)}
@@ -3169,7 +3422,7 @@ export default function AdminDashboardPage() {
                               }}
                               className={styles.secondaryBtn}
                             >
-                              View Orders →
+                              {t.viewOrdersBtn}
                             </button>
                           </td>
                         </tr>
@@ -3205,7 +3458,7 @@ export default function AdminDashboardPage() {
 
               <div className={styles.toolbarRow}>
                 <span style={{ fontSize: '14px', color: 'var(--ad-text-muted)' }}>
-                  Configured Courier Providers ({cargoProviders.length})
+                  {t.configuredCourierProviders} ({cargoProviders.length})
                 </span>
                 <button onClick={() => setShowProviderModal(true)} className={styles.primaryBtn}>
                   <PlusIcon size={14} />
@@ -3259,7 +3512,7 @@ export default function AdminDashboardPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div className={styles.toolbarRow}>
                 <span style={{ fontSize: '14px', color: 'var(--ad-text-muted)' }}>
-                  Active Promotional Codes ({coupons.length})
+                  {t.activePromoCodesLabel} ({coupons.length})
                 </span>
                 <button onClick={() => setShowCouponModal(true)} className={styles.primaryBtn}>
                   <PlusIcon size={14} />
@@ -3282,16 +3535,16 @@ export default function AdminDashboardPage() {
                         {c.code}
                       </div>
                       <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ad-primary)', marginTop: '4px' }}>
-                        {c.type === 'percent' ? `%${c.value} OFF` : `₺${c.value} OFF`}
+                        {c.type === 'percent' ? `%${c.value} ${t.offSuffix}` : `₺${c.value} ${t.offSuffix}`}
                       </div>
                       <div style={{ fontSize: '11.5px', color: 'var(--ad-text-muted)', marginTop: '4px' }}>
-                        Min Order: {fmtCurrency(c.minOrderAmount)} · Uses: {c.usedCount}/{c.maxUses || '∞'}
+                        {t.minOrderShortLabel} {fmtCurrency(c.minOrderAmount)} · {t.usesShortLabel} {c.usedCount}/{c.maxUses || '∞'}
                       </div>
                     </div>
 
                     <div className={styles.bentoCardFooter}>
                       <span style={{ fontSize: '11px', color: 'var(--ad-text-muted)' }}>
-                        {c.expiresAt ? `Expires ${fmtDate(c.expiresAt)}` : t.noExpiry}
+                        {c.expiresAt ? `${t.expiresPrefix} ${fmtDate(c.expiresAt)}` : t.noExpiry}
                       </span>
                       <button onClick={() => handleDeleteCoupon(c.id)} className={styles.cardDeleteBtn}>
                         <TrashIcon size={14} />
@@ -3314,7 +3567,7 @@ export default function AdminDashboardPage() {
                     <thead>
                       <tr>
                         <th>{t.colProduct}</th>
-                        <th>Customer</th>
+                        <th>{t.colCustomer}</th>
                         <th>{t.colRating}</th>
                         <th>{t.colReview}</th>
                         <th>{t.colVisibility}</th>
@@ -3325,15 +3578,15 @@ export default function AdminDashboardPage() {
                       {reviews.length === 0 ? (
                         <tr>
                           <td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>
-                            <span style={{ color: 'var(--ad-text-muted)' }}>No customer reviews recorded.</span>
+                            <span style={{ color: 'var(--ad-text-muted)' }}>{t.noReviewsRecorded}</span>
                           </td>
                         </tr>
                       ) : (
                         reviews.map((rev) => (
                           <tr key={rev.id} className={styles.tableRow}>
-                            <td style={{ fontWeight: 700 }}>{rev.productName || 'Coffee Roast'}</td>
+                            <td style={{ fontWeight: 700 }}>{rev.productName || t.coffeeRoastFallback}</td>
                             <td>
-                              <div>{rev.customerName || (lang === 'tr' ? 'Kahvesever Müşteri' : 'Customer')}</div>
+                              <div>{rev.customerName || t.reviewerFallback}</div>
                               <div style={{ fontSize: '11px', color: 'var(--ad-text-muted)' }}>{rev.customerEmail}</div>
                             </td>
                             <td>
@@ -3384,7 +3637,7 @@ export default function AdminDashboardPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div className={styles.toolbarRow}>
                 <span style={{ fontSize: '14px', color: 'var(--ad-text-muted)' }}>
-                  Published Journal Stories ({blogPosts.length})
+                  {t.publishedJournalStories} ({blogPosts.length})
                 </span>
                 <button
                   onClick={() => {
@@ -3416,7 +3669,7 @@ export default function AdminDashboardPage() {
                     )}
                     <div>
                       <span style={{ fontSize: '11px', color: 'var(--ad-primary)', fontWeight: 700, textTransform: 'uppercase' }}>
-                        {post.category}
+                        {BLOG_CATEGORY_LABELS[post.category]?.[lang] || post.category}
                       </span>
                       <h4 className={styles.bentoCardTitle} style={{ marginTop: '4px' }}>
                         {lang === 'tr' ? post.titleTr || post.titleEn : post.titleEn || post.titleTr}
@@ -4300,11 +4553,11 @@ export default function AdminDashboardPage() {
               {storefrontSettings?.announcementEnabled && (
                 <div>
                   <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--ad-text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    Live Storefront Announcement Bar Preview:
+                    {t.liveAnnouncementPreview}
                   </span>
                   <div className={styles.announcementPreviewBox} style={{ background: storefrontSettings.announcementBg, marginTop: '6px' }}>
                     <span>{lang === 'tr' ? storefrontSettings.announcementTextTr : storefrontSettings.announcementTextEn}</span>
-                    <span style={{ textDecoration: 'underline', fontSize: '12px', cursor: 'pointer' }}>View Details →</span>
+                    <span style={{ textDecoration: 'underline', fontSize: '12px', cursor: 'pointer' }}>{t.viewDetailsArrow}</span>
                   </div>
                 </div>
               )}
@@ -4485,7 +4738,7 @@ export default function AdminDashboardPage() {
                   className={`${styles.modalNavPill} ${productModalTab === 'all' ? styles.modalNavPillActive : ''}`}
                 >
                   <LayersIcon size={13} />
-                  <span>Overview & All</span>
+                  <span>{t.tabOverviewAll}</span>
                 </button>
                 <button
                   type="button"
@@ -4493,7 +4746,7 @@ export default function AdminDashboardPage() {
                   className={`${styles.modalNavPill} ${productModalTab === 'basics' ? styles.modalNavPillActive : ''}`}
                 >
                   <TagIcon size={13} />
-                  <span>Basics & Pricing</span>
+                  <span>{t.tabBasicsPricing}</span>
                 </button>
                 {modalType === 'coffee' ? (
                   <button
@@ -4502,7 +4755,7 @@ export default function AdminDashboardPage() {
                     className={`${styles.modalNavPill} ${productModalTab === 'profile' ? styles.modalNavPillActive : ''}`}
                   >
                     <SlidersIcon size={13} />
-                    <span>Roast & Sensory</span>
+                    <span>{t.tabRoastSensory}</span>
                   </button>
                 ) : (
                   <button
@@ -4511,7 +4764,7 @@ export default function AdminDashboardPage() {
                     className={`${styles.modalNavPill} ${productModalTab === 'profile' ? styles.modalNavPillActive : ''}`}
                   >
                     <GearIcon size={13} />
-                    <span>Specs</span>
+                    <span>{t.tabSpecs}</span>
                   </button>
                 )}
                 <button
@@ -4520,7 +4773,7 @@ export default function AdminDashboardPage() {
                   className={`${styles.modalNavPill} ${productModalTab === 'media' ? styles.modalNavPillActive : ''}`}
                 >
                   <ImageIcon size={13} />
-                  <span>Photos & Media</span>
+                  <span>{t.tabPhotosMedia}</span>
                 </button>
               </div>
 
@@ -4545,9 +4798,9 @@ export default function AdminDashboardPage() {
                       <div className={styles.sectionCardHeader}>
                         <h4 className={styles.sectionCardTitle}>
                           <span className={styles.sectionCardIcon}><TagIcon size={15} /></span>
-                          <span>Product Details & Pricing</span>
+                          <span>{t.productDetailsPricing}</span>
                         </h4>
-                        <span style={{ fontSize: '11px', color: 'var(--ad-text-muted)' }}>Core catalog parameters</span>
+                        <span style={{ fontSize: '11px', color: 'var(--ad-text-muted)' }}>{t.coreCatalogParams}</span>
                       </div>
 
                       <div className={styles.formGrid2}>
@@ -4568,7 +4821,7 @@ export default function AdminDashboardPage() {
                         <div className={styles.formGroup}>
                           <label className={styles.formLabel}>
                             <span>{t.roastSlug}</span>
-                            <span className={styles.formHint}>(URL identifier)</span>
+                            <span className={styles.formHint}>{t.urlIdentifierHint}</span>
                           </label>
                           <input
                             type="text"
@@ -4591,7 +4844,7 @@ export default function AdminDashboardPage() {
                               onClick={() => setShowCategoryManager(true)}
                               style={{ background: 'none', border: 'none', color: 'var(--ad-primary)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', padding: 0 }}
                             >
-                              + New Category
+                              {t.newCategoryBtn}
                             </button>
                           </div>
                           <select
@@ -4675,10 +4928,10 @@ export default function AdminDashboardPage() {
                           <span className={styles.sectionCardIcon}>
                             {modalType === 'coffee' ? <CoffeeBeanIcon size={15} /> : <GearIcon size={15} />}
                           </span>
-                          <span>{modalType === 'coffee' ? 'Terroir & Sensory Profile' : 'Technical Specifications'}</span>
+                          <span>{modalType === 'coffee' ? t.terroirSensoryProfile : t.technicalSpecifications}</span>
                         </h4>
                         <span style={{ fontSize: '11px', color: 'var(--ad-text-muted)' }}>
-                          {modalType === 'coffee' ? 'Origin, roast meter & flavor notes' : 'Specs and details'}
+                          {modalType === 'coffee' ? t.originRoastFlavorHint : t.specsAndDetailsHint}
                         </span>
                       </div>
 
@@ -4724,7 +4977,7 @@ export default function AdminDashboardPage() {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <label className={styles.formLabel}>{t.roastMeterLabel}</label>
                               <span style={{ color: 'var(--ad-primary)', fontWeight: 700, fontSize: '12.5px' }}>
-                                {prodForm.roastLevel || 50}% Roast
+                                {prodForm.roastLevel || 50}% {t.roastPctSuffix}
                               </span>
                             </div>
 
@@ -4736,7 +4989,7 @@ export default function AdminDashboardPage() {
                                   onClick={() => setProdForm((prev) => ({ ...prev, roastLevel: rp.value }))}
                                   className={`${styles.roastPresetCard} ${(prodForm.roastLevel || 50) === rp.value ? styles.roastPresetCardActive : ''}`}
                                 >
-                                  <span className={styles.roastPresetName}>{rp.name}</span>
+                                  <span className={styles.roastPresetName}>{lang === 'tr' ? rp.nameTr : rp.nameEn}</span>
                                   <span className={styles.roastPresetValue}>{rp.value}%</span>
                                 </button>
                               ))}
@@ -4756,8 +5009,8 @@ export default function AdminDashboardPage() {
                           {/* Interactive Tasting Notes Chip Builder */}
                           <div className={styles.formGroup}>
                             <label className={styles.formLabel}>
-                              <span>Tasting Notes (Chips)</span>
-                              <span className={styles.formHint}>Press Enter or comma to add</span>
+                              <span>{t.tastingNotesChips}</span>
+                              <span className={styles.formHint}>{t.pressEnterOrComma}</span>
                             </label>
 
                             <div className={styles.chipContainer}>
@@ -4775,7 +5028,7 @@ export default function AdminDashboardPage() {
                               ))}
                               <input
                                 type="text"
-                                placeholder={tastingNotesList.length === 0 ? "Type note and press Enter (e.g. Jasmine)..." : "Add another note..."}
+                                placeholder={tastingNotesList.length === 0 ? t.typeNoteAndPressEnter : t.addAnotherNote}
                                 value={chipInput}
                                 onChange={(e) => setChipInput(e.target.value)}
                                 onKeyDown={(e) => {
@@ -4790,7 +5043,7 @@ export default function AdminDashboardPage() {
 
                             {/* Popular suggestions */}
                             <div className={styles.chipSuggestions}>
-                              <span className={styles.chipSuggestionLabel}>Quick add:</span>
+                              <span className={styles.chipSuggestionLabel}>{t.quickAdd}</span>
                               {POPULAR_TASTING_NOTES.map((suggest) => (
                                 <button
                                   key={suggest}
@@ -4825,9 +5078,9 @@ export default function AdminDashboardPage() {
                       <div className={styles.sectionCardHeader}>
                         <h4 className={styles.sectionCardTitle}>
                           <span className={styles.sectionCardIcon}><ImageIcon size={15} /></span>
-                          <span>Product Media & Artwork</span>
+                          <span>{t.productMediaArtwork}</span>
                         </h4>
-                        <span style={{ fontSize: '11px', color: 'var(--ad-text-muted)' }}>High-res photography</span>
+                        <span style={{ fontSize: '11px', color: 'var(--ad-text-muted)' }}>{t.highResPhotography}</span>
                       </div>
 
                       {/* Dropzone or Preview */}
@@ -4839,7 +5092,7 @@ export default function AdminDashboardPage() {
                             onClick={() => setProdForm((prev) => ({ ...prev, imageUrl: '' }))}
                             className={styles.removeFileBtn}
                           >
-                            <CloseIcon size={12} /> Remove & Change Image
+                            <CloseIcon size={12} /> {t.removeChangeImage}
                           </button>
                         </div>
                       ) : (
@@ -4856,9 +5109,9 @@ export default function AdminDashboardPage() {
                         >
                           <span className={styles.dropZoneIcon}><UploadCloudIcon size={30} /></span>
                           <span className={styles.dropZoneText}>
-                            {uploadingImage ? 'Uploading image...' : 'Drop image file here or click to browse'}
+                            {uploadingImage ? t.uploadingImageText : t.dropImageHere}
                           </span>
-                          <span className={styles.dropZoneSub}>Supports WebP, PNG, JPG (High Resolution)</span>
+                          <span className={styles.dropZoneSub}>{t.supportsFormats}</span>
                           <input
                             type="file"
                             accept="image/*"
@@ -4874,8 +5127,8 @@ export default function AdminDashboardPage() {
                       {/* Direct URL Input */}
                       <div className={styles.formGroup}>
                         <label className={styles.formLabel}>
-                          <span>Image URL</span>
-                          <span className={styles.formHint}>(Or paste custom web link)</span>
+                          <span>{t.imageUrlLabel}</span>
+                          <span className={styles.formHint}>{t.orPasteCustomLink}</span>
                         </label>
                         <input
                           type="text"
@@ -4889,7 +5142,7 @@ export default function AdminDashboardPage() {
                       {/* Quick Asset Library Picker */}
                       <div className={styles.assetPickerSection}>
                         <div className={styles.assetPickerHeader}>
-                          <span>Pick from Roastery Image Library ({modalType === 'coffee' ? 'Packs' : 'Equipment'}):</span>
+                          <span>{t.pickFromLibrary} ({modalType === 'coffee' ? t.packsWord : t.equipmentWord}):</span>
                         </div>
                         <div className={styles.assetPickerGrid}>
                           {(modalType === 'coffee' ? COFFEE_PACK_PRESETS : EQUIPMENT_PRESETS).map((preset) => (
@@ -4914,7 +5167,7 @@ export default function AdminDashboardPage() {
                       <div className={styles.sectionCardHeader}>
                         <h4 className={styles.sectionCardTitle}>
                           <span className={styles.sectionCardIcon}><JournalIcon size={15} /></span>
-                          <span>Coffee Story & Farmer Notes</span>
+                          <span>{t.coffeeStoryFarmerNotes}</span>
                         </h4>
                       </div>
 
@@ -4934,7 +5187,7 @@ export default function AdminDashboardPage() {
                   <div className={styles.switchContainer}>
                     <div className={styles.switchLabelBlock}>
                       <span className={styles.switchTitle}>{t.showInCatalog}</span>
-                      <span className={styles.switchSubtitle}>When enabled, customers can discover and purchase this item in storefront.</span>
+                      <span className={styles.switchSubtitle}>{t.showInCatalogSubtitle}</span>
                     </div>
                     <label className={styles.toggleSwitch}>
                       <input
@@ -4950,10 +5203,10 @@ export default function AdminDashboardPage() {
                 {/* Right Sticky Column: Live Product Card Preview */}
                 <div className={styles.modalPreviewSidebar}>
                   <div className={styles.previewSidebarTitle}>
-                    <span>Live Storefront Preview</span>
+                    <span>{t.liveStorefrontPreview}</span>
                     <span className={styles.liveBadge}>
                       <span className={styles.liveBadgeDot} />
-                      Live
+                      {t.liveLabel}
                     </span>
                   </div>
 
@@ -4968,23 +5221,23 @@ export default function AdminDashboardPage() {
                         </div>
                       )}
                       <span className={styles.productCardCategoryBadge}>
-                        {prodForm.category || 'Category'}
+                        {prodForm.category || t.categoryFallback}
                       </span>
                       <span className={`${styles.productCardStockBadge} ${(prodForm.stock ?? 25) <= 0 ? styles.badgeOutOfStock : styles.badgeInStock}`}>
-                        {(prodForm.stock ?? 25) <= 0 ? 'Sold Out' : `${prodForm.stock ?? 25} in stock`}
+                        {(prodForm.stock ?? 25) <= 0 ? t.soldOutBadge : `${prodForm.stock ?? 25} ${t.inStockSuffix}`}
                       </span>
                     </div>
 
                     <div className={styles.productCardBody}>
                       <h4 className={styles.productCardTitle}>
-                        {prodForm.name || (modalType === 'coffee' ? 'Specialty Coffee Roast Name' : 'Machinery & Gear SKU')}
+                        {prodForm.name || (modalType === 'coffee' ? t.specialtyCoffeeRoastNamePlaceholder : t.machineryGearSkuPlaceholder)}
                       </h4>
 
                       {modalType === 'coffee' && (
                         <>
                           <div className={styles.productCardOrigin}>
                             <PinLocationIcon size={12} />
-                            <span>{prodForm.origin || 'Terroir Region'} · {prodForm.altitude || 'High Altitude'}</span>
+                            <span>{prodForm.origin || t.terroirRegionFallback} · {prodForm.altitude || t.highAltitudeFallback}</span>
                           </div>
 
                           <div className={styles.roastLevelMeter}>
@@ -4994,7 +5247,7 @@ export default function AdminDashboardPage() {
                                 <span key={dot} className={`${styles.roastDot} ${dot <= activeDots ? styles.roastDotFilled : ''}`} />
                               );
                             })}
-                            <span className={styles.roastMeterText}>{prodForm.roastLevel || 50}% Roast</span>
+                            <span className={styles.roastMeterText}>{prodForm.roastLevel || 50}% {t.roastPctSuffix}</span>
                           </div>
 
                           {tastingNotesList.length > 0 && (
@@ -5022,7 +5275,7 @@ export default function AdminDashboardPage() {
                   </div>
 
                   <div style={{ fontSize: '11px', color: 'var(--ad-text-muted)', lineHeight: 1.4, background: 'var(--ad-bg-canvas)', padding: '12px', borderRadius: '10px' }}>
-                    💡 <strong>Live Preview:</strong> Updates in real-time as you type, select roast profiles, and attach artwork.
+                    💡 <strong>{t.livePreviewColon}</strong> {t.livePreviewUpdatesText}
                   </div>
                 </div>
               </div>
@@ -5031,7 +5284,7 @@ export default function AdminDashboardPage() {
               <div className={styles.modalFooter}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span className={`${styles.statusBadge} ${prodForm.isActive ?? true ? styles.statusActive : styles.statusHidden}`}>
-                    {prodForm.isActive ?? true ? 'Active in Storefront' : 'Hidden from Storefront'}
+                    {prodForm.isActive ?? true ? t.activeInStorefront : t.hiddenFromStorefront}
                   </span>
                 </div>
 
@@ -5044,7 +5297,7 @@ export default function AdminDashboardPage() {
                     }}
                     className={styles.secondaryBtn}
                   >
-                    Cancel
+                    {t.cancel}
                   </button>
                   <button type="submit" disabled={actionLoading} className={styles.primaryBtn}>
                     {actionLoading ? t.saving : t.saveProduct}
@@ -5121,7 +5374,7 @@ export default function AdminDashboardPage() {
                             style={{ height: '34px' }}
                           />
                           <button type="submit" className={styles.primaryBtn} style={{ padding: '4px 12px', fontSize: '12px' }}>
-                            Save
+                            {t.save}
                           </button>
                           <button type="button" onClick={() => setEditingCat(null)} className={styles.secondaryBtn} style={{ padding: '4px 10px', fontSize: '12px' }}>
                             <CloseIcon size={12} />
@@ -5131,7 +5384,7 @@ export default function AdminDashboardPage() {
                         <div>
                           <span style={{ fontWeight: 700, fontSize: '13.5px' }}>{c.label}</span>
                           <span style={{ fontSize: '11px', color: 'var(--ad-text-muted)', marginLeft: '8px' }}>
-                            <code>{c.slug}</code> · <strong>{count}</strong> products
+                            <code>{c.slug}</code> · <strong>{count}</strong> {t.productsSuffix}
                           </span>
                         </div>
                       )}
@@ -5168,7 +5421,7 @@ export default function AdminDashboardPage() {
             <div className={styles.modalFooter}>
               <div />
               <button onClick={() => setShowCategoryManager(false)} className={styles.primaryBtn}>
-                Done
+                {t.done}
               </button>
             </div>
           </div>
@@ -5201,7 +5454,7 @@ export default function AdminDashboardPage() {
                   </div>
                   <div style={{ fontWeight: 700, fontSize: '14px', marginTop: '6px' }}>{selectedOrder.email}</div>
                   <div style={{ fontSize: '13px', color: 'var(--ad-text-body)', marginTop: '2px' }}>
-                    {selectedOrder.phone || 'No phone provided'}
+                    {selectedOrder.phone || t.noPhoneProvided}
                   </div>
                 </div>
 
@@ -5210,7 +5463,7 @@ export default function AdminDashboardPage() {
                     {t.address}
                   </div>
                   <div style={{ fontSize: '13px', color: 'var(--ad-text-body)', marginTop: '6px', lineHeight: 1.4 }}>
-                    {selectedOrder.address || 'Standard Delivery Address'}
+                    {selectedOrder.address || t.standardDeliveryAddress}
                   </div>
                 </div>
               </div>
@@ -5232,7 +5485,7 @@ export default function AdminDashboardPage() {
                       <div>
                         <div style={{ fontWeight: 600 }}>{item.name}</div>
                         <div style={{ fontSize: '11.5px', color: 'var(--ad-text-muted)' }}>
-                          Qty: {item.quantity} × {fmtCurrency(item.price)}
+                          {t.qtyLabel} {item.quantity} × {fmtCurrency(item.price)}
                         </div>
                       </div>
                       <div style={{ fontWeight: 700 }}>{fmtCurrency(item.quantity * item.price)}</div>
@@ -5347,7 +5600,7 @@ export default function AdminDashboardPage() {
                 <span>{t.printSlip}</span>
               </button>
               <button onClick={() => setSelectedOrder(null)} className={styles.primaryBtn}>
-                Close
+                {t.close}
               </button>
             </div>
           </div>
@@ -5362,7 +5615,7 @@ export default function AdminDashboardPage() {
           <div className={styles.modalCard}>
             <div className={styles.modalHeader}>
               <h3 className={styles.modalTitle}>
-                {editingProvider ? 'Edit Cargo Carrier' : 'Add Cargo Carrier'}
+                {editingProvider ? t.editCargoCarrier : t.addCargoCarrier}
               </h3>
               <button
                 onClick={() => {
@@ -5378,7 +5631,7 @@ export default function AdminDashboardPage() {
             <form onSubmit={handleSaveProvider} className={styles.modalForm}>
               <div className={styles.modalBody}>
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Carrier Name</label>
+                  <label className={styles.formLabel}>{t.colProvider}</label>
                   <input
                     type="text"
                     required
@@ -5390,7 +5643,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Delivery Fee (₺)</label>
+                  <label className={styles.formLabel}>{t.colFee}</label>
                   <input
                     type="number"
                     required
@@ -5414,7 +5667,7 @@ export default function AdminDashboardPage() {
                     }}
                     className={styles.secondaryBtn}
                   >
-                    Cancel
+                    {t.cancel}
                   </button>
                   <button type="submit" disabled={actionLoading} className={styles.primaryBtn}>
                     {t.saveProvider}
@@ -5434,7 +5687,7 @@ export default function AdminDashboardPage() {
           <div className={styles.modalCard}>
             <div className={styles.modalHeader}>
               <h3 className={styles.modalTitle}>
-                {editingCoupon ? 'Edit Discount Coupon' : 'New Discount Coupon'}
+                {editingCoupon ? t.editDiscountCoupon : t.newDiscountCoupon}
               </h3>
               <button
                 onClick={() => {
@@ -5450,7 +5703,7 @@ export default function AdminDashboardPage() {
             <form onSubmit={handleSaveCoupon} className={styles.modalForm}>
               <div className={styles.modalBody}>
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Coupon Code</label>
+                  <label className={styles.formLabel}>{t.colCode}</label>
                   <input
                     type="text"
                     required
@@ -5463,7 +5716,7 @@ export default function AdminDashboardPage() {
 
                 <div className={styles.formGrid2}>
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Discount Type</label>
+                    <label className={styles.formLabel}>{t.discountTypeLabel}</label>
                     <select
                       value={couponForm.type}
                       onChange={(e) => setCouponForm((prev) => ({ ...prev, type: e.target.value }))}
@@ -5475,7 +5728,7 @@ export default function AdminDashboardPage() {
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Value ({couponForm.type === 'percent' ? '%' : '₺'})</label>
+                    <label className={styles.formLabel}>{t.valueLabel} ({couponForm.type === 'percent' ? '%' : '₺'})</label>
                     <input
                       type="number"
                       required
@@ -5489,7 +5742,7 @@ export default function AdminDashboardPage() {
 
                 <div className={styles.formGrid2}>
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Min Order Amount (₺)</label>
+                    <label className={styles.formLabel}>{t.minOrderAmountLabel}</label>
                     <input
                       type="number"
                       min="0"
@@ -5500,11 +5753,11 @@ export default function AdminDashboardPage() {
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Max Uses (Optional)</label>
+                    <label className={styles.formLabel}>{t.maxUsesOptional}</label>
                     <input
                       type="number"
                       min="1"
-                      placeholder="Leave empty for unlimited"
+                      placeholder={t.leaveEmptyUnlimited}
                       value={couponForm.maxUses}
                       onChange={(e) => setCouponForm((prev) => ({ ...prev, maxUses: e.target.value }))}
                       className={styles.formInput}
@@ -5513,7 +5766,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Expiry Date (Optional)</label>
+                  <label className={styles.formLabel}>{t.expiryDateOptional}</label>
                   <input
                     type="date"
                     value={couponForm.expiresAt}
@@ -5534,7 +5787,7 @@ export default function AdminDashboardPage() {
                     }}
                     className={styles.secondaryBtn}
                   >
-                    Cancel
+                    {t.cancel}
                   </button>
                   <button type="submit" disabled={actionLoading} className={styles.primaryBtn}>
                     {t.saveCoupon}
@@ -5554,7 +5807,7 @@ export default function AdminDashboardPage() {
           <div className={`${styles.modalCard} ${styles.modalCardLarge}`}>
             <div className={styles.modalHeader}>
               <h3 className={styles.modalTitle}>
-                {selectedBlogPost ? 'Edit Journal Story' : 'Write Journal Story'}
+                {selectedBlogPost ? t.editJournalStory : t.writeJournalStory}
               </h3>
               <button
                 onClick={() => {
@@ -5601,7 +5854,7 @@ export default function AdminDashboardPage() {
                     </div>
 
                     <div className={styles.formGroup}>
-                      <label className={styles.formLabel}>Makale İçeriği (Türkçe)</label>
+                      <label className={styles.formLabel}>{t.articleContentTr}</label>
                       <div
                         ref={contentTrRef}
                         contentEditable
@@ -5630,7 +5883,7 @@ export default function AdminDashboardPage() {
                     </div>
 
                     <div className={styles.formGroup}>
-                      <label className={styles.formLabel}>Article Content (English)</label>
+                      <label className={styles.formLabel}>{t.articleContentEn}</label>
                       <div
                         ref={contentEnRef}
                         contentEditable
@@ -5648,24 +5901,24 @@ export default function AdminDashboardPage() {
 
                 <div className={styles.formGrid2}>
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Category</label>
+                    <label className={styles.formLabel}>{t.blogCategoryLabel}</label>
                     <select
                       value={blogForm.category || 'culture'}
                       onChange={(e) => setBlogForm((prev) => ({ ...prev, category: e.target.value }))}
                       className={styles.formSelect}
                     >
-                      <option value="culture">Coffee Culture</option>
-                      <option value="brew">Brewing Guides</option>
-                      <option value="origins">Origin Stories</option>
-                      <option value="news">Roastery News</option>
+                      <option value="culture">{t.blogCatCulture}</option>
+                      <option value="brew">{t.blogCatBrewing}</option>
+                      <option value="origins">{t.blogCatOrigin}</option>
+                      <option value="news">{t.blogCatNews}</option>
                     </select>
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Cover Image URL</label>
+                    <label className={styles.formLabel}>{t.coverImageUrl}</label>
                     <input
                       type="text"
-                      placeholder="Paste image URL..."
+                      placeholder={t.pasteImageUrlPlaceholder}
                       value={blogForm.imageUrl || ''}
                       onChange={(e) => setBlogForm((prev) => ({ ...prev, imageUrl: e.target.value }))}
                       className={styles.formInput}
@@ -5685,7 +5938,7 @@ export default function AdminDashboardPage() {
                     }}
                     className={styles.secondaryBtn}
                   >
-                    Cancel
+                    {t.cancel}
                   </button>
                   <button type="submit" disabled={actionLoading} className={styles.primaryBtn}>
                     {t.publishPost}
@@ -5707,7 +5960,7 @@ export default function AdminDashboardPage() {
               <div className={styles.modalTitleGroup}>
                 <h3 className={styles.modalTitle}>{t.thermalLabelTitle}</h3>
                 <span className={styles.modalSubtitle}>
-                  Print high-resolution 4x6" thermal adhesive stickers for coffee pouches.
+                  {t.thermalLabelSubtitle}
                 </span>
               </div>
               <button onClick={() => setBagLabelProduct(null)} className={styles.modalCloseBtn}>
@@ -5728,14 +5981,14 @@ export default function AdminDashboardPage() {
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>Pouch Net Weight</label>
+                  <label className={styles.formLabel}>{t.pouchNetWeightLabel}</label>
                   <select
                     className={styles.formSelect}
                     value={bagLabelSize}
                     onChange={(e) => setBagLabelSize(e.target.value as '250g' | '1kg')}
                   >
-                    <option value="250g">250 Grams (Retail Pouch)</option>
-                    <option value="1kg">1,000 Grams / 1kg (Barista Bag)</option>
+                    <option value="250g">{t.pouch250gOption}</option>
+                    <option value="1kg">{t.pouch1kgOption}</option>
                   </select>
                 </div>
               </div>
@@ -5797,7 +6050,7 @@ export default function AdminDashboardPage() {
               <div />
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button onClick={() => setBagLabelProduct(null)} className={styles.secondaryBtn}>
-                  Close
+                  {t.close}
                 </button>
                 <button onClick={() => window.print()} className={styles.primaryBtn}>
                   <PrinterIcon size={14} />

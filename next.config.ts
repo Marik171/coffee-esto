@@ -66,6 +66,14 @@ const nextConfig: NextConfig = {
   // Next.js bundle and loaded natively by Node at runtime.
   serverExternalPackages: ['iyzipay'],
 
+  // iyzipay also scandir()s its own lib/resources folder at require-time,
+  // which the standalone build's file tracer can't see statically — without
+  // this, that directory is missing from .next/standalone and every route
+  // importing iyzipay crashes with ENOENT in production.
+  outputFileTracingIncludes: {
+    '/**': ['./node_modules/iyzipay/**/*'],
+  },
+
   async headers() {
     return [
       {

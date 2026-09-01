@@ -27,12 +27,12 @@ export default function AdminLoginPage() {
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Authentication failed.');
+        throw new Error(data.error || 'Kimlik doğrulama başarısız oldu.');
       }
 
       router.push('/admin');
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Network error authenticating session.';
+      const message = err instanceof Error ? err.message : 'Oturum doğrulanırken ağ hatası oluştu.';
       setErrorMsg(message);
     } finally {
       setIsLoading(false);
@@ -47,9 +47,9 @@ export default function AdminLoginPage() {
             <BrandLogoIcon size={24} />
           </div>
           <span className={styles.brandTitle}>COFFEE ESTO</span>
-          <span className={styles.brandSub}>Specialty Roastery Admin</span>
-          <h1 className={styles.title}>Roastery Access</h1>
-          <p className={styles.subtitle}>Enter management credentials to access live queues and roastery operations.</p>
+          <span className={styles.brandSub}>Özel Kavurma Yönetimi</span>
+          <h1 className={styles.title}>Kavurmahane Girişi</h1>
+          <p className={styles.subtitle}>Canlı siparişlere ve kavurmahane işlemlerine erişmek için yönetici bilgilerinizi girin.</p>
         </div>
 
         {errorMsg && (
@@ -61,19 +61,19 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.inputBox}>
-            <label htmlFor="admin-email">Admin Email</label>
+            <label htmlFor="admin-email">Yönetici E-postası</label>
             <input
               id="admin-email"
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="e.g. manager@roastery.com"
+              placeholder="örn. yonetici@kavurmahane.com"
             />
           </div>
 
           <div className={styles.inputBox}>
-            <label htmlFor="admin-password">Secure Password</label>
+            <label htmlFor="admin-password">Güvenli Şifre</label>
             <input
               id="admin-password"
               type="password"
@@ -85,12 +85,12 @@ export default function AdminLoginPage() {
           </div>
 
           <button type="submit" className={styles.submitBtn} disabled={isLoading}>
-            {isLoading ? 'Authenticating...' : 'Sign In to Dashboard →'}
+            {isLoading ? 'Giriş yapılıyor...' : 'Panele Giriş Yap →'}
           </button>
         </form>
 
         <Link href="/coffee" className={styles.backBtn}>
-          ← Return to Storefront
+          ← Mağazaya Dön
         </Link>
       </div>
     </div>
