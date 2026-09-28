@@ -67,12 +67,14 @@ export default function AccountContent({ locale = 'en' }: AccountContentProps) {
       signUpSub: 'Join Coffee Esto Roastery',
       emailPlaceholder: 'Email Address',
       passwordPlaceholder: 'Password',
+      passwordHint: 'At least 8 characters, with an uppercase letter, a lowercase letter, and a number.',
       namePlaceholder: 'Full Name',
       newsOptIn: 'Email me with news and offers',
       termsText: 'By continuing, you agree to our ',
       termsLink: 'Terms of service',
       privacyPolicy: 'Privacy policy',
       genericError: 'Something went wrong. Please try again.',
+      passwordRequirementsError: 'Password must be at least 8 characters and include an uppercase letter, a lowercase letter, and a number.',
       noAccount: "Don't have an account?",
       haveAccount: 'Already have an account?',
       or: 'or',
@@ -85,12 +87,14 @@ export default function AccountContent({ locale = 'en' }: AccountContentProps) {
       signUpSub: 'Coffee Esto Roastery\'ye katılın',
       emailPlaceholder: 'E-posta Adresi',
       passwordPlaceholder: 'Şifre',
+      passwordHint: 'En az 8 karakter, bir büyük harf, bir küçük harf ve bir rakam içermelidir.',
       namePlaceholder: 'Ad Soyad',
       newsOptIn: 'Haber ve teklifleri e-posta ile gönder',
       termsText: 'Devam ederek, ',
       termsLink: 'Hizmet Şartları',
       privacyPolicy: 'Gizlilik politikası',
       genericError: 'Bir şeyler ters gitti. Lütfen tekrar deneyin.',
+      passwordRequirementsError: 'Şifre en az 8 karakter olmalı; bir büyük harf, bir küçük harf ve bir rakam içermelidir.',
       noAccount: 'Hesabınız yok mu?',
       haveAccount: 'Zaten hesabınız var mı?',
       or: 'veya',
@@ -205,8 +209,8 @@ export default function AccountContent({ locale = 'en' }: AccountContentProps) {
       console.error(err);
       if (err.code === 'auth/email-already-in-use') {
         setError(locale === 'tr' ? 'Bu e-posta adresi zaten kullanımda.' : 'This email is already in use.');
-      } else if (err.code === 'auth/weak-password') {
-        setError(locale === 'tr' ? 'Şifre çok zayıf. En az 6 karakter olmalıdır.' : 'Password is too weak. It must be at least 6 characters.');
+      } else if (err.code === 'auth/password-does-not-meet-requirements' || err.code === 'auth/weak-password') {
+        setError(t.passwordRequirementsError);
       } else {
         setError(t.genericError);
       }
@@ -385,8 +389,10 @@ export default function AccountContent({ locale = 'en' }: AccountContentProps) {
                     placeholder={t.passwordPlaceholder}
                     className={styles.emailInput}
                     required
+                    minLength={8}
                     autoComplete="new-password"
                   />
+                  <p className={styles.passwordHint}>{t.passwordHint}</p>
                 </div>
 
                 <div className={styles.checkboxWrapper}>

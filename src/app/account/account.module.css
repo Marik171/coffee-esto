@@ -96,6 +96,13 @@
   margin-bottom: 8px;
 }
 
+.passwordHint {
+  font-size: 10px;
+  color: #888888;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
 .lastUsedLabel {
   position: absolute;
   top: 0;
