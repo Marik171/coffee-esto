@@ -294,6 +294,11 @@ export async function POST(request: Request) {
     const threeDSResult = await initializeThreeDSPayment({ ...iyzipayRequest, callbackUrl });
 
     if (threeDSResult.status !== 'success' || !threeDSResult.threeDSHtmlContent) {
+      console.error('3DS initiate failed', {
+        conversationId: orderId,
+        errorCode: threeDSResult.errorCode,
+        errorMessage: threeDSResult.errorMessage,
+      });
       return NextResponse.json(
         {
           success: false,
