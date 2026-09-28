@@ -1,12 +1,19 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import db from '@/lib/db';
-import { createPayment, Iyzipay } from '@/lib/iyzipay';
+import { createPayment, cancelPayment, Iyzipay } from '@/lib/iyzipay';
 import { verifyToken } from '@/lib/auth';
-import { sendOrderConfirmationEmail, sendOwnerNewOrderNotification, sendLowStockAlert } from '@/lib/emails';
+import { sendOrderConfirmationEmail, sendOwnerNewOrderNotification, sendLowStockAlert, sendCheckoutFailsafeAlert } from '@/lib/emails';
 import { validateCoupon } from '@/lib/coupons';
+import { checkRateLimit } from '@/lib/rateLimiter';
 
 const LOW_STOCK_THRESHOLD = 5;
+
+// Charge attempts per IP — generous for a real shopper (retrying a declined card,
+// checking out a wholesale order separately, etc.) but tight enough to blunt
+// scripted card-testing, which is the realistic abuse pattern for this endpoint.
+const RATE_LIMIT = 8;
+const WINDOW_MS = 60 * 60 * 1000;
 
 interface CheckoutItem {
   id: string;
@@ -30,6 +37,15 @@ interface ShippingDetails {
   zipCode: string;
 }
 
+// Thrown inside the post-payment transaction when stock ran out between the
+// pre-charge check and now (a race between two near-simultaneous checkouts).
+// Distinguishing it lets us tell the customer "sold out" instead of a generic error.
+class StockConflictError extends Error {
+  constructor(public readonly productId: string) {
+    super(`Stock for "${productId}" changed before the order could be completed.`);
+  }
+}
+
 function getProductId(id: string): string {
   const parts = id.split('-');
   const sizeIndex = parts.findIndex((p) => p === '250g' || p === '500g' || p === '1kg');
@@ -41,6 +57,18 @@ function getProductId(id: string): string {
 
 export async function POST(request: Request) {
   try {
+    const ip0 = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      ?? request.headers.get('x-real-ip')
+      ?? 'unknown';
+
+    const rate = checkRateLimit(`checkout:${ip0}`, RATE_LIMIT, WINDOW_MS);
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { success: false, error: 'Too many checkout attempts. Please try again later or contact support.' },
+        { status: 429, headers: { 'Retry-After': String(rate.retryAfterSeconds) } }
+      );
+    }
+
     const body = await request.json();
     const { items, shippingDetails, cardDetails, isWholesale, locale, cargoProviderId, couponCode } = body as {
       items: CheckoutItem[];
@@ -212,10 +240,8 @@ export async function POST(request: Request) {
       ? `20${cardDetails.expireYear}`
       : cardDetails.expireYear;
 
-    // Buyer IP from request headers
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-      ?? request.headers.get('x-real-ip')
-      ?? '0.0.0.0';
+    // Buyer IP — fall back to the rate-limit IP computed above; iyzico wants a non-empty value
+    const ip = ip0 !== 'unknown' ? ip0 : '0.0.0.0';
 
     // iyzico requires basketItems prices to sum to `price` (subtotal, not paidPrice).
     // Distribute subtotal across line items proportionally (avoid floating point drift).
@@ -289,45 +315,96 @@ export async function POST(request: Request) {
     }
 
     // ── 5. Payment succeeded — persist order + decrement stock atomically ──
+    //
+    // From here on the card has already been charged. If anything in this block
+    // fails (DB error, or another checkout winning a stock race in the meantime),
+    // we must void the charge before returning an error — otherwise the customer
+    // is left charged with no order and no way for support to find it.
 
+    let newOrder;
+    try {
+      newOrder = await db.$transaction(async (tx) => {
+        // Wholesale keeps the pre-existing unconditional decrement (bulk/backorder
+        // model). Retail gets a conditional decrement so two near-simultaneous
+        // checkouts for the last unit in stock can't both succeed.
+        for (const [baseId, qty] of requestedTotals.entries()) {
+          if (isWholesale) {
+            await tx.product.update({ where: { id: baseId }, data: { stock: { decrement: qty } } });
+            continue;
+          }
+          const result = await tx.product.updateMany({
+            where: { id: baseId, stock: { gte: qty } },
+            data: { stock: { decrement: qty } },
+          });
+          if (result.count === 0) {
+            throw new StockConflictError(baseId);
+          }
+        }
 
-    const [newOrder] = await db.$transaction([
-      db.order.create({
-        data: {
-          id: orderId,
-          email: shippingDetails.email,
-          phone: shippingDetails.phone,
-          address: `${shippingDetails.address}, ${shippingDetails.city} ${shippingDetails.zipCode}`,
-          paymentId: paymentResult.paymentId ?? '',
-          subtotal: calculatedSubtotal,
-          shippingFee,
-          cargoProviderName,
-          couponCode: appliedCouponCode,
-          discountAmount,
-          totalAmount,
-          status: 'pending',
-          paymentStatus: 'captured',
-          fulfillmentStatus: 'not_fulfilled',
-          ...(customerId && { customerId }),
-          items: {
-            create: mappedItems.map((item) => ({
-              coffeeId: item.id,
-              name: item.name,
-              quantity: item.quantity,
-              price: item.price,
-            })),
+        if (appliedCouponId) {
+          await tx.coupon.update({ where: { id: appliedCouponId }, data: { usedCount: { increment: 1 } } });
+        }
+
+        return tx.order.create({
+          data: {
+            id: orderId,
+            email: shippingDetails.email,
+            phone: shippingDetails.phone,
+            address: `${shippingDetails.address}, ${shippingDetails.city} ${shippingDetails.zipCode}`,
+            paymentId: paymentResult.paymentId ?? '',
+            subtotal: calculatedSubtotal,
+            shippingFee,
+            cargoProviderName,
+            couponCode: appliedCouponCode,
+            discountAmount,
+            totalAmount,
+            status: 'pending',
+            paymentStatus: 'captured',
+            fulfillmentStatus: 'not_fulfilled',
+            ...(customerId && { customerId }),
+            items: {
+              create: mappedItems.map((item) => ({
+                coffeeId: item.id,
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price,
+              })),
+            },
           },
+          include: { items: true },
+        });
+      });
+    } catch (txError) {
+      const isStockConflict = txError instanceof StockConflictError;
+      console.error('Checkout: order transaction failed after successful payment — voiding charge.', txError);
+
+      const voidResult = await cancelPayment(paymentResult.paymentId ?? '', ip).catch((voidErr) => {
+        console.error('Checkout: CRITICAL — payment void also failed after order-transaction failure.', voidErr);
+        return null;
+      });
+      const voided = voidResult?.status === 'success';
+
+      await sendCheckoutFailsafeAlert({
+        attemptedOrderId: orderId,
+        email: shippingDetails.email,
+        totalAmount,
+        paymentId: paymentResult.paymentId ?? '',
+        reason: isStockConflict
+          ? `Item "${(txError as StockConflictError).productId}" sold out between stock check and order creation.`
+          : String(txError instanceof Error ? txError.message : txError),
+        voided,
+      });
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: isStockConflict
+            ? 'One or more items in your cart just sold out. Your payment was not completed.'
+            : 'We could not complete your order after payment. Any charge has been automatically reversed — please try again, or contact support if you were still charged.',
         },
-        include: { items: true },
-      }),
-      ...Array.from(requestedTotals.entries()).map(([baseId, qty]) =>
-        db.product.update({
-          where: { id: baseId },
-          data: { stock: { decrement: qty } },
-        })
-      ),
-      ...(appliedCouponId ? [db.coupon.update({ where: { id: appliedCouponId }, data: { usedCount: { increment: 1 } } })] : []),
-    ]);
+        { status: isStockConflict ? 409 : 500 }
+      );
+    }
 
     // Cart converted to an order — stop any pending abandoned-cart reminder for this email.
     await db.abandonedCart.deleteMany({ where: { email: shippingDetails.email } }).catch(() => {});

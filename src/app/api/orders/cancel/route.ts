@@ -1,9 +1,25 @@
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { cancelPayment } from '@/lib/iyzipay';
+import { checkRateLimit } from '@/lib/rateLimiter';
+
+const RATE_LIMIT = 10;
+const WINDOW_MS = 15 * 60 * 1000;
 
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      ?? request.headers.get('x-real-ip')
+      ?? 'unknown';
+
+    const rate = checkRateLimit(`orders-cancel:${ip}`, RATE_LIMIT, WINDOW_MS);
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { success: false, error: 'Too many attempts. Please try again later or contact support.' },
+        { status: 429, headers: { 'Retry-After': String(rate.retryAfterSeconds) } }
+      );
+    }
+
     const body = await request.json();
     const { orderId, email } = body as { orderId?: string; email?: string };
 
@@ -42,11 +58,7 @@ export async function POST(request: Request) {
 
     // Issue real void via iyzico before touching the database
     if (order.paymentStatus === 'captured' && order.paymentId) {
-      const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-        ?? request.headers.get('x-real-ip')
-        ?? '0.0.0.0';
-
-      const result = await cancelPayment(order.paymentId, ip);
+      const result = await cancelPayment(order.paymentId, ip !== 'unknown' ? ip : '0.0.0.0');
 
       if (result.status !== 'success') {
         return NextResponse.json(

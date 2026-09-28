@@ -299,6 +299,59 @@ export async function sendOwnerNewOrderNotification(order: OrderEmailDetails): P
   });
 }
 
+// Fires when a card was successfully charged via iyzico but the order record
+// could not be created afterward (DB error, item sold out mid-request, etc.).
+// The checkout route always attempts to void the charge before sending this —
+// `voided` says whether that void actually succeeded, since a failed void
+// means real money is stuck and needs a manual refund from the iyzico dashboard.
+export async function sendCheckoutFailsafeAlert(details: {
+  attemptedOrderId: string;
+  email: string;
+  totalAmount: number;
+  paymentId: string;
+  reason: string;
+  voided: boolean;
+}): Promise<void> {
+  const ownerEmail = getOwnerEmail();
+  if (!ownerEmail) {
+    console.error('[emails] OWNER_EMAIL is not configured — skipping checkout failsafe alert.');
+    return;
+  }
+
+  const statusLine = details.voided
+    ? 'The charge was automatically voided — no action needed on the payment itself.'
+    : '⚠️ The automatic void ALSO FAILED. This customer has been charged and no order exists. Refund manually from the iyzico dashboard.';
+
+  const bodyHtml = `
+    <p style="margin: 0 0 16px; font-size: 14px; line-height: 1.7; color: ${colors.warmMid};">
+      A checkout charge succeeded but the order could not be saved afterward, so it never reached the admin panel.
+    </p>
+    <div style="background-color: ${colors.sand}; border-radius: 12px; padding: 20px 24px; font-size: 14px; color: ${colors.warmText};">
+      <p style="margin: 0 0 6px;"><strong>Attempted order:</strong> ${escapeHtml(details.attemptedOrderId)}</p>
+      <p style="margin: 0 0 6px;"><strong>Customer:</strong> ${escapeHtml(details.email)}</p>
+      <p style="margin: 0 0 6px;"><strong>Amount:</strong> ${details.totalAmount.toFixed(2)} TRY</p>
+      <p style="margin: 0 0 6px;"><strong>iyzico payment ID:</strong> ${escapeHtml(details.paymentId || 'n/a')}</p>
+      <p style="margin: 0 0 6px;"><strong>Reason:</strong> ${escapeHtml(details.reason)}</p>
+    </div>
+    ${divider()}
+    <p style="margin: 0; font-size: 14px; line-height: 1.7; color: ${details.voided ? colors.warmMid : '#b23b3b'}; font-weight: ${details.voided ? 400 : 700};">
+      ${statusLine}
+    </p>
+  `;
+
+  await sendEmail({
+    to: [{ email: ownerEmail }],
+    subject: `${details.voided ? 'Checkout failsafe triggered' : '⚠️ ACTION NEEDED — refund required'} — ${details.attemptedOrderId}`,
+    htmlContent: renderEmailLayout({
+      preheader: `Charged ${details.totalAmount.toFixed(2)} TRY but no order was created for ${details.email}`,
+      heroEyebrow: 'Checkout failsafe',
+      heroTitle: details.attemptedOrderId,
+      bodyHtml,
+      locale: 'tr',
+    }),
+  });
+}
+
 export async function sendLowStockAlert(products: { id: string; name: string; stock: number }[]): Promise<void> {
   const ownerEmail = getOwnerEmail();
   if (!ownerEmail) {
