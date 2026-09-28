@@ -20,6 +20,21 @@ export interface ShippingDetails {
   city: string;
   phone: string;
   zipCode: string;
+  identityNumber: string;
+}
+
+// Turkey's national ID (TC Kimlik No) checksum algorithm. iyzico's live API
+// validates this on the buyer's identityNumber (sandbox doesn't), so a
+// placeholder like '11111111111' is accepted in sandbox but rejected live.
+export function isValidTcKimlik(id: string): boolean {
+  if (!/^[1-9][0-9]{10}$/.test(id)) return false;
+  const d = id.split('').map(Number);
+  const oddSum = d[0] + d[2] + d[4] + d[6] + d[8];
+  const evenSum = d[1] + d[3] + d[5] + d[7];
+  const d10 = (((oddSum * 7) - evenSum) % 10 + 10) % 10;
+  if (d10 !== d[9]) return false;
+  const d11 = d.slice(0, 10).reduce((a, b) => a + b, 0) % 10;
+  return d11 === d[10];
 }
 
 export function getProductId(id: string): string {

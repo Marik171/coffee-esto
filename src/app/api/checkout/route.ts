@@ -5,7 +5,7 @@ import { initializeThreeDSPayment, Iyzipay } from '@/lib/iyzipay';
 import { verifyToken } from '@/lib/auth';
 import { checkRateLimit } from '@/lib/rateLimiter';
 import { validateCoupon } from '@/lib/coupons';
-import { PICKUP_LABEL, PICKUP_ADDRESS, getProductId, type PendingCheckoutPayload, type ShippingDetails } from '@/lib/checkoutShared';
+import { PICKUP_LABEL, PICKUP_ADDRESS, getProductId, isValidTcKimlik, type PendingCheckoutPayload, type ShippingDetails } from '@/lib/checkoutShared';
 
 // Charge attempts per IP — generous for a real shopper (retrying a declined card,
 // checking out a wholesale order separately, etc.) but tight enough to blunt
@@ -77,6 +77,13 @@ export async function POST(request: Request) {
         (!isPickup && (!shippingDetails?.address || !shippingDetails?.city || !shippingDetails?.zipCode))) {
       return NextResponse.json(
         { success: false, error: 'All shipping fields are required.' },
+        { status: 400 }
+      );
+    }
+
+    if (!isValidTcKimlik(shippingDetails.identityNumber ?? '')) {
+      return NextResponse.json(
+        { success: false, error: 'Please enter a valid TC Kimlik number.' },
         { status: 400 }
       );
     }
@@ -253,10 +260,7 @@ export async function POST(request: Request) {
         surname: lastName,
         gsmNumber: shippingDetails.phone.startsWith('+') ? shippingDetails.phone : `+90${shippingDetails.phone}`,
         email: shippingDetails.email,
-        // Guest placeholder — collect real TC Kimlik for KYC if needed. Must pass Turkey's
-        // national-ID checksum algorithm: iyzico's live API validates it (sandbox doesn't),
-        // so an arbitrary string of digits like '11111111111' is rejected as invalid.
-        identityNumber: '12345678950',
+        identityNumber: shippingDetails.identityNumber,
         registrationAddress: isPickup ? PICKUP_ADDRESS.line : shippingDetails.address,
         ip,
         city: isPickup ? PICKUP_ADDRESS.city : shippingDetails.city,

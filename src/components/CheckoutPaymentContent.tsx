@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart } from '../context/CartContext';
 import styles from '../app/checkout/payment/payment.module.css';
+import { isValidTcKimlik } from '@/lib/checkoutShared';
 
 interface CheckoutPaymentContentProps {
   locale: string;
@@ -89,7 +90,8 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       city: 'District',
       state: 'Province',
       zip: 'ZIP code',
-      phone: 'Phone (optional)',
+      phone: 'Phone',
+      identityNumber: 'TC Identity Number',
       textNews: 'Text me with news and offers',
       shippingMethod: 'Shipping method',
       shippingMethodInfo: 'Shipping is free on this order.',
@@ -115,6 +117,7 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       terms: 'Terms of service',
       cancellations: 'Cancellations',
       validationErr: 'Please complete all required fields.',
+      identityErr: 'Please enter a valid 11-digit TC Identity Number.',
       cardErr: 'Please enter a valid card number.',
       expiryErr: 'Please enter a valid expiry date.',
       cvvErr: 'Please enter a valid security code.',
@@ -145,7 +148,8 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       city: 'İlçe',
       state: 'İl',
       zip: 'Posta Kodu',
-      phone: 'Telefon (isteğe bağlı)',
+      phone: 'Telefon',
+      identityNumber: 'TC Kimlik No',
       textNews: 'SMS ile haber ve kampanya al',
       shippingMethod: 'Kargo yöntemi',
       shippingMethodInfo: 'Bu siparişte kargo ücretsizdir.',
@@ -171,6 +175,7 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       terms: 'Kullanım koşulları',
       cancellations: 'İptal koşulları',
       validationErr: 'Lütfen tüm zorunlu alanları doldurun.',
+      identityErr: 'Lütfen geçerli bir 11 haneli TC Kimlik numarası girin.',
       cardErr: 'Lütfen geçerli bir kart numarası girin.',
       expiryErr: 'Lütfen geçerli bir son kullanma tarihi girin.',
       cvvErr: 'Lütfen geçerli bir güvenlik kodu girin.',
@@ -253,6 +258,7 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
   const [stateName, setStateName] = useState('');
   const [zipCode, setZipCode] = useState('');
   const [phone, setPhone] = useState('');
+  const [identityNumber, setIdentityNumber] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [cardName, setCardName] = useState('');
   const [cardExpiry, setCardExpiry] = useState('');
@@ -416,6 +422,9 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
     if (!email || !firstName || !lastName || !phone || (!isPickup && (!address || !city || !zipCode))) {
       setErrorMessage(t.validationErr); return;
     }
+    if (!isValidTcKimlik(identityNumber)) {
+      setErrorMessage(t.identityErr); return;
+    }
     if (requiresShippingSelection) { setErrorMessage(t.selectShippingErr); return; }
     if (cardNumber.replace(/\s/g, '').length < 15) { setErrorMessage(t.cardErr); return; }
     if (cardExpiry.replace(/[\s/]/g, '').length < 4) { setErrorMessage(t.expiryErr); return; }
@@ -431,7 +440,7 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
           isWholesale,
           isSubscriber,
           deliveryMode: isPickup ? 'pickup' : 'ship',
-          shippingDetails: { email, fullName: `${firstName} ${lastName}`, address, city, zipCode, phone },
+          shippingDetails: { email, fullName: `${firstName} ${lastName}`, address, city, zipCode, phone, identityNumber },
           cardDetails: { cardHolderName: cardName, cardNumber, expireMonth: parts[0], expireYear: parts[1], cvc: cardCvv },
           cargoProviderId: isPickup ? undefined : (selectedCargoProviderId || undefined),
           couponCode: appliedCoupon?.code || undefined,
@@ -577,6 +586,12 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
                       <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                     </svg>
                   </button>
+                </div>
+
+                <div className={styles.inputField}>
+                  <input id="identityNumber" type="text" inputMode="numeric" required maxLength={11}
+                    value={identityNumber} onChange={(e) => setIdentityNumber(e.target.value.replace(/\D/g, '').substring(0, 11))}
+                    placeholder={t.identityNumber} className={styles.floatInput} />
                 </div>
 
                 {deliveryMode === 'pickup' ? (
