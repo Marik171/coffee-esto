@@ -9,6 +9,18 @@ import { checkRateLimit } from '@/lib/rateLimiter';
 
 const LOW_STOCK_THRESHOLD = 5;
 
+// Mirrors the address shown in the checkout page's pickup panel
+// (src/components/CheckoutPaymentContent.tsx) — used as the order's stored
+// address for pickup orders, and as the address/city/zip iyzico requires
+// on the payment request when the customer skips filling in their own.
+const PICKUP_LABEL = 'Store Pickup';
+const PICKUP_ADDRESS = {
+  line: 'Coffee Esto Roastery, Topselvi Mahallesi, Kubilay Caddesi, Şht. Ahmet Yalçın Sk. 3/a',
+  city: 'İstanbul',
+  district: 'Kartal',
+  zipCode: '34873',
+};
+
 // Charge attempts per IP — generous for a real shopper (retrying a declined card,
 // checking out a wholesale order separately, etc.) but tight enough to blunt
 // scripted card-testing, which is the realistic abuse pattern for this endpoint.
@@ -70,7 +82,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { items, shippingDetails, cardDetails, isWholesale, locale, cargoProviderId, couponCode } = body as {
+    const { items, shippingDetails, cardDetails, isWholesale, locale, cargoProviderId, couponCode, deliveryMode } = body as {
       items: CheckoutItem[];
       shippingDetails: ShippingDetails;
       cardDetails: CardDetails;
@@ -78,7 +90,11 @@ export async function POST(request: Request) {
       locale?: string;
       cargoProviderId?: string;
       couponCode?: string;
+      deliveryMode?: 'ship' | 'pickup';
     };
+
+    // Pickup only applies to retail orders — wholesale always ships.
+    const isPickup = !isWholesale && deliveryMode === 'pickup';
 
     // ── 1. Input validation ──────────────────────────────────────
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -98,9 +114,8 @@ export async function POST(request: Request) {
       }
     }
 
-    if (!shippingDetails?.email || !shippingDetails?.fullName ||
-        !shippingDetails?.address || !shippingDetails?.city ||
-        !shippingDetails?.phone || !shippingDetails?.zipCode) {
+    if (!shippingDetails?.email || !shippingDetails?.fullName || !shippingDetails?.phone ||
+        (!isPickup && (!shippingDetails?.address || !shippingDetails?.city || !shippingDetails?.zipCode))) {
       return NextResponse.json(
         { success: false, error: 'All shipping fields are required.' },
         { status: 400 }
@@ -186,7 +201,10 @@ export async function POST(request: Request) {
     // ── 2b. Shipping fee — server-side source of truth, never trust a client-sent fee ──
     let shippingFee = 0;
     let cargoProviderName = '';
-    if (!isWholesale) {
+    if (isPickup) {
+      // No shipping fee, no courier — the customer collects it in person.
+      cargoProviderName = PICKUP_LABEL;
+    } else if (!isWholesale) {
       const shippingSettings = await db.shippingSettings.findUnique({ where: { id: 1 } });
       if (shippingSettings?.enabled) {
         if (!cargoProviderId) {
@@ -277,25 +295,25 @@ export async function POST(request: Request) {
         gsmNumber: shippingDetails.phone.startsWith('+') ? shippingDetails.phone : `+90${shippingDetails.phone}`,
         email: shippingDetails.email,
         identityNumber: '11111111111', // Guest placeholder — collect TC Kimlik for KYC if needed
-        registrationAddress: shippingDetails.address,
+        registrationAddress: isPickup ? PICKUP_ADDRESS.line : shippingDetails.address,
         ip,
-        city: shippingDetails.city,
+        city: isPickup ? PICKUP_ADDRESS.city : shippingDetails.city,
         country: 'Turkey',
-        zipCode: shippingDetails.zipCode,
+        zipCode: isPickup ? PICKUP_ADDRESS.zipCode : shippingDetails.zipCode,
       },
       shippingAddress: {
         contactName: shippingDetails.fullName,
-        city: shippingDetails.city,
+        city: isPickup ? PICKUP_ADDRESS.city : shippingDetails.city,
         country: 'Turkey',
-        address: shippingDetails.address,
-        zipCode: shippingDetails.zipCode,
+        address: isPickup ? PICKUP_ADDRESS.line : shippingDetails.address,
+        zipCode: isPickup ? PICKUP_ADDRESS.zipCode : shippingDetails.zipCode,
       },
       billingAddress: {
         contactName: shippingDetails.fullName,
-        city: shippingDetails.city,
+        city: isPickup ? PICKUP_ADDRESS.city : shippingDetails.city,
         country: 'Turkey',
-        address: shippingDetails.address,
-        zipCode: shippingDetails.zipCode,
+        address: isPickup ? PICKUP_ADDRESS.line : shippingDetails.address,
+        zipCode: isPickup ? PICKUP_ADDRESS.zipCode : shippingDetails.zipCode,
       },
       basketItems,
     };
@@ -360,7 +378,9 @@ export async function POST(request: Request) {
             fullName: shippingDetails.fullName,
             locale: detectedLocale,
             phone: shippingDetails.phone,
-            address: `${shippingDetails.address}, ${shippingDetails.city} ${shippingDetails.zipCode}`,
+            address: isPickup
+              ? `${PICKUP_LABEL}: ${PICKUP_ADDRESS.line}, ${PICKUP_ADDRESS.city} ${PICKUP_ADDRESS.zipCode}`
+              : `${shippingDetails.address}, ${shippingDetails.city} ${shippingDetails.zipCode}`,
             paymentId: paymentResult.paymentId ?? '',
             subtotal: calculatedSubtotal,
             shippingFee,

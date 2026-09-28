@@ -45,6 +45,7 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
   const [couponError, setCouponError] = useState('');
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [deliveryMode, setDeliveryMode] = useState<'ship' | 'pickup'>('ship');
+  const isPickup = !isWholesale && deliveryMode === 'pickup';
   const [emailMe, setEmailMe] = useState(false);
   const [textMe, setTextMe] = useState(false);
   const [sameAsBilling, setSameAsBilling] = useState(true);
@@ -325,8 +326,8 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
     ? wholesaleItems.reduce((acc, item) => acc + item.wholesalePrice * item.quantity, 0)
     : cartTotal;
   const selectedCargoProvider = cargoProviders.find((p) => p.id === selectedCargoProviderId);
-  const requiresShippingSelection = !isWholesale && shippingEnabled && cargoProviders.length > 0 && !selectedCargoProvider;
-  const shippingFee = (!isWholesale && shippingEnabled && selectedCargoProvider) ? selectedCargoProvider.fee : 0;
+  const requiresShippingSelection = !isWholesale && !isPickup && shippingEnabled && cargoProviders.length > 0 && !selectedCargoProvider;
+  const shippingFee = (!isWholesale && !isPickup && shippingEnabled && selectedCargoProvider) ? selectedCargoProvider.fee : 0;
   const discountAmount = appliedCoupon?.discountAmount ?? 0;
   const grandTotal = Math.max(subtotal - discountAmount, 0) + shippingFee;
   const totalQty = itemsToRender.reduce((acc: number, item: any) => acc + item.quantity, 0);
@@ -411,7 +412,7 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
-    if (!email || !firstName || !lastName || !address || !city || !zipCode) {
+    if (!email || !firstName || !lastName || (!isPickup && (!address || !city || !zipCode))) {
       setErrorMessage(t.validationErr); return;
     }
     if (requiresShippingSelection) { setErrorMessage(t.selectShippingErr); return; }
@@ -428,9 +429,10 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
           items: itemsToRender.map((item) => ({ id: item.id, quantity: item.quantity })),
           isWholesale,
           isSubscriber,
+          deliveryMode: isPickup ? 'pickup' : 'ship',
           shippingDetails: { email, fullName: `${firstName} ${lastName}`, address, city, zipCode, phone },
           cardDetails: { cardHolderName: cardName, cardNumber, expireMonth: parts[0], expireYear: parts[1], cvc: cardCvv },
-          cargoProviderId: selectedCargoProviderId || undefined,
+          cargoProviderId: isPickup ? undefined : (selectedCargoProviderId || undefined),
           couponCode: appliedCoupon?.code || undefined,
           locale,
         }),
