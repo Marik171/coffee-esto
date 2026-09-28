@@ -259,6 +259,7 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
   const [cardCvv, setCardCvv] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [threeDSHtml, setThreeDSHtml] = useState('');
 
   const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
   const [isSearchingAddress, setIsSearchingAddress] = useState(false);
@@ -439,15 +440,37 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       });
       const resData = await response.json();
       if (!response.ok || !resData.success) throw new Error(resData.error || 'Payment declined.');
-      const { orderId, totalAmount } = resData.data;
-      if (isWholesale) localStorage.removeItem('coffee_esto_wholesale_cart');
-      else clearCart();
-      router.push(`${locale === 'tr' ? '' : '/en'}/checkout/success?orderId=${orderId}&total=${totalAmount}&email=${encodeURIComponent(email)}`);
+      // Card isn't charged yet — this HTML hands the customer to their bank for
+      // 3D Secure verification. It's shown in an iframe; the bank's callback
+      // posts the final outcome back to us via window.postMessage (see effect below).
+      const decoded = atob(resData.data.threeDSHtmlContent as string);
+      setThreeDSHtml(decoded);
     } catch (err: unknown) {
       setErrorMessage(err instanceof Error ? err.message : 'Checkout failed.');
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      const data = event.data;
+      if (!data || data.source !== 'coffee-esto-3ds') return;
+
+      setThreeDSHtml('');
+      if (data.success) {
+        if (isWholesale) localStorage.removeItem('coffee_esto_wholesale_cart');
+        else clearCart();
+        router.push(`${locale === 'tr' ? '' : '/en'}/checkout/success?orderId=${data.orderId}&total=${data.totalAmount}&email=${encodeURIComponent(data.email || email)}`);
+      } else {
+        setErrorMessage(data.error || 'Payment declined.');
+        setIsSubmitting(false);
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isWholesale, locale, email]);
 
   const linkPrefix = locale === 'tr' ? '' : '/en';
 
@@ -863,6 +886,36 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
 
         </div>
       </main>
+
+      {threeDSHtml && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
+          }}
+        >
+          <div style={{ background: '#fff', borderRadius: '8px', width: 'min(480px, 94vw)', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid #eee' }}>
+              <span style={{ fontSize: '13px', fontWeight: 600, color: '#333' }}>
+                {locale === 'tr' ? 'Banka Doğrulaması' : 'Bank Verification'}
+              </span>
+              <button
+                type="button"
+                onClick={() => { setThreeDSHtml(''); setIsSubmitting(false); }}
+                aria-label={locale === 'tr' ? 'Kapat' : 'Close'}
+                style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', color: '#666', lineHeight: 1 }}
+              >
+                ×
+              </button>
+            </div>
+            <iframe
+              title="3D Secure Verification"
+              srcDoc={threeDSHtml}
+              style={{ border: 0, width: '100%', height: '520px', maxHeight: '80vh' }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

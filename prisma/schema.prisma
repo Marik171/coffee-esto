@@ -36,6 +36,16 @@ model Order {
   @@index([customerId])
 }
 
+// Holds everything needed to finish creating an Order once a 3D Secure
+// redirect completes and the bank calls back — the payment has already been
+// authorized by then, so this must contain no card data, only order-building
+// inputs (locked-in prices, shipping details, coupon, etc).
+model PendingCheckout {
+  id        String   @id // = orderId = iyzico conversationId
+  payload   Json
+  createdAt DateTime @default(now())
+}
+
 // Singleton row (id always 1) toggling whether checkout charges shipping at all.
 model ShippingSettings {
   id      Int     @id @default(1)

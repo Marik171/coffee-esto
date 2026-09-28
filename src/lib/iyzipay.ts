@@ -85,6 +85,51 @@ export function createPayment(request: IyzipayPaymentRequest): Promise<IyzipayPa
   });
 }
 
+export interface IyzipayThreeDSInitializeResult {
+  status: 'success' | 'failure';
+  threeDSHtmlContent?: string; // base64-encoded HTML that redirects the customer to their bank
+  errorCode?: string;
+  errorMessage?: string;
+}
+
+// Starts a 3D Secure payment: the returned HTML must be shown to the customer
+// (e.g. in an iframe) — it auto-submits to the issuing bank, which authenticates
+// the cardholder and then POSTs the result to `request.callbackUrl`.
+export function initializeThreeDSPayment(
+  request: IyzipayPaymentRequest & { callbackUrl: string }
+): Promise<IyzipayThreeDSInitializeResult> {
+  return new Promise((resolve, reject) => {
+    iyzipay.threedsInitialize.create(
+      { locale: Iyzipay.LOCALE.TR, ...request },
+      (err: Error | null, result: IyzipayThreeDSInitializeResult) => {
+        if (err) reject(err);
+        else resolve(result);
+      }
+    );
+  });
+}
+
+// Finalizes a 3D Secure payment after the bank has called back with a
+// paymentId + conversationId — this is what actually charges the card.
+export function completeThreeDSPayment(params: {
+  paymentId: string;
+  conversationId: string;
+}): Promise<IyzipayPaymentResult> {
+  return new Promise((resolve, reject) => {
+    iyzipay.threedsPayment.create(
+      {
+        locale: Iyzipay.LOCALE.TR,
+        paymentId: params.paymentId,
+        conversationId: params.conversationId,
+      },
+      (err: Error | null, result: IyzipayPaymentResult) => {
+        if (err) reject(err);
+        else resolve(result);
+      }
+    );
+  });
+}
+
 export interface IyzipayActionResult {
   status: 'success' | 'failure';
   errorCode?: string;
