@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { cancelPayment } from '@/lib/iyzipay';
+import { sendOrderRoastingStartedEmail, sendOrderShippedEmail } from '@/lib/emails';
 
 interface OrderItem {
   id: string;
@@ -14,6 +15,8 @@ interface OrderItem {
 interface OrderWithItems {
   id: string;
   email: string;
+  fullName: string;
+  locale: string;
   phone: string;
   address: string;
   paymentId: string;
@@ -209,6 +212,26 @@ export async function POST(request: Request) {
           )
         : []),
     ]);
+
+    // Notify the customer of the status change — best-effort, never blocks the response
+    // (sendEmail() already swallows its own provider errors internally).
+    if (action === 'start_roasting') {
+      await sendOrderRoastingStartedEmail({
+        orderId: updated.id,
+        email: updated.email,
+        fullName: order.fullName,
+        locale: order.locale,
+      }).catch((err) => console.error('Failed to send roasting-started email:', err));
+    } else if (action === 'ship_fulfillment') {
+      await sendOrderShippedEmail({
+        orderId: updated.id,
+        email: updated.email,
+        fullName: order.fullName,
+        locale: order.locale,
+        trackingNumber: updated.trackingNumber,
+        shippingProvider: updated.shippingProvider,
+      }).catch((err) => console.error('Failed to send shipped email:', err));
+    }
 
     return NextResponse.json({ success: true, data: formatOrder(updated), error: null });
 

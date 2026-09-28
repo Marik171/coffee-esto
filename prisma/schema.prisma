@@ -11,6 +11,8 @@ generator client {
 model Order {
   id                String      @id
   email             String
+  fullName          String      @default("")
+  locale            String      @default("tr")
   phone             String      @default("")
   address           String
   paymentId         String      @default("")

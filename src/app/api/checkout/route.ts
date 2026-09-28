@@ -300,6 +300,14 @@ export async function POST(request: Request) {
       basketItems,
     };
 
+    // Detected once, up front, so it can be persisted on the order and reused
+    // later (e.g. shipped-notification emails) — not just the confirmation email.
+    let detectedLocale = locale;
+    if (!detectedLocale) {
+      const referer = request.headers.get('referer') || '';
+      detectedLocale = (referer.includes('/en/') || referer.endsWith('/en')) ? 'en' : 'tr';
+    }
+
     // ── 4. Charge via iyzico ─────────────────────────────────────
     const paymentResult = await createPayment(iyzipayRequest);
 
@@ -349,6 +357,8 @@ export async function POST(request: Request) {
           data: {
             id: orderId,
             email: shippingDetails.email,
+            fullName: shippingDetails.fullName,
+            locale: detectedLocale,
             phone: shippingDetails.phone,
             address: `${shippingDetails.address}, ${shippingDetails.city} ${shippingDetails.zipCode}`,
             paymentId: paymentResult.paymentId ?? '',
@@ -408,12 +418,6 @@ export async function POST(request: Request) {
 
     // Cart converted to an order — stop any pending abandoned-cart reminder for this email.
     await db.abandonedCart.deleteMany({ where: { email: shippingDetails.email } }).catch(() => {});
-
-    let detectedLocale = locale;
-    if (!detectedLocale) {
-      const referer = request.headers.get('referer') || '';
-      detectedLocale = (referer.includes('/en/') || referer.endsWith('/en')) ? 'en' : 'tr';
-    }
 
     const orderEmailDetails = {
       orderId: newOrder.id,

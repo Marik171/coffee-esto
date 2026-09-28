@@ -262,6 +262,140 @@ export async function sendOrderConfirmationEmail(order: OrderEmailDetails): Prom
   });
 }
 
+const orderRoastingTranslations = {
+  tr: {
+    subject: (id: string) => `Kavurma başladı — ${id}`,
+    preheader: (id: string) => `${id} numaralı siparişiniz şu anda kavuruluyor.`,
+    eyebrow: 'KAVURMA BAŞLADI',
+    title: (name?: string) => `İyi haber${name ? `, ${name}` : ''}!`,
+    bodyText: 'Siparişiniz şu anda İstanbul kavurmahanemizde küçük partiler halinde taze kavruluyor. Kavurma ve paketleme tamamlanır tamamlanmaz kargo bilgilerinizi e-posta ile göndereceğiz.',
+    orderLabel: 'Sipariş',
+    closingText: 'Bu süreçte sorularınız olursa, bu e-postayı doğrudan yanıtlayabilirsiniz.',
+  },
+  en: {
+    subject: (id: string) => `Roasting has started — ${id}`,
+    preheader: (id: string) => `Your order ${id} is being roasted right now.`,
+    eyebrow: 'ROASTING STARTED',
+    title: (name?: string) => `Good news${name ? `, ${name}` : ''}!`,
+    bodyText: "Your order is being freshly roasted in small batches at our İstanbul roastery right now. We'll email your shipping details the moment it's roasted and packed.",
+    orderLabel: 'Order',
+    closingText: 'Questions in the meantime? Just reply to this email.',
+  },
+};
+
+const orderShippedTranslations = {
+  tr: {
+    subject: (id: string) => `Siparişiniz kargoya verildi — ${id}`,
+    preheader: (id: string) => `${id} numaralı siparişiniz yola çıktı.`,
+    eyebrow: 'KARGOYA VERİLDİ',
+    title: (name?: string) => `Yola çıktı${name ? `, ${name}` : ''}!`,
+    bodyText: 'Taze kavrulmuş siparişiniz kargoya verildi ve size doğru yola çıktı.',
+    orderLabel: 'Sipariş',
+    carrierLabel: 'Kargo Firması',
+    trackingLabel: 'Takip Numarası',
+    closingText: 'Sorularınız olursa, bu e-postayı doğrudan yanıtlayabilirsiniz.',
+  },
+  en: {
+    subject: (id: string) => `Your order has shipped — ${id}`,
+    preheader: (id: string) => `Your order ${id} is on its way.`,
+    eyebrow: 'SHIPPED',
+    title: (name?: string) => `On its way${name ? `, ${name}` : ''}!`,
+    bodyText: "Your freshly roasted order has shipped and is on its way to you.",
+    orderLabel: 'Order',
+    carrierLabel: 'Carrier',
+    trackingLabel: 'Tracking Number',
+    closingText: 'Questions? Just reply to this email.',
+  },
+};
+
+export async function sendOrderRoastingStartedEmail(order: {
+  orderId: string;
+  email: string;
+  fullName?: string;
+  locale?: string;
+}): Promise<void> {
+  const tLoc = order.locale === 'en' ? 'en' : 'tr';
+  const t = orderRoastingTranslations[tLoc];
+
+  const firstName = order.fullName?.trim().split(/\s+/)[0];
+  const safeFirstName = firstName ? escapeHtml(firstName) : undefined;
+
+  const bodyHtml = `
+    <p style="margin: 0 0 4px; font-size: 15px; line-height: 1.7; color: ${colors.warmMid};">
+      ${t.bodyText}
+    </p>
+    <p style="margin: 24px 0 0; font-size: 13px; color: ${colors.warmMid};">
+      ${t.orderLabel} <strong style="color: ${colors.warmText};">${order.orderId}</strong>
+    </p>
+    ${divider()}
+    <p style="margin: 0; font-size: 14px; line-height: 1.7; color: ${colors.warmMid};">
+      ${t.closingText}
+    </p>
+  `;
+
+  await sendEmail({
+    to: [{ email: order.email, name: order.fullName }],
+    subject: t.subject(order.orderId),
+    htmlContent: renderEmailLayout({
+      preheader: t.preheader(order.orderId),
+      heroEyebrow: t.eyebrow,
+      heroTitle: t.title(safeFirstName),
+      bodyHtml,
+      locale: tLoc,
+    }),
+  });
+}
+
+export async function sendOrderShippedEmail(order: {
+  orderId: string;
+  email: string;
+  fullName?: string;
+  locale?: string;
+  trackingNumber?: string;
+  shippingProvider?: string;
+}): Promise<void> {
+  const tLoc = order.locale === 'en' ? 'en' : 'tr';
+  const t = orderShippedTranslations[tLoc];
+
+  const firstName = order.fullName?.trim().split(/\s+/)[0];
+  const safeFirstName = firstName ? escapeHtml(firstName) : undefined;
+
+  const trackingRowsHtml = (order.shippingProvider || order.trackingNumber)
+    ? `
+      <div style="background-color: ${colors.sand}; border-radius: 12px; padding: 20px 24px; margin-top: 20px;">
+        ${order.shippingProvider ? renderTotalsRow(t.carrierLabel, escapeHtml(order.shippingProvider)) : ''}
+        ${order.trackingNumber ? renderTotalsRow(t.trackingLabel, escapeHtml(order.trackingNumber), true) : ''}
+      </div>
+    `
+    : '';
+
+  const bodyHtml = `
+    <p style="margin: 0 0 4px; font-size: 15px; line-height: 1.7; color: ${colors.warmMid};">
+      ${t.bodyText}
+    </p>
+    <p style="margin: 24px 0 0; font-size: 13px; color: ${colors.warmMid};">
+      ${t.orderLabel} <strong style="color: ${colors.warmText};">${order.orderId}</strong>
+    </p>
+    ${trackingRowsHtml}
+    ${divider()}
+    <p style="margin: 0; font-size: 14px; line-height: 1.7; color: ${colors.warmMid};">
+      ${t.closingText}
+    </p>
+  `;
+
+  await sendEmail({
+    to: [{ email: order.email, name: order.fullName }],
+    subject: t.subject(order.orderId),
+    htmlContent: renderEmailLayout({
+      preheader: t.preheader(order.orderId),
+      heroEyebrow: t.eyebrow,
+      heroTitle: t.title(safeFirstName),
+      bodyHtml,
+      locale: tLoc,
+    }),
+  });
+}
+
 export async function sendOwnerNewOrderNotification(order: OrderEmailDetails): Promise<void> {
   const ownerEmail = getOwnerEmail();
   if (!ownerEmail) {
