@@ -413,7 +413,7 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
-    if (!email || !firstName || !lastName || (!isPickup && (!address || !city || !zipCode))) {
+    if (!email || !firstName || !lastName || !phone || (!isPickup && (!address || !city || !zipCode))) {
       setErrorMessage(t.validationErr); return;
     }
     if (requiresShippingSelection) { setErrorMessage(t.selectShippingErr); return; }
@@ -556,6 +556,29 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
                   </button>
                 </div>
 
+                {/* Name + phone are required for every order — pickup or shipped —
+                    so they render regardless of delivery mode. */}
+                <div className={styles.halfRow}>
+                  <div className={styles.inputField}>
+                    <input id="firstName" type="text" required value={firstName} onChange={(e) => setFirstName(e.target.value)}
+                      placeholder={t.firstName} className={styles.floatInput} />
+                  </div>
+                  <div className={styles.inputField}>
+                    <input id="lastName" type="text" required value={lastName} onChange={(e) => setLastName(e.target.value)}
+                      placeholder={t.lastName} className={styles.floatInput} />
+                  </div>
+                </div>
+
+                <div className={styles.inputField}>
+                  <input id="phone" type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)}
+                    placeholder={t.phone} className={styles.floatInput} />
+                  <button type="button" className={styles.fieldIconBtn} aria-label="phone info">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                  </button>
+                </div>
+
                 {deliveryMode === 'pickup' ? (
                   /* ── Pickup: store address + map ── */
                   <div className={styles.pickupPanel}>
@@ -603,17 +626,6 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
                         <option value="TR">{locale === 'tr' ? 'Türkiye' : 'Turkey'}</option>
                       </select>
                       <span className={styles.selectChevron}>▾</span>
-                    </div>
-
-                    <div className={styles.halfRow}>
-                      <div className={styles.inputField}>
-                        <input id="firstName" type="text" required value={firstName} onChange={(e) => setFirstName(e.target.value)}
-                          placeholder={t.firstName} className={styles.floatInput} />
-                      </div>
-                      <div className={styles.inputField}>
-                        <input id="lastName" type="text" required value={lastName} onChange={(e) => setLastName(e.target.value)}
-                          placeholder={t.lastName} className={styles.floatInput} />
-                      </div>
                     </div>
 
                     <div className={styles.inputField}>
@@ -677,16 +689,6 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
                         <input id="zip" type="text" required value={zipCode} onChange={(e) => setZipCode(e.target.value)}
                           placeholder={t.zip} className={styles.floatInput} />
                       </div>
-                    </div>
-
-                    <div className={styles.inputField}>
-                      <input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
-                        placeholder={t.phone} className={styles.floatInput} />
-                      <button type="button" className={styles.fieldIconBtn} aria-label="phone info">
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                        </svg>
-                      </button>
                     </div>
 
                     <label className={styles.checkboxRow}>
