@@ -61,17 +61,44 @@ const securityHeaders = [
   },
 ];
 
+// iyzipay's lib/Iyzipay.js scandir()s its own lib/resources folder and
+// require()s each file dynamically by path. The Next.js standalone build's
+// file tracer (@vercel/nft) can't see through that — it never even visits
+// those resource files, so it also misses every package THEY require, such
+// as postman-request and postman-request's own dependencies. That already
+// bit production once (iyzipay's own resources dir was missing -> ENOENT),
+// and again with postman-request missing -> "Cannot find module
+// 'postman-request'" crashing every route that imports '@/lib/iyzipay'
+// (checkout, admin/orders, orders/cancel, account/payment-methods).
+// Fix: force-include the full resolved dependency closure of iyzipay +
+// postman-request (computed by walking package-lock.json), since none of
+// it gets picked up by normal tracing.
+const iyzipayDependencyClosure = [
+  '@postman/form-data', '@postman/tough-cookie', '@postman/tunnel-agent',
+  'agent-base', 'asn1', 'assert-plus', 'asynckit', 'aws-sign2', 'aws4',
+  'bcrypt-pbkdf', 'bluebird', 'call-bind-apply-helpers', 'call-bound',
+  'caseless', 'combined-stream', 'core-util-is', 'dashdash', 'debug',
+  'delayed-stream', 'dunder-proto', 'ecc-jsbn', 'es-define-property',
+  'es-errors', 'es-object-atoms', 'extend', 'extsprintf', 'forever-agent',
+  'function-bind', 'get-intrinsic', 'get-proto', 'getpass', 'gopd',
+  'has-symbols', 'hasown', 'http-signature', 'ip-address', 'is-typedarray',
+  'isstream', 'iyzipay', 'jsbn', 'json-schema', 'json-stringify-safe',
+  'jsprim', 'math-intrinsics', 'mime-db', 'mime-types', 'ms', 'oauth-sign',
+  'object-inspect', 'postman-request', 'psl', 'punycode', 'qs',
+  'querystringify', 'requires-port', 'safe-buffer', 'safer-buffer',
+  'side-channel', 'side-channel-list', 'side-channel-map',
+  'side-channel-weakmap', 'smart-buffer', 'socks', 'socks-proxy-agent',
+  'sshpk', 'stream-length', 'tweetnacl', 'universalify', 'url-parse',
+  'uuid', 'verror',
+];
+
 const nextConfig: NextConfig = {
   // iyzipay uses dynamic require() internally — must be excluded from the
   // Next.js bundle and loaded natively by Node at runtime.
   serverExternalPackages: ['iyzipay'],
 
-  // iyzipay also scandir()s its own lib/resources folder at require-time,
-  // which the standalone build's file tracer can't see statically — without
-  // this, that directory is missing from .next/standalone and every route
-  // importing iyzipay crashes with ENOENT in production.
   outputFileTracingIncludes: {
-    '/**': ['./node_modules/iyzipay/**/*'],
+    '/**': iyzipayDependencyClosure.map((pkg) => `./node_modules/${pkg}/**/*`),
   },
 
   async headers() {
