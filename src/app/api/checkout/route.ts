@@ -253,7 +253,10 @@ export async function POST(request: Request) {
         surname: lastName,
         gsmNumber: shippingDetails.phone.startsWith('+') ? shippingDetails.phone : `+90${shippingDetails.phone}`,
         email: shippingDetails.email,
-        identityNumber: '11111111111', // Guest placeholder — collect TC Kimlik for KYC if needed
+        // Guest placeholder — collect real TC Kimlik for KYC if needed. Must pass Turkey's
+        // national-ID checksum algorithm: iyzico's live API validates it (sandbox doesn't),
+        // so an arbitrary string of digits like '11111111111' is rejected as invalid.
+        identityNumber: '12345678950',
         registrationAddress: isPickup ? PICKUP_ADDRESS.line : shippingDetails.address,
         ip,
         city: isPickup ? PICKUP_ADDRESS.city : shippingDetails.city,
