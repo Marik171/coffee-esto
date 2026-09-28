@@ -1794,7 +1794,6 @@ export default function AdminDashboardPage() {
   // Filtered Orders
   const filteredOrders = orders.filter((o) => {
     if (orderStatusFilter !== 'all') {
-      if (orderStatusFilter === 'pending' && o.status !== 'pending') return false;
       if (orderStatusFilter === 'roasting' && o.fulfillment_status !== 'roasting') return false;
       if (orderStatusFilter === 'packed' && o.fulfillment_status !== 'fulfilled') return false;
       if (orderStatusFilter === 'shipped' && o.fulfillment_status !== 'shipped') return false;
@@ -3248,7 +3247,7 @@ export default function AdminDashboardPage() {
               <div className={styles.pipelineTabs}>
                 {[
                   { key: 'all', label: t.allOrders, count: orders.length },
-                  { key: 'pending', label: t.awaitingPayment, count: orders.filter((o) => o.payment_status === 'awaiting').length },
+                  { key: 'awaiting_payment', label: t.awaitingPayment, count: orders.filter((o) => o.payment_status === 'awaiting').length },
                   { key: 'roasting', label: t.roasting, count: orders.filter((o) => o.fulfillment_status === 'roasting').length },
                   { key: 'packed', label: t.packed, count: orders.filter((o) => o.fulfillment_status === 'fulfilled').length },
                   { key: 'shipped', label: t.shipped, count: orders.filter((o) => o.fulfillment_status === 'shipped').length },
