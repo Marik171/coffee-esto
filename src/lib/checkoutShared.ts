@@ -37,6 +37,21 @@ export function isValidTcKimlik(id: string): boolean {
   return d11 === d[10];
 }
 
+// Normalizes a Turkish phone number to E.164 (+90XXXXXXXXXX) for iyzico's
+// gsmNumber field. Customers commonly type the local format with a leading
+// 0 (e.g. "0532 123 45 67") — naively prepending "+90" to that produces an
+// invalid "+900532..." double-zero number that iyzico's live API rejects
+// (sandbox doesn't validate the format as strictly).
+export function normalizeTrPhone(phone: string): string {
+  let digits = phone.replace(/\D/g, '');
+  if (digits.startsWith('90') && digits.length === 12) {
+    digits = digits.slice(2);
+  } else if (digits.startsWith('0')) {
+    digits = digits.slice(1);
+  }
+  return `+90${digits}`;
+}
+
 export function getProductId(id: string): string {
   const parts = id.split('-');
   const sizeIndex = parts.findIndex((p) => p === '250g' || p === '500g' || p === '1kg');

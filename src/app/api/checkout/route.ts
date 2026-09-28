@@ -5,7 +5,7 @@ import { initializeThreeDSPayment, Iyzipay } from '@/lib/iyzipay';
 import { verifyToken } from '@/lib/auth';
 import { checkRateLimit } from '@/lib/rateLimiter';
 import { validateCoupon } from '@/lib/coupons';
-import { PICKUP_LABEL, PICKUP_ADDRESS, getProductId, isValidTcKimlik, type PendingCheckoutPayload, type ShippingDetails } from '@/lib/checkoutShared';
+import { PICKUP_LABEL, PICKUP_ADDRESS, getProductId, isValidTcKimlik, normalizeTrPhone, type PendingCheckoutPayload, type ShippingDetails } from '@/lib/checkoutShared';
 
 // Charge attempts per IP — generous for a real shopper (retrying a declined card,
 // checking out a wholesale order separately, etc.) but tight enough to blunt
@@ -258,7 +258,7 @@ export async function POST(request: Request) {
         id: shippingDetails.email,
         name: firstName,
         surname: lastName,
-        gsmNumber: shippingDetails.phone.startsWith('+') ? shippingDetails.phone : `+90${shippingDetails.phone}`,
+        gsmNumber: normalizeTrPhone(shippingDetails.phone),
         email: shippingDetails.email,
         identityNumber: shippingDetails.identityNumber,
         registrationAddress: isPickup ? PICKUP_ADDRESS.line : shippingDetails.address,
