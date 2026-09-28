@@ -43,9 +43,9 @@ env:
       - BUILD
       - RUNTIME
 
-  # iyzico sandbox endpoint — switch to https://api.iyzipay.com for production payments
+  # iyzico live endpoint — real cards are charged against this
   - variable: IYZIPAY_BASE_URL
-    value: https://sandbox-api.iyzipay.com
+    value: https://api.iyzipay.com
     availability:
       - BUILD
       - RUNTIME
