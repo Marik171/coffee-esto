@@ -7,6 +7,7 @@ import CartDrawer from '../components/CartDrawer';
 import ErrorBoundary from '../components/ErrorBoundary';
 import LanguageSync from '../components/LanguageSync';
 import BackToTop from '../components/BackToTop';
+import CookieConsent from '../components/CookieConsent';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -63,6 +64,7 @@ export default function RootLayout({
             <CartDrawer />
           </ErrorBoundary>
           <BackToTop />
+          <CookieConsent />
         </CartProvider>
       </body>
     </html>
