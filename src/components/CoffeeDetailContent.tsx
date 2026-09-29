@@ -453,6 +453,9 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en', initi
     };
   }, [coffee?.videoUrl]);
 
+  // ── Related products state ──────────────────────────────────────
+  const [relatedProducts, setRelatedProducts] = useState<CoffeeProduct[]>([]);
+
   // ── Reviews state ──────────────────────────────────────────────
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [reviewStats, setReviewStats] = useState<ReviewStats>({ total: 0, avgRating: 0, distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } });
@@ -553,6 +556,7 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en', initi
       brewGuideCTA: '📖 Open Coffee Brewing Companion',
       shippingNote: 'Free shipping on orders over ₺2,000. For orders below ₺2,000, shipping cost is paid by the buyer.',
       inquireStock: 'Inquire About Stock',
+      youMayAlsoLike: 'You May Also Like',
     },
     tr: {
       loadingText: 'Kavrum parametreleri yükleniyor...',
@@ -583,6 +587,7 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en', initi
       brewGuideCTA: '📖 Kahve Demleme Asistanını Aç',
       shippingNote: '2.000 TL üzeri siparişlerde kargo ücretsizdir. 2.000 TL altındaki siparişlerde kargo ücreti alıcıya aittir.',
       inquireStock: 'Stok Sorgulayın',
+      youMayAlsoLike: 'Bunlar da İlginizi Çekebilir',
     }
   };
 
@@ -617,6 +622,28 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en', initi
     };
     fetchProduct();
   }, [coffeeId, initialProduct, locale]);
+
+  // Same-category products, excluding this one and anything out of stock —
+  // cross-sell block shown further down the page.
+  useEffect(() => {
+    if (!coffee) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/products');
+        const d = await res.json();
+        if (cancelled || !res.ok || !d.success) return;
+        const related = (d.data as CoffeeProduct[])
+          .filter((p) => p.id !== coffee.id && p.category === coffee.category && p.stock > 0)
+          .slice(0, 4)
+          .map((p) => localizeProduct(p, locale));
+        setRelatedProducts(related);
+      } catch {
+        /* non-fatal — section just doesn't render */
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [coffee, locale]);
 
   const fetchReviews = async (productId: string) => {
     try {
@@ -1319,6 +1346,51 @@ export default function CoffeeDetailContent({ id: coffeeId, locale = 'en', initi
             )}
           </div>
         </div>
+      )}
+
+      {relatedProducts.length > 0 && (
+        <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '64px 24px 96px' }}>
+          <h2 style={{
+            fontSize: '22px', fontWeight: 600, marginBottom: '28px',
+            textAlign: 'center', letterSpacing: '0.02em',
+          }}>
+            {t.youMayAlsoLike}
+          </h2>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '24px',
+          }}>
+            {relatedProducts.map((p) => (
+              <Link
+                key={p.id}
+                href={`${linkPrefix}/coffee/${p.id}`}
+                style={{
+                  display: 'flex', flexDirection: 'column', textDecoration: 'none', color: 'inherit',
+                  border: '1px solid #eee', borderRadius: '10px', overflow: 'hidden',
+                  transition: 'box-shadow 0.2s ease',
+                }}
+              >
+                <div style={{ aspectRatio: '1 / 1', background: '#f6f3ee', overflow: 'hidden' }}>
+                  {p.imageUrl && (
+                    <img src={p.imageUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  )}
+                </div>
+                <div style={{ padding: '14px 16px' }}>
+                  <span style={{ display: 'block', fontSize: '11px', color: '#999', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    {p.origin}
+                  </span>
+                  <span style={{ display: 'block', fontSize: '15px', fontWeight: 600, margin: '4px 0' }}>
+                    {p.name}
+                  </span>
+                  <span style={{ fontSize: '14px', color: '#555' }}>
+                    {locale === 'tr' ? `${p.price} TL` : `₺${p.price}`}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
       )}
 
       <Footer waveColor="#ffffff" locale={locale} />
