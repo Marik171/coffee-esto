@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
-import { cancelPayment } from '@/lib/iyzipay';
+import { cancelPayment, refundPayment } from '@/lib/iyzipay';
 import { sendOrderRoastingStartedEmail, sendOrderShippedEmail } from '@/lib/emails';
 
 interface OrderItem {
@@ -166,15 +166,38 @@ export async function POST(request: Request) {
           );
         }
         if (order.paymentStatus === 'captured' && order.paymentId) {
-          const cancelResult = await cancelPayment(order.paymentId, ip);
+          // Same-day void first (instant, fee-free); once iyzico has settled the
+          // payment that fails, so fall back to a per-transaction refund.
+          const cancelResult = await cancelPayment(order.paymentId, ip).catch(
+            (err): { status: 'failure'; errorMessage: string } => ({ status: 'failure', errorMessage: String(err) })
+          );
           if (cancelResult.status !== 'success') {
-            return NextResponse.json(
-              {
-                success: false,
-                error: `Payment void failed (${cancelResult.errorCode ?? 'unknown'}): ${cancelResult.errorMessage ?? 'iyzico error'}. Issue refund manually from the iyzico dashboard.`,
-              },
-              { status: 402 }
+            const transactions = (order.paymentTransactions as Array<{ paymentTransactionId: string; price: string }> | null) ?? [];
+            if (transactions.length === 0) {
+              return NextResponse.json(
+                {
+                  success: false,
+                  error: `Payment void failed: ${cancelResult.errorMessage ?? 'iyzico error'}. Issue refund manually from the iyzico dashboard.`,
+                },
+                { status: 402 }
+              );
+            }
+            const refundResults = await Promise.all(
+              transactions.map((t) => refundPayment(t.paymentTransactionId, t.price, ip).catch(
+                (err): { status: 'failure'; errorMessage: string } => ({ status: 'failure', errorMessage: String(err) })
+              ))
             );
+            const failed = refundResults.find((r) => r.status !== 'success');
+            if (failed) {
+              console.error('Admin cancel: void and refund both failed', { orderId, cancelResult, refundResults });
+              return NextResponse.json(
+                {
+                  success: false,
+                  error: `Refund failed: ${failed.errorMessage ?? 'iyzico error'}. Issue refund manually from the iyzico dashboard.`,
+                },
+                { status: 402 }
+              );
+            }
           }
         }
         nextStatus            = 'canceled';

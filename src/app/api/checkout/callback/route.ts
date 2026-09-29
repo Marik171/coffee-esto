@@ -129,6 +129,7 @@ export async function POST(request: Request) {
               ? `${PICKUP_LABEL}: ${PICKUP_ADDRESS.line}, ${PICKUP_ADDRESS.city} ${PICKUP_ADDRESS.zipCode}`
               : `${shippingDetails.address}, ${shippingDetails.city} ${shippingDetails.zipCode}`,
             paymentId: paymentResult.paymentId ?? '',
+            paymentTransactions: (paymentResult.itemTransactions ?? []) as unknown as object,
             subtotal: calculatedSubtotal,
             shippingFee,
             cargoProviderName,

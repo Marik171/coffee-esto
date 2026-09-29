@@ -71,6 +71,12 @@ export interface IyzipayPaymentResult {
   errorCode?: string;
   errorMessage?: string;
   errorGroup?: string;
+  // One entry per basket item — needed later to issue a refund, since iyzico's
+  // refund API operates on a paymentTransactionId, not the top-level paymentId.
+  itemTransactions?: Array<{
+    paymentTransactionId: string;
+    price: string;
+  }>;
 }
 
 export function createPayment(request: IyzipayPaymentRequest): Promise<IyzipayPaymentResult> {
@@ -136,6 +142,8 @@ export interface IyzipayActionResult {
   errorMessage?: string;
 }
 
+// Same-day, pre-settlement void. Fails once iyzico has settled the payment
+// (typically the next day) — use refundPayment for anything after that.
 export function cancelPayment(paymentId: string, ip: string): Promise<IyzipayActionResult> {
   return new Promise((resolve, reject) => {
     iyzipay.cancel.create(
@@ -144,6 +152,33 @@ export function cancelPayment(paymentId: string, ip: string): Promise<IyzipayAct
         conversationId: `CANCEL-${paymentId}`,
         paymentId,
         ip,
+      },
+      (err: Error | null, result: IyzipayActionResult) => {
+        if (err) reject(err);
+        else resolve(result);
+      }
+    );
+  });
+}
+
+// Refunds a single settled payment transaction. Unlike cancelPayment, this
+// works after settlement — it's the only path back for a customer once a
+// same-day void is no longer possible. Refunds are per item-transaction, so
+// a multi-item order needs one call per stored transaction ID.
+export function refundPayment(
+  paymentTransactionId: string,
+  price: string,
+  ip: string
+): Promise<IyzipayActionResult> {
+  return new Promise((resolve, reject) => {
+    iyzipay.refund.create(
+      {
+        locale: Iyzipay.LOCALE.TR,
+        conversationId: `REFUND-${paymentTransactionId}`,
+        paymentTransactionId,
+        price,
+        ip,
+        currency: Iyzipay.CURRENCY.TRY,
       },
       (err: Error | null, result: IyzipayActionResult) => {
         if (err) reject(err);

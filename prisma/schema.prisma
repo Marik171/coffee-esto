@@ -16,6 +16,9 @@ model Order {
   phone             String      @default("")
   address           String
   paymentId         String      @default("")
+  // iyzico's per-item paymentTransactionId + price, captured at charge time.
+  // Needed to refund after settlement (cancelPayment/void only works same-day).
+  paymentTransactions Json?
   subtotal          Float
   shippingFee       Float
   cargoProviderName String      @default("")

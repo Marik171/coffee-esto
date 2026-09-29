@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
-import { cancelPayment } from '@/lib/iyzipay';
+import { cancelPayment, refundPayment } from '@/lib/iyzipay';
 import { checkRateLimit } from '@/lib/rateLimiter';
 
 const RATE_LIMIT = 10;
@@ -56,18 +56,44 @@ export async function POST(request: Request) {
       );
     }
 
-    // Issue real void via iyzico before touching the database
+    // Reverse the charge via iyzico before touching the database. A same-day
+    // void (cancelPayment) is preferred — it's instant and fee-free — but it
+    // fails once iyzico has settled the payment (typically the next day), so
+    // we fall back to a per-transaction refund, which works after settlement.
     if (order.paymentStatus === 'captured' && order.paymentId) {
-      const result = await cancelPayment(order.paymentId, ip !== 'unknown' ? ip : '0.0.0.0');
+      const voidIp = ip !== 'unknown' ? ip : '0.0.0.0';
+      const voidResult = await cancelPayment(order.paymentId, voidIp).catch(
+        (err): { status: 'failure'; errorMessage: string } => ({ status: 'failure', errorMessage: String(err) })
+      );
 
-      if (result.status !== 'success') {
-        return NextResponse.json(
-          {
-            success: false,
-            error: `Payment void failed: ${result.errorMessage ?? 'iyzico returned an error'}. Please contact support.`,
-          },
-          { status: 402 }
+      if (voidResult.status !== 'success') {
+        const transactions = (order.paymentTransactions as Array<{ paymentTransactionId: string; price: string }> | null) ?? [];
+        if (transactions.length === 0) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: `Payment reversal failed: ${voidResult.errorMessage ?? 'iyzico returned an error'}. Please contact support.`,
+            },
+            { status: 402 }
+          );
+        }
+
+        const refundResults = await Promise.all(
+          transactions.map((t) => refundPayment(t.paymentTransactionId, t.price, voidIp).catch(
+            (err): { status: 'failure'; errorMessage: string } => ({ status: 'failure', errorMessage: String(err) })
+          ))
         );
+        const failed = refundResults.find((r) => r.status !== 'success');
+        if (failed) {
+          console.error('Order cancel: void and refund both failed', { orderId, voidResult, refundResults });
+          return NextResponse.json(
+            {
+              success: false,
+              error: `Refund failed: ${failed.errorMessage ?? 'iyzico returned an error'}. Please contact support — your payment has not been reversed.`,
+            },
+            { status: 402 }
+          );
+        }
       }
     }
 
