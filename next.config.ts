@@ -104,7 +104,12 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/(.*)',
+        // Excludes /api/checkout/3ds-frame/*, which sets its own deliberately
+        // permissive CSP to show the bank's own 3DS page verbatim — multiple
+        // CSP headers on the same response are enforced as an intersection
+        // (most restrictive wins), so this one would otherwise still apply
+        // and block the bank's scripts/forms regardless of that route's own header.
+        source: '/((?!api/checkout/3ds-frame/).*)',
         headers: securityHeaders,
       },
     ];

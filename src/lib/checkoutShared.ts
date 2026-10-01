@@ -87,4 +87,8 @@ export interface PendingCheckoutPayload {
   customerId?: string;
   detectedLocale: string;
   ip: string;
+  // Base64 HTML from iyzico's threeDSInitialize — stashed so /api/checkout/3ds-frame
+  // can serve it as a real top-level response (its own CSP, not ours) instead of
+  // the browser inheriting our site's CSP, which blocks the bank's own scripts/forms.
+  threeDSHtmlContent: string;
 }

@@ -319,7 +319,10 @@ export async function POST(request: Request) {
     }
 
     // Stash everything needed to build the order once the bank confirms —
-    // no card data, just the already-locked-in prices/shipping/coupon inputs.
+    // no card data (card details already went straight to iyzico above), just
+    // the already-locked-in prices/shipping/coupon inputs, plus the 3DS HTML
+    // itself so /api/checkout/3ds-frame can serve it from a real same-origin
+    // URL with its own response headers (see that route for why).
     const pendingPayload: PendingCheckoutPayload = {
       shippingDetails,
       mappedItems,
@@ -335,6 +338,7 @@ export async function POST(request: Request) {
       ...(customerId && { customerId }),
       detectedLocale,
       ip,
+      threeDSHtmlContent: threeDSResult.threeDSHtmlContent,
     };
     await db.pendingCheckout.create({
       data: { id: orderId, payload: pendingPayload as unknown as object },
@@ -344,7 +348,6 @@ export async function POST(request: Request) {
       success: true,
       data: {
         conversationId: orderId,
-        threeDSHtmlContent: threeDSResult.threeDSHtmlContent,
       },
       error: null,
     });

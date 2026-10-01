@@ -469,17 +469,18 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       });
       const resData = await response.json();
       if (!response.ok || !resData.success) throw new Error(resData.error || 'Payment declined.');
-      // Card isn't charged yet — this HTML hands the customer to their bank for
-      // 3D Secure verification. It runs in a popup (not an iframe): iyzico's own
-      // 3DS relay page sets anti-framing headers and refuses to render inside any
-      // iframe, so the whole flow has to be a real top-level window. The bank's
-      // callback eventually lands on our own /api/checkout/callback route, which
-      // posts the outcome back via window.opener.postMessage (see effect below).
-      const decoded = atob(resData.data.threeDSHtmlContent as string);
+      // Card isn't charged yet — this hands the customer to their bank for 3D
+      // Secure verification in a popup (not an iframe: iyzico's own 3DS relay
+      // page refuses to render inside any iframe). Navigate the popup to a real
+      // same-origin URL rather than document.write()-ing the HTML into it —
+      // an about:blank popup inherits our site's strict CSP from whatever
+      // script created it, which blocks the bank's own scripts and its form
+      // submissions to scheme domains (e.g. goguvenliodeme.bkm.com.tr). A real
+      // navigation gets that route's own, deliberately permissive, headers.
+      // The bank's callback eventually lands on our own /api/checkout/callback
+      // route, which posts the outcome back via window.opener.postMessage.
       if (threeDSPopupRef.current && !threeDSPopupRef.current.closed) {
-        threeDSPopupRef.current.document.open();
-        threeDSPopupRef.current.document.write(decoded);
-        threeDSPopupRef.current.document.close();
+        threeDSPopupRef.current.location.href = `/api/checkout/3ds-frame/${resData.data.conversationId}`;
       } else {
         throw new Error(t.popupClosedErr);
       }
