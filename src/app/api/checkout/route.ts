@@ -299,7 +299,10 @@ export async function POST(request: Request) {
     // hands them off to their bank. The bank authenticates them and POSTs the
     // result to our callback route, which is what actually charges the card
     // and creates the order.
-    const callbackUrl = `${new URL(request.url).origin}/api/checkout/callback`;
+    // Not derived from request.url: behind Cloud Run/Firebase App Hosting's
+    // proxy that resolves to the container's internal bind address
+    // (0.0.0.0:8080), which the bank would be left redirecting to.
+    const callbackUrl = 'https://coffeeesto.com/api/checkout/callback';
     const threeDSResult = await initializeThreeDSPayment({ ...iyzipayRequest, callbackUrl });
 
     if (threeDSResult.status !== 'success' || !threeDSResult.threeDSHtmlContent) {
