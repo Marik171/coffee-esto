@@ -316,21 +316,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // TEMP DEBUG: inspect what domain the bank's 3DS challenge page expects
-    // its static assets (jquery, bank branding JS) to resolve against — the
-    // live Halkbank challenge is loading blank because those requests 404
-    // against coffeeesto.com itself. Remove once the real origin is known.
-    try {
-      const decodedPreview = Buffer.from(threeDSResult.threeDSHtmlContent, 'base64').toString('utf-8');
-      console.log('3DS HTML preview', {
-        conversationId: orderId,
-        length: decodedPreview.length,
-        preview: decodedPreview.slice(0, 4000),
-      });
-    } catch (e) {
-      console.error('3DS HTML preview decode failed', e);
-    }
-
     // Stash everything needed to build the order once the bank confirms —
     // no card data, just the already-locked-in prices/shipping/coupon inputs.
     const pendingPayload: PendingCheckoutPayload = {

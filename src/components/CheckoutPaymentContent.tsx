@@ -431,7 +431,7 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
     if (cardCvv.length < 3) { setErrorMessage(t.cvvErr); return; }
     setIsSubmitting(true);
     try {
-      const parts = cardExpiry.replace(' ', '').split('/');
+      const parts = cardExpiry.replace(/\s/g, '').split('/');
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
