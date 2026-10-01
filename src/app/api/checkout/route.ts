@@ -294,9 +294,11 @@ export async function POST(request: Request) {
 
     // ── 4. Start 3D Secure authentication via iyzico ─────────────
     // The card is NOT charged yet — iyzico returns an HTML page (shown to the
-    // customer in an iframe) that hands them off to their bank. The bank
-    // authenticates them and POSTs the result to our callback route, which is
-    // what actually charges the card and creates the order.
+    // customer in a popup window, not an iframe — iyzico's own 3DS relay page
+    // sets anti-framing headers and refuses to render inside any iframe) that
+    // hands them off to their bank. The bank authenticates them and POSTs the
+    // result to our callback route, which is what actually charges the card
+    // and creates the order.
     const callbackUrl = `${new URL(request.url).origin}/api/checkout/callback`;
     const threeDSResult = await initializeThreeDSPayment({ ...iyzipayRequest, callbackUrl });
 
@@ -314,22 +316,6 @@ export async function POST(request: Request) {
         },
         { status: 402 }
       );
-    }
-
-    // TEMP DEBUG: verify the expiry-whitespace fix actually changed what reaches
-    // the bank, and whether the ACS result is still a hard reject (gateerr) vs
-    // a real challenge. Remove once confirmed.
-    try {
-      const decodedPreview = Buffer.from(threeDSResult.threeDSHtmlContent, 'base64').toString('utf-8');
-      console.log('3DS HTML preview', {
-        conversationId: orderId,
-        sentExpireMonth: iyzipayRequest.paymentCard.expireMonth,
-        sentExpireYear: iyzipayRequest.paymentCard.expireYear,
-        length: decodedPreview.length,
-        preview: decodedPreview.slice(0, 4000),
-      });
-    } catch (e) {
-      console.error('3DS HTML preview decode failed', e);
     }
 
     // Stash everything needed to build the order once the bank confirms —

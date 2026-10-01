@@ -121,6 +121,9 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       cardErr: 'Please enter a valid card number.',
       expiryErr: 'Please enter a valid expiry date.',
       cvvErr: 'Please enter a valid security code.',
+      popupBlockedErr: 'Your browser blocked the verification window. Please allow pop-ups for this site and try again.',
+      popupClosedErr: 'The verification window was closed before it could load. Please try again.',
+      threeDsPopupHint: 'Complete verification in the window that just opened, then return here.',
       freeShipping: 'Free',
       selectShippingErr: 'Please select a shipping method.',
       noProvidersErr: 'Shipping is temporarily unavailable. Please contact us to complete your order.',
@@ -179,6 +182,9 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       cardErr: 'Lütfen geçerli bir kart numarası girin.',
       expiryErr: 'Lütfen geçerli bir son kullanma tarihi girin.',
       cvvErr: 'Lütfen geçerli bir güvenlik kodu girin.',
+      popupBlockedErr: 'Tarayıcınız doğrulama penceresini engelledi. Lütfen bu site için açılır pencerelere izin verin ve tekrar deneyin.',
+      popupClosedErr: 'Doğrulama penceresi yüklenmeden kapatıldı. Lütfen tekrar deneyin.',
+      threeDsPopupHint: 'Az önce açılan pencerede doğrulamayı tamamlayın, ardından buraya geri dönün.',
       freeShipping: 'Ücretsiz',
       selectShippingErr: 'Lütfen bir kargo yöntemi seçin.',
       noProvidersErr: 'Kargo seçenekleri şu anda kullanılamıyor. Siparişinizi tamamlamak için lütfen bizimle iletişime geçin.',
@@ -265,7 +271,8 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
   const [cardCvv, setCardCvv] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [threeDSHtml, setThreeDSHtml] = useState('');
+  const [awaiting3DS, setAwaiting3DS] = useState(false);
+  const threeDSPopupRef = React.useRef<Window | null>(null);
 
   const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
   const [isSearchingAddress, setIsSearchingAddress] = useState(false);
@@ -430,6 +437,19 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
     if (cardExpiry.replace(/[\s/]/g, '').length < 4) { setErrorMessage(t.expiryErr); return; }
     if (cardCvv.length < 3) { setErrorMessage(t.cvvErr); return; }
     setIsSubmitting(true);
+
+    // Must open the popup synchronously, inside this click-triggered handler and
+    // before any `await` — otherwise browsers treat it as an unsolicited popup
+    // and block it. We fill in its content once the bank's HTML comes back.
+    const popup = window.open('', 'iyzico3ds', 'width=480,height=680');
+    if (!popup) {
+      setErrorMessage(t.popupBlockedErr);
+      setIsSubmitting(false);
+      return;
+    }
+    popup.document.write('<!doctype html><title>...</title><body style="font-family:sans-serif;color:#888;display:flex;align-items:center;justify-content:center;height:100vh;margin:0">Loading verification…</body>');
+    threeDSPopupRef.current = popup;
+
     try {
       const parts = cardExpiry.replace(/\s/g, '').split('/');
       const response = await fetch('/api/checkout', {
@@ -450,11 +470,23 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       const resData = await response.json();
       if (!response.ok || !resData.success) throw new Error(resData.error || 'Payment declined.');
       // Card isn't charged yet — this HTML hands the customer to their bank for
-      // 3D Secure verification. It's shown in an iframe; the bank's callback
-      // posts the final outcome back to us via window.postMessage (see effect below).
+      // 3D Secure verification. It runs in a popup (not an iframe): iyzico's own
+      // 3DS relay page sets anti-framing headers and refuses to render inside any
+      // iframe, so the whole flow has to be a real top-level window. The bank's
+      // callback eventually lands on our own /api/checkout/callback route, which
+      // posts the outcome back via window.opener.postMessage (see effect below).
       const decoded = atob(resData.data.threeDSHtmlContent as string);
-      setThreeDSHtml(decoded);
+      if (threeDSPopupRef.current && !threeDSPopupRef.current.closed) {
+        threeDSPopupRef.current.document.open();
+        threeDSPopupRef.current.document.write(decoded);
+        threeDSPopupRef.current.document.close();
+      } else {
+        throw new Error(t.popupClosedErr);
+      }
+      setAwaiting3DS(true);
     } catch (err: unknown) {
+      threeDSPopupRef.current?.close();
+      threeDSPopupRef.current = null;
       setErrorMessage(err instanceof Error ? err.message : 'Checkout failed.');
       setIsSubmitting(false);
     }
@@ -466,7 +498,9 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
       const data = event.data;
       if (!data || data.source !== 'coffee-esto-3ds') return;
 
-      setThreeDSHtml('');
+      threeDSPopupRef.current?.close();
+      threeDSPopupRef.current = null;
+      setAwaiting3DS(false);
       if (data.success) {
         if (isWholesale) localStorage.removeItem('coffee_esto_wholesale_cart');
         else clearCart();
@@ -480,6 +514,20 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
     return () => window.removeEventListener('message', handleMessage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isWholesale, locale, email]);
+
+  // The bank callback is what normally clears awaiting3DS via postMessage, but
+  // if the customer closes the popup themselves, nothing else would — poll for it.
+  useEffect(() => {
+    if (!awaiting3DS) return;
+    const interval = setInterval(() => {
+      if (threeDSPopupRef.current?.closed) {
+        threeDSPopupRef.current = null;
+        setAwaiting3DS(false);
+        setIsSubmitting(false);
+      }
+    }, 500);
+    return () => clearInterval(interval);
+  }, [awaiting3DS]);
 
   const linkPrefix = locale === 'tr' ? '' : '/en';
 
@@ -904,32 +952,32 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
         </div>
       </main>
 
-      {threeDSHtml && (
+      {awaiting3DS && (
         <div
           style={{
             position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
           }}
         >
-          <div style={{ background: '#fff', borderRadius: '8px', width: 'min(480px, 94vw)', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid #eee' }}>
-              <span style={{ fontSize: '13px', fontWeight: 600, color: '#333' }}>
-                {locale === 'tr' ? 'Banka Doğrulaması' : 'Bank Verification'}
-              </span>
-              <button
-                type="button"
-                onClick={() => { setThreeDSHtml(''); setIsSubmitting(false); }}
-                aria-label={locale === 'tr' ? 'Kapat' : 'Close'}
-                style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', color: '#666', lineHeight: 1 }}
-              >
-                ×
-              </button>
-            </div>
-            <iframe
-              title="3D Secure Verification"
-              srcDoc={threeDSHtml}
-              style={{ border: 0, width: '100%', height: '520px', maxHeight: '80vh' }}
-            />
+          <div style={{ background: '#fff', borderRadius: '8px', width: 'min(420px, 94vw)', padding: '28px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', textAlign: 'center' }}>
+            <span style={{ fontSize: '14px', fontWeight: 600, color: '#333' }}>
+              {locale === 'tr' ? 'Banka Doğrulaması' : 'Bank Verification'}
+            </span>
+            <p style={{ margin: 0, fontSize: '13px', color: '#666', lineHeight: 1.5 }}>
+              {t.threeDsPopupHint}
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                threeDSPopupRef.current?.close();
+                threeDSPopupRef.current = null;
+                setAwaiting3DS(false);
+                setIsSubmitting(false);
+              }}
+              style={{ background: 'none', border: '1px solid #ddd', borderRadius: '6px', padding: '8px 16px', fontSize: '13px', cursor: 'pointer', color: '#666' }}
+            >
+              {locale === 'tr' ? 'İptal' : 'Cancel'}
+            </button>
           </div>
         </div>
       )}

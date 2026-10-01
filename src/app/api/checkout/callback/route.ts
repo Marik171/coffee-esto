@@ -7,15 +7,16 @@ import { PICKUP_LABEL, PICKUP_ADDRESS, StockConflictError, type PendingCheckoutP
 const LOW_STOCK_THRESHOLD = 5;
 
 // The bank redirects the customer's browser back here (a POST, form-encoded)
-// once 3D Secure authentication finishes. This is rendered inside the iframe
-// the checkout page opened, so the response is a tiny HTML page that reports
-// the outcome back to the parent window via postMessage — never a redirect,
-// which would just navigate the iframe instead of the checkout page.
+// once 3D Secure authentication finishes. This renders inside the popup window
+// the checkout page opened (not an iframe — iyzico's own 3DS relay page sets
+// anti-framing headers and refuses to load inside any iframe), so the response
+// is a tiny HTML page that reports the outcome back to the opener via
+// postMessage — never a redirect, which would just navigate the popup itself.
 function respondToParent(result: { success: boolean; error?: string; orderId?: string; totalAmount?: number; email?: string }) {
   // Escape "</" so a stray product/error string can't prematurely close the <script> tag.
   const payload = JSON.stringify({ source: 'coffee-esto-3ds', ...result }).replace(/<\//g, '<\\/');
   const html = `<!doctype html><html><body><script>
-    window.parent.postMessage(${payload}, window.location.origin);
+    (window.opener || window.parent).postMessage(${payload}, window.location.origin);
   </script></body></html>`;
   return new NextResponse(html, { headers: { 'Content-Type': 'text/html' } });
 }
