@@ -316,6 +316,22 @@ export async function POST(request: Request) {
       );
     }
 
+    // TEMP DEBUG: verify the expiry-whitespace fix actually changed what reaches
+    // the bank, and whether the ACS result is still a hard reject (gateerr) vs
+    // a real challenge. Remove once confirmed.
+    try {
+      const decodedPreview = Buffer.from(threeDSResult.threeDSHtmlContent, 'base64').toString('utf-8');
+      console.log('3DS HTML preview', {
+        conversationId: orderId,
+        sentExpireMonth: iyzipayRequest.paymentCard.expireMonth,
+        sentExpireYear: iyzipayRequest.paymentCard.expireYear,
+        length: decodedPreview.length,
+        preview: decodedPreview.slice(0, 4000),
+      });
+    } catch (e) {
+      console.error('3DS HTML preview decode failed', e);
+    }
+
     // Stash everything needed to build the order once the bank confirms —
     // no card data, just the already-locked-in prices/shipping/coupon inputs.
     const pendingPayload: PendingCheckoutPayload = {
