@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import * as XLSX from 'xlsx';
 import styles from './admin.module.css';
 import {
   BrandLogoIcon,
@@ -364,10 +365,15 @@ interface OrderItem {
 interface Order {
   id: string;
   email: string;
+  fullName: string;
   phone: string;
   address: string;
+  identityNumber: string;
+  isWholesale: boolean;
   subtotal: number;
   shippingFee: number;
+  couponCode: string;
+  discountAmount: number;
   totalAmount: number;
   status: string;
   payment_status: string;
@@ -498,6 +504,16 @@ function fmtDate(dateStr: string): string {
   }
 }
 
+// DD.MM.YYYY — the unambiguous date format Turkish accounting/bookkeeping
+// expects, as opposed to MM/DD/YYYY which Excel can misparse by locale.
+function fmtDateAccounting(dateStr: string): string {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return '';
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`;
+}
+
 /* ── Translations ─────────────────────────────────────────────── */
 const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
   en: {
@@ -613,6 +629,9 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
     paginationPageOf: 'Page {page} of {total}',
     paginationPrev: 'Previous',
     paginationNext: 'Next',
+    identityNumberLabel: 'TC Identity No',
+    orderTypeWholesale: 'Wholesale Order',
+    orderTypeRetail: 'Retail Order',
 
     // Order Modal
     orderSpecs: 'Order Details & Workflow',
@@ -1017,6 +1036,9 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
     paginationPageOf: 'Sayfa {page} / {total}',
     paginationPrev: 'Önceki',
     paginationNext: 'Sonraki',
+    identityNumberLabel: 'TC Kimlik No',
+    orderTypeWholesale: 'Toptan Sipariş',
+    orderTypeRetail: 'Perakende Sipariş',
 
     // Order Modal
     orderSpecs: 'Sipariş Detayları ve Süreç',
@@ -1833,30 +1855,45 @@ export default function AdminDashboardPage() {
     orderPageClamped * ORDERS_PER_PAGE
   );
 
-  const handleExportOrdersCsv = () => {
-    const header = ['Order ID', 'Date', 'Email', 'Phone', 'Items', 'Total', 'Payment Status', 'Fulfillment Status', 'Tracking Number'];
-    const escapeCsv = (val: string | number) => `"${String(val).replace(/"/g, '""')}"`;
-    const rows = filteredOrders.map((o) => [
-      o.id,
-      fmtDate(o.createdAt),
-      o.email,
-      o.phone || '',
-      o.items?.length || 0,
-      o.totalAmount,
-      o.payment_status,
-      o.fulfillment_status,
-      o.trackingNumber || '',
-    ].map(escapeCsv).join(','));
-    const csv = [header.map(escapeCsv).join(','), ...rows].join('\r\n');
-    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `orders-export-${new Date().toISOString().slice(0, 10)}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  const handleExportOrdersExcel = () => {
+    const ordersSheet = filteredOrders.map((o) => ({
+      'Order ID': o.id,
+      'Date': fmtDateAccounting(o.createdAt),
+      'Customer Name': o.fullName || '',
+      'Email': o.email,
+      'Phone': o.phone || '',
+      'Tax ID / TC Kimlik No': o.identityNumber || '',
+      'Order Type': o.isWholesale ? 'Wholesale' : 'Retail',
+      'Address': o.address || '',
+      'Subtotal': o.subtotal,
+      'Coupon Code': o.couponCode || '',
+      'Discount': o.discountAmount || 0,
+      'Shipping Fee': o.shippingFee,
+      'Total Amount': o.totalAmount,
+      'Currency': 'TRY',
+      'Payment Status': o.payment_status,
+      'Payment Reference': o.id,
+      'Fulfillment Status': o.fulfillment_status,
+      'Shipping Provider': o.shippingProvider || '',
+      'Tracking Number': o.trackingNumber || '',
+      'Order Status': o.status,
+    }));
+
+    const itemsSheet = filteredOrders.flatMap((o) =>
+      (o.items || []).map((item) => ({
+        'Order ID': o.id,
+        'Date': fmtDateAccounting(o.createdAt),
+        'Product Name': item.name,
+        'Quantity': item.quantity,
+        'Unit Price': item.price,
+        'Line Total': item.quantity * item.price,
+      }))
+    );
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(ordersSheet), 'Orders');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(itemsSheet), 'Order Items');
+    XLSX.writeFile(wb, `orders-export-${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
   /* ── Calculations & Metrics ─────────────────────────────────── */
@@ -3329,7 +3366,7 @@ export default function AdminDashboardPage() {
                     </button>
                   ))}
                 </div>
-                <button onClick={handleExportOrdersCsv} className={styles.ghostBtn} disabled={filteredOrders.length === 0}>
+                <button onClick={handleExportOrdersExcel} className={styles.ghostBtn} disabled={filteredOrders.length === 0}>
                   {t.exportToExcel}
                 </button>
               </div>
@@ -3369,10 +3406,13 @@ export default function AdminDashboardPage() {
                                 {ord.phone || t.noPhoneFallback}
                               </div>
                             </td>
-                            <td>
-                              <span style={{ fontSize: '12px', color: 'var(--ad-text-body)' }}>
-                                {ord.items?.length || 0} {t.itemsSuffix}
-                              </span>
+                            <td style={{ maxWidth: '220px' }}>
+                              <div
+                                style={{ fontSize: '12px', color: 'var(--ad-text-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                                title={ord.items?.map((it) => `${it.name} ×${it.quantity}`).join(', ')}
+                              >
+                                {ord.items?.map((it) => `${it.name} ×${it.quantity}`).join(', ') || '—'}
+                              </div>
                             </td>
                             <td style={{ fontWeight: 700 }}>{fmtCurrency(ord.totalAmount)}</td>
                             <td>
@@ -5550,9 +5590,22 @@ export default function AdminDashboardPage() {
                   <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--ad-text-muted)', textTransform: 'uppercase' }}>
                     {t.customerInfo}
                   </div>
-                  <div style={{ fontWeight: 700, fontSize: '14px', marginTop: '6px' }}>{selectedOrder.email}</div>
+                  <div style={{ fontWeight: 700, fontSize: '14px', marginTop: '6px' }}>
+                    {selectedOrder.fullName || selectedOrder.email}
+                  </div>
+                  <div style={{ fontSize: '13px', color: 'var(--ad-text-body)', marginTop: '2px' }}>
+                    {selectedOrder.email}
+                  </div>
                   <div style={{ fontSize: '13px', color: 'var(--ad-text-body)', marginTop: '2px' }}>
                     {selectedOrder.phone || t.noPhoneProvided}
+                  </div>
+                  {selectedOrder.identityNumber && (
+                    <div style={{ fontSize: '13px', color: 'var(--ad-text-body)', marginTop: '2px' }}>
+                      {t.identityNumberLabel}: {selectedOrder.identityNumber}
+                    </div>
+                  )}
+                  <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--ad-primary)', marginTop: '6px', textTransform: 'uppercase' }}>
+                    {selectedOrder.isWholesale ? t.orderTypeWholesale : t.orderTypeRetail}
                   </div>
                 </div>
 

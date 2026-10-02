@@ -131,6 +131,8 @@ export async function POST(request: Request) {
               : `${shippingDetails.address}, ${shippingDetails.city} ${shippingDetails.zipCode}`,
             paymentId: paymentResult.paymentId ?? '',
             paymentTransactions: (paymentResult.itemTransactions ?? []) as unknown as object,
+            identityNumber: shippingDetails.identityNumber ?? '',
+            isWholesale,
             subtotal: calculatedSubtotal,
             shippingFee,
             cargoProviderName,

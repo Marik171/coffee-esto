@@ -20,8 +20,12 @@ interface OrderWithItems {
   phone: string;
   address: string;
   paymentId: string;
+  identityNumber: string;
+  isWholesale: boolean;
   subtotal: number;
   shippingFee: number;
+  couponCode: string;
+  discountAmount: number;
   totalAmount: number;
   status: string;
   paymentStatus: string;
@@ -37,10 +41,15 @@ function formatOrder(o: OrderWithItems) {
   return {
     id: o.id,
     email: o.email,
+    fullName: o.fullName,
     phone: o.phone,
     address: o.address,
+    identityNumber: o.identityNumber,
+    isWholesale: o.isWholesale,
     subtotal: o.subtotal,
     shippingFee: o.shippingFee,
+    couponCode: o.couponCode,
+    discountAmount: o.discountAmount,
     totalAmount: o.totalAmount,
     status: o.status,
     payment_status: o.paymentStatus,

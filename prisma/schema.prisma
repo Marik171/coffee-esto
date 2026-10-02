@@ -19,6 +19,11 @@ model Order {
   // iyzico's per-item paymentTransactionId + price, captured at charge time.
   // Needed to refund after settlement (cancelPayment/void only works same-day).
   paymentTransactions Json?
+  // TC Kimlik No / tax ID, collected at checkout for iyzico's buyer verification
+  // and required on Turkish e-Arşiv/e-Fatura invoices — kept here so accounting
+  // exports don't need to re-derive it.
+  identityNumber    String      @default("")
+  isWholesale       Boolean     @default(false)
   subtotal          Float
   shippingFee       Float
   cargoProviderName String      @default("")

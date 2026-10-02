@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Order" ADD COLUMN "identityNumber" TEXT NOT NULL DEFAULT '';
+ALTER TABLE "Order" ADD COLUMN "isWholesale" BOOLEAN NOT NULL DEFAULT false;
