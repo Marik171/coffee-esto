@@ -514,6 +514,74 @@ function fmtDateAccounting(dateStr: string): string {
   return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`;
 }
 
+// Column/sheet labels for the orders Excel export — follows the admin
+// dashboard's own language toggle so Turkish-speaking staff/accountants
+// get a Turkish workbook without needing a separate settings.
+const EXPORT_COLUMNS: Record<Lang, Record<string, string>> = {
+  en: {
+    orderId: 'Order ID',
+    date: 'Date',
+    customerName: 'Customer Name',
+    email: 'Email',
+    phone: 'Phone',
+    identityNumber: 'Tax ID / TC Kimlik No',
+    orderType: 'Order Type',
+    wholesale: 'Wholesale',
+    retail: 'Retail',
+    address: 'Address',
+    subtotal: 'Subtotal',
+    couponCode: 'Coupon Code',
+    discount: 'Discount',
+    shippingFee: 'Shipping Fee',
+    totalAmount: 'Total Amount',
+    currency: 'Currency',
+    paymentStatus: 'Payment Status',
+    paymentReference: 'Payment Reference',
+    fulfillmentStatus: 'Fulfillment Status',
+    shippingProvider: 'Shipping Provider',
+    trackingNumber: 'Tracking Number',
+    orderStatus: 'Order Status',
+    productName: 'Product Name',
+    quantity: 'Quantity',
+    unitPrice: 'Unit Price',
+    lineTotal: 'Line Total',
+    sheetOrders: 'Orders',
+    sheetOrderItems: 'Order Items',
+    fileNamePrefix: 'orders-export',
+  },
+  tr: {
+    orderId: 'Sipariş No',
+    date: 'Tarih',
+    customerName: 'Müşteri Adı',
+    email: 'E-posta',
+    phone: 'Telefon',
+    identityNumber: 'Vergi No / TC Kimlik No',
+    orderType: 'Sipariş Türü',
+    wholesale: 'Toptan',
+    retail: 'Perakende',
+    address: 'Adres',
+    subtotal: 'Ara Toplam',
+    couponCode: 'Kupon Kodu',
+    discount: 'İndirim',
+    shippingFee: 'Kargo Ücreti',
+    totalAmount: 'Toplam Tutar',
+    currency: 'Para Birimi',
+    paymentStatus: 'Ödeme Durumu',
+    paymentReference: 'Ödeme Referansı',
+    fulfillmentStatus: 'Hazırlık Durumu',
+    shippingProvider: 'Kargo Firması',
+    trackingNumber: 'Takip Numarası',
+    orderStatus: 'Sipariş Durumu',
+    productName: 'Ürün Adı',
+    quantity: 'Adet',
+    unitPrice: 'Birim Fiyat',
+    lineTotal: 'Satır Toplamı',
+    sheetOrders: 'Siparişler',
+    sheetOrderItems: 'Sipariş Kalemleri',
+    fileNamePrefix: 'siparis-raporu',
+  },
+};
+
 /* ── Translations ─────────────────────────────────────────────── */
 const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
   en: {
@@ -1856,44 +1924,46 @@ export default function AdminDashboardPage() {
   );
 
   const handleExportOrdersExcel = () => {
+    const xlsxCols = EXPORT_COLUMNS[lang];
+
     const ordersSheet = filteredOrders.map((o) => ({
-      'Order ID': o.id,
-      'Date': fmtDateAccounting(o.createdAt),
-      'Customer Name': o.fullName || '',
-      'Email': o.email,
-      'Phone': o.phone || '',
-      'Tax ID / TC Kimlik No': o.identityNumber || '',
-      'Order Type': o.isWholesale ? 'Wholesale' : 'Retail',
-      'Address': o.address || '',
-      'Subtotal': o.subtotal,
-      'Coupon Code': o.couponCode || '',
-      'Discount': o.discountAmount || 0,
-      'Shipping Fee': o.shippingFee,
-      'Total Amount': o.totalAmount,
-      'Currency': 'TRY',
-      'Payment Status': o.payment_status,
-      'Payment Reference': o.id,
-      'Fulfillment Status': o.fulfillment_status,
-      'Shipping Provider': o.shippingProvider || '',
-      'Tracking Number': o.trackingNumber || '',
-      'Order Status': o.status,
+      [xlsxCols.orderId]: o.id,
+      [xlsxCols.date]: fmtDateAccounting(o.createdAt),
+      [xlsxCols.customerName]: o.fullName || '',
+      [xlsxCols.email]: o.email,
+      [xlsxCols.phone]: o.phone || '',
+      [xlsxCols.identityNumber]: o.identityNumber || '',
+      [xlsxCols.orderType]: o.isWholesale ? xlsxCols.wholesale : xlsxCols.retail,
+      [xlsxCols.address]: o.address || '',
+      [xlsxCols.subtotal]: o.subtotal,
+      [xlsxCols.couponCode]: o.couponCode || '',
+      [xlsxCols.discount]: o.discountAmount || 0,
+      [xlsxCols.shippingFee]: o.shippingFee,
+      [xlsxCols.totalAmount]: o.totalAmount,
+      [xlsxCols.currency]: 'TRY',
+      [xlsxCols.paymentStatus]: fmtStatus('payment', o.payment_status, lang),
+      [xlsxCols.paymentReference]: o.id,
+      [xlsxCols.fulfillmentStatus]: fmtStatus('fulfillment', o.fulfillment_status, lang),
+      [xlsxCols.shippingProvider]: o.shippingProvider || '',
+      [xlsxCols.trackingNumber]: o.trackingNumber || '',
+      [xlsxCols.orderStatus]: fmtStatus('order', o.status, lang),
     }));
 
     const itemsSheet = filteredOrders.flatMap((o) =>
       (o.items || []).map((item) => ({
-        'Order ID': o.id,
-        'Date': fmtDateAccounting(o.createdAt),
-        'Product Name': item.name,
-        'Quantity': item.quantity,
-        'Unit Price': item.price,
-        'Line Total': item.quantity * item.price,
+        [xlsxCols.orderId]: o.id,
+        [xlsxCols.date]: fmtDateAccounting(o.createdAt),
+        [xlsxCols.productName]: item.name,
+        [xlsxCols.quantity]: item.quantity,
+        [xlsxCols.unitPrice]: item.price,
+        [xlsxCols.lineTotal]: item.quantity * item.price,
       }))
     );
 
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(ordersSheet), 'Orders');
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(itemsSheet), 'Order Items');
-    XLSX.writeFile(wb, `orders-export-${new Date().toISOString().slice(0, 10)}.xlsx`);
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(ordersSheet), xlsxCols.sheetOrders);
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(itemsSheet), xlsxCols.sheetOrderItems);
+    XLSX.writeFile(wb, `${xlsxCols.fileNamePrefix}-${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
   /* ── Calculations & Metrics ─────────────────────────────────── */
