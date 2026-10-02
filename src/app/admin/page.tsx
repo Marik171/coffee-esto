@@ -609,6 +609,10 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
     loadingOrders: 'Loading active orders...',
     noOrders: 'No orders match this filter.',
     manageOrder: 'Manage',
+    exportToExcel: 'Export to Excel',
+    paginationPageOf: 'Page {page} of {total}',
+    paginationPrev: 'Previous',
+    paginationNext: 'Next',
 
     // Order Modal
     orderSpecs: 'Order Details & Workflow',
@@ -1009,6 +1013,10 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
     loadingOrders: 'Siparişler yükleniyor...',
     noOrders: 'Bu filtreye uygun sipariş bulunamadı.',
     manageOrder: 'Yönet',
+    exportToExcel: 'Excel\'e Aktar',
+    paginationPageOf: 'Sayfa {page} / {total}',
+    paginationPrev: 'Önceki',
+    paginationNext: 'Sonraki',
 
     // Order Modal
     orderSpecs: 'Sipariş Detayları ve Süreç',
@@ -1400,6 +1408,8 @@ export default function AdminDashboardPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orderCarrier, setOrderCarrier] = useState('Yurtiçi Kargo');
   const [orderTracking, setOrderTracking] = useState('');
+  const [orderPage, setOrderPage] = useState(1);
+  const ORDERS_PER_PAGE = 20;
 
   // Product Modals & Sub-tabs
   const [isAddingProduct, setIsAddingProduct] = useState(false);
@@ -1812,6 +1822,43 @@ export default function AdminDashboardPage() {
     return true;
   });
 
+  useEffect(() => {
+    setOrderPage(1);
+  }, [orderStatusFilter, orderSearch]);
+
+  const orderTotalPages = Math.max(1, Math.ceil(filteredOrders.length / ORDERS_PER_PAGE));
+  const orderPageClamped = Math.min(orderPage, orderTotalPages);
+  const paginatedOrders = filteredOrders.slice(
+    (orderPageClamped - 1) * ORDERS_PER_PAGE,
+    orderPageClamped * ORDERS_PER_PAGE
+  );
+
+  const handleExportOrdersCsv = () => {
+    const header = ['Order ID', 'Date', 'Email', 'Phone', 'Items', 'Total', 'Payment Status', 'Fulfillment Status', 'Tracking Number'];
+    const escapeCsv = (val: string | number) => `"${String(val).replace(/"/g, '""')}"`;
+    const rows = filteredOrders.map((o) => [
+      o.id,
+      fmtDate(o.createdAt),
+      o.email,
+      o.phone || '',
+      o.items?.length || 0,
+      o.totalAmount,
+      o.payment_status,
+      o.fulfillment_status,
+      o.trackingNumber || '',
+    ].map(escapeCsv).join(','));
+    const csv = [header.map(escapeCsv).join(','), ...rows].join('\r\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `orders-export-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   /* ── Calculations & Metrics ─────────────────────────────────── */
   const totalRevenue = orders
     .filter((o) => o.payment_status === 'captured' && o.status !== 'canceled')
@@ -1998,6 +2045,23 @@ export default function AdminDashboardPage() {
       setOrderTracking('');
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : 'An error occurred updating the order.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteOrder = async (id: string) => {
+    if (!confirm(t.confirmDelete)) return;
+    setActionLoading(true);
+    setErrorMsg('');
+    try {
+      const res = await fetch(`/api/admin/orders?id=${id}`, { method: 'DELETE' });
+      const d = await res.json();
+      if (!d.success) throw new Error(d.error);
+      setOrders((prev) => prev.filter((o) => o.id !== id));
+      if (selectedOrder?.id === id) setSelectedOrder(null);
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : 'Failed to delete order.');
     } finally {
       setActionLoading(false);
     }
@@ -3244,25 +3308,30 @@ export default function AdminDashboardPage() {
           ═════════════════════════════════════════════════════════ */}
           {activeTab === 'orders' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div className={styles.pipelineTabs}>
-                {[
-                  { key: 'all', label: t.allOrders, count: orders.length },
-                  { key: 'awaiting_payment', label: t.awaitingPayment, count: orders.filter((o) => o.payment_status === 'awaiting').length },
-                  { key: 'roasting', label: t.roasting, count: orders.filter((o) => o.fulfillment_status === 'roasting').length },
-                  { key: 'packed', label: t.packed, count: orders.filter((o) => o.fulfillment_status === 'fulfilled').length },
-                  { key: 'shipped', label: t.shipped, count: orders.filter((o) => o.fulfillment_status === 'shipped').length },
-                  { key: 'completed', label: t.completed, count: orders.filter((o) => o.status === 'completed').length },
-                  { key: 'canceled', label: t.canceled, count: orders.filter((o) => o.status === 'canceled').length },
-                ].map((tab) => (
-                  <button
-                    key={tab.key}
-                    onClick={() => setOrderStatusFilter(tab.key)}
-                    className={`${styles.pipelineTab} ${orderStatusFilter === tab.key ? styles.pipelineTabActive : ''}`}
-                  >
-                    <span>{tab.label}</span>
-                    <span className={styles.pipelineCount}>{tab.count}</span>
-                  </button>
-                ))}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <div className={styles.pipelineTabs}>
+                  {[
+                    { key: 'all', label: t.allOrders, count: orders.length },
+                    { key: 'awaiting_payment', label: t.awaitingPayment, count: orders.filter((o) => o.payment_status === 'awaiting').length },
+                    { key: 'roasting', label: t.roasting, count: orders.filter((o) => o.fulfillment_status === 'roasting').length },
+                    { key: 'packed', label: t.packed, count: orders.filter((o) => o.fulfillment_status === 'fulfilled').length },
+                    { key: 'shipped', label: t.shipped, count: orders.filter((o) => o.fulfillment_status === 'shipped').length },
+                    { key: 'completed', label: t.completed, count: orders.filter((o) => o.status === 'completed').length },
+                    { key: 'canceled', label: t.canceled, count: orders.filter((o) => o.status === 'canceled').length },
+                  ].map((tab) => (
+                    <button
+                      key={tab.key}
+                      onClick={() => setOrderStatusFilter(tab.key)}
+                      className={`${styles.pipelineTab} ${orderStatusFilter === tab.key ? styles.pipelineTabActive : ''}`}
+                    >
+                      <span>{tab.label}</span>
+                      <span className={styles.pipelineCount}>{tab.count}</span>
+                    </button>
+                  ))}
+                </div>
+                <button onClick={handleExportOrdersCsv} className={styles.ghostBtn} disabled={filteredOrders.length === 0}>
+                  {t.exportToExcel}
+                </button>
               </div>
 
               <div className={styles.tableCard}>
@@ -3281,14 +3350,14 @@ export default function AdminDashboardPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredOrders.length === 0 ? (
+                      {paginatedOrders.length === 0 ? (
                         <tr>
                           <td colSpan={8} style={{ textAlign: 'center', padding: '40px' }}>
                             <span style={{ color: 'var(--ad-text-muted)' }}>{t.noOrders}</span>
                           </td>
                         </tr>
                       ) : (
-                        filteredOrders.map((ord) => (
+                        paginatedOrders.map((ord) => (
                           <tr key={ord.id} className={styles.tableRow}>
                             <td style={{ fontWeight: 700, color: 'var(--ad-primary)' }}>
                               #{ord.id.slice(0, 8)}
@@ -3335,9 +3404,18 @@ export default function AdminDashboardPage() {
                               </span>
                             </td>
                             <td>
-                              <button onClick={() => setSelectedOrder(ord)} className={styles.primaryBtn}>
-                                {t.manageOrder}
-                              </button>
+                              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                <button onClick={() => setSelectedOrder(ord)} className={styles.primaryBtn}>
+                                  {t.manageOrder}
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteOrder(ord.id)}
+                                  className={styles.cardDeleteBtn}
+                                  title={t.confirmDelete}
+                                >
+                                  <TrashIcon size={14} />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))
@@ -3345,6 +3423,27 @@ export default function AdminDashboardPage() {
                     </tbody>
                   </table>
                 </div>
+                {filteredOrders.length > 0 && (
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '12px', padding: '14px 20px' }}>
+                    <span style={{ fontSize: '12px', color: 'var(--ad-text-muted)' }}>
+                      {t.paginationPageOf.replace('{page}', String(orderPageClamped)).replace('{total}', String(orderTotalPages))}
+                    </span>
+                    <button
+                      onClick={() => setOrderPage((p) => Math.max(1, p - 1))}
+                      disabled={orderPageClamped <= 1}
+                      className={styles.ghostBtn}
+                    >
+                      {t.paginationPrev}
+                    </button>
+                    <button
+                      onClick={() => setOrderPage((p) => Math.min(orderTotalPages, p + 1))}
+                      disabled={orderPageClamped >= orderTotalPages}
+                      className={styles.ghostBtn}
+                    >
+                      {t.paginationNext}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )}

@@ -73,6 +73,40 @@ export async function GET() {
   }
 }
 
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    if (!id) {
+      return NextResponse.json({ success: false, error: 'Missing order id.' }, { status: 400 });
+    }
+
+    const order = await db.order.findUnique({ where: { id } });
+    if (!order) {
+      return NextResponse.json({ success: false, error: `Order ${id} not found.` }, { status: 404 });
+    }
+
+    // Paid orders should be canceled/refunded (POST action=cancel_order) first —
+    // deleting the row here only removes the record, it never touches iyzico.
+    if (order.paymentStatus === 'captured') {
+      return NextResponse.json(
+        { success: false, error: 'Cancel and refund this order before deleting it.' },
+        { status: 400 }
+      );
+    }
+
+    await db.order.delete({ where: { id } }); // OrderItem rows cascade
+
+    return NextResponse.json({ success: true, data: { id }, error: null });
+  } catch (error) {
+    console.error('Failed to delete order:', error);
+    return NextResponse.json(
+      { success: false, error: 'Internal server error deleting order.' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
