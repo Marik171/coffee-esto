@@ -420,6 +420,86 @@
 }
 .shippingMethodBox p { margin: 0; }
 
+/* Cargo / carrier selection cards */
+.cargoList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cargoCard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+.cargoCard:hover {
+  border-color: #9ca3af;
+}
+
+.cargoCardSelected {
+  border-color: #1a1a1a;
+  background: #fafaf7;
+  box-shadow: 0 0 0 1px #1a1a1a;
+}
+
+.cargoRadio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cargoRadio:focus-visible + .cargoCheck {
+  outline: 2px solid #1a1a1a;
+  outline-offset: 2px;
+}
+
+.cargoCheck {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border: 1.5px solid #9ca3af;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.cargoCardSelected .cargoCheck {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+}
+
+.cargoName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.cargoFee {
+  margin-left: auto;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .cargoCard {
+    gap: 10px;
+    padding: 10px 12px;
+  }
+}
+
 /* Payment note */
 .paymentNote {
   font-size: 12px;

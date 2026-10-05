@@ -8,6 +8,7 @@ import ErrorBoundary from '../components/ErrorBoundary';
 import LanguageSync from '../components/LanguageSync';
 import BackToTop from '../components/BackToTop';
 import CookieConsent from '../components/CookieConsent';
+import SubscribePopup from '../components/SubscribePopup';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -65,6 +66,9 @@ export default function RootLayout({
           </ErrorBoundary>
           <BackToTop />
           <CookieConsent />
+          <ErrorBoundary fallback={null}>
+            <SubscribePopup />
+          </ErrorBoundary>
         </CartProvider>
       </body>
     </html>

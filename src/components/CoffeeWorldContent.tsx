@@ -17,6 +17,10 @@ interface BlogPost {
   createdAt: string;
 }
 
+// Article bodies are stored as HTML (text, images, videos) — card excerpts need plain text only.
+const stripHtml = (html: string) =>
+  html.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+
 interface CoffeeWorldContentProps {
   locale?: string;
 }
@@ -26,6 +30,7 @@ export default function CoffeeWorldContent({ locale = 'tr' }: CoffeeWorldContent
   const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false); // mobile filter dropdown
 
   const categories = [
     { slug: 'all', labelTr: 'Tümü', labelEn: 'All' },
@@ -45,6 +50,7 @@ export default function CoffeeWorldContent({ locale = 'tr' }: CoffeeWorldContent
       label: 'THE COFFEE ESTO DERGİ & REHBER',
       title: 'Kahve Dünyası',
       subtitle: 'Kavurma tekniklerinden demleme reçetelerine, barista eğitimlerinden ekipman kullanımına kadar kahveye dair güncel bilgiler, profesyonel öneriler ve sektörel içerikler.',
+      filtersTitle: 'Kategoriler',
       loading: 'İçerikler yükleniyor...',
       noPosts: 'Bu kategoride henüz bir yazı bulunmamaktadır.',
       readMore: 'Devamını Oku',
@@ -57,6 +63,7 @@ export default function CoffeeWorldContent({ locale = 'tr' }: CoffeeWorldContent
       label: 'THE COFFEE ESTO JOURNAL & GUIDE',
       title: 'Coffee World',
       subtitle: 'From roasting techniques to brewing recipes, barista training to equipment use — up-to-date coffee knowledge, professional tips, and industry content.',
+      filtersTitle: 'Categories',
       loading: 'Loading content...',
       noPosts: 'No posts available in this category yet.',
       readMore: 'Read More',
@@ -90,6 +97,12 @@ export default function CoffeeWorldContent({ locale = 'tr' }: CoffeeWorldContent
   const filteredPosts = activeCategory === 'all'
     ? posts
     : posts.filter((post) => post.category === activeCategory);
+
+  // A post may exist in only one language — fall back to the other so it never renders blank.
+  const postTitle = (p: BlogPost) =>
+    (locale === 'tr' ? p.titleTr || p.titleEn : p.titleEn || p.titleTr);
+  const postContent = (p: BlogPost) =>
+    (locale === 'tr' ? p.contentTr || p.contentEn : p.contentEn || p.contentTr);
 
   const getCategoryLabel = (slug: string) => {
     const cat = categories.find((c) => c.slug === slug);
@@ -128,21 +141,41 @@ export default function CoffeeWorldContent({ locale = 'tr' }: CoffeeWorldContent
 
       {/* Main Content Area */}
       <main className={styles.mainContainer}>
-        {/* Category Filters */}
-        <div className={styles.categoryFilters} role="tablist" aria-label="Blog Categories">
-          {categories.map((cat) => (
+        <div className={styles.worldLayout}>
+          {/* Left sidebar: category filters (dropdown on mobile) */}
+          <aside className={styles.sidebar} aria-label={t.filtersTitle}>
             <button
-              key={cat.slug}
-              className={`${styles.filterBtn} ${activeCategory === cat.slug ? styles.activeFilter : ''}`}
-              onClick={() => setActiveCategory(cat.slug)}
-              role="tab"
-              aria-selected={activeCategory === cat.slug}
+              type="button"
+              className={styles.filtersToggle}
+              onClick={() => setFiltersOpen((o) => !o)}
+              aria-expanded={filtersOpen}
             >
-              {locale === 'tr' ? cat.labelTr : cat.labelEn}
+              <span>{activeCategory === 'all' ? t.filtersTitle : getCategoryLabel(activeCategory)}</span>
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: filtersOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
             </button>
-          ))}
-        </div>
+            <div className={`${styles.sidebarBody} ${filtersOpen ? styles.sidebarBodyOpen : ''}`}>
+              <div className={styles.filterGroup}>
+                <span className={styles.filterGroupLabel}>{t.filtersTitle}</span>
+                <div className={styles.filterTags} role="tablist" aria-label="Blog Categories">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.slug}
+                      className={`${styles.tagBtn} ${activeCategory === cat.slug ? styles.tagBtnActive : ''}`}
+                      onClick={() => { setActiveCategory(cat.slug); setFiltersOpen(false); }}
+                      role="tab"
+                      aria-selected={activeCategory === cat.slug}
+                    >
+                      {locale === 'tr' ? cat.labelTr : cat.labelEn}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </aside>
 
+          <div className={styles.worldMain}>
         {isLoading ? (
           <div className={styles.loadingState}>
             <span className={styles.spinner}>☕️</span>
@@ -159,7 +192,7 @@ export default function CoffeeWorldContent({ locale = 'tr' }: CoffeeWorldContent
                 <div className={styles.cardMedia}>
                   <img
                     src={post.imageUrl || '/images/blog/beans.png'}
-                    alt={locale === 'tr' ? post.titleTr : post.titleEn}
+                    alt={postTitle(post)}
                     className={styles.cardImage}
                   />
                   <span className={styles.cardBadge}>
@@ -169,10 +202,10 @@ export default function CoffeeWorldContent({ locale = 'tr' }: CoffeeWorldContent
                 <div className={styles.cardBody}>
                   <span className={styles.cardDate}>{formatDate(post.createdAt)}</span>
                   <h2 className={styles.cardTitle}>
-                    {locale === 'tr' ? post.titleTr : post.titleEn}
+                    {postTitle(post)}
                   </h2>
                   <p className={styles.cardExcerpt}>
-                    {(locale === 'tr' ? post.contentTr : post.contentEn).substring(0, 160)}...
+                    {stripHtml(postContent(post)).substring(0, 160)}...
                   </p>
                   <button type="button" className={styles.readMoreBtn}>
                     {t.readMore} →
@@ -182,6 +215,8 @@ export default function CoffeeWorldContent({ locale = 'tr' }: CoffeeWorldContent
             ))}
           </div>
         )}
+          </div>
+        </div>
       </main>
 
       {/* Article Detail Modal */}
@@ -199,7 +234,7 @@ export default function CoffeeWorldContent({ locale = 'tr' }: CoffeeWorldContent
             <div className={styles.modalHero}>
               <img
                 src={selectedPost.imageUrl || '/images/blog/beans.png'}
-                alt={locale === 'tr' ? selectedPost.titleTr : selectedPost.titleEn}
+                alt={postTitle(selectedPost)}
                 className={styles.modalHeroImage}
               />
             </div>
@@ -208,7 +243,7 @@ export default function CoffeeWorldContent({ locale = 'tr' }: CoffeeWorldContent
                 {getCategoryLabel(selectedPost.category)}
               </span>
               <h1 className={styles.modalTitle}>
-                {locale === 'tr' ? selectedPost.titleTr : selectedPost.titleEn}
+                {postTitle(selectedPost)}
               </h1>
               <div className={styles.modalMeta}>
                 <span>{t.by} <strong>{t.author}</strong></span>
@@ -216,7 +251,7 @@ export default function CoffeeWorldContent({ locale = 'tr' }: CoffeeWorldContent
                 <span>{t.date} {formatDate(selectedPost.createdAt)}</span>
               </div>
               <div className={styles.modalText}>
-                {(locale === 'tr' ? selectedPost.contentTr : selectedPost.contentEn)
+                {postContent(selectedPost)
                   .split('\n\n')
                   .map((para, i) => {
                     if (para.includes('<') && para.includes('>')) {

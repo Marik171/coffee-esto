@@ -2,6 +2,41 @@ import { NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { invalidateCache } from '@/lib/cache';
 
+
+/** True when an HTML string has visible text or embedded media (editors leave "<br>" behind when cleared). */
+function hasContent(html?: string): boolean {
+  if (!html) return false;
+  if (/<(img|video)\b/i.test(html)) return true;
+  return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim().length > 0;
+}
+
+/**
+ * A post needs at least one complete language (title + content). The other language may be left
+ * empty — the storefront falls back to whichever one exists. Returns cleaned fields or an error.
+ */
+function normalizeBlogFields(input: {
+  titleEn?: string; titleTr?: string; contentEn?: string; contentTr?: string; category?: string; imageUrl?: string;
+}) {
+  const hasTr = !!input.titleTr?.trim() && hasContent(input.contentTr);
+  const hasEn = !!input.titleEn?.trim() && hasContent(input.contentEn);
+
+  if (!input.category?.trim()) return { error: 'Category is required.' } as const;
+  if (!hasTr && !hasEn) {
+    return { error: 'Add a title and content in at least one language (Turkish or English).' } as const;
+  }
+
+  return {
+    data: {
+      titleTr: hasTr ? input.titleTr!.trim() : '',
+      contentTr: hasTr ? input.contentTr!.trim() : '',
+      titleEn: hasEn ? input.titleEn!.trim() : '',
+      contentEn: hasEn ? input.contentEn!.trim() : '',
+      category: input.category.trim(),
+      imageUrl: input.imageUrl?.trim() ?? '',
+    },
+  } as const;
+}
+
 /** GET /api/admin/blog — returns all blog posts */
 export async function GET() {
   try {
@@ -31,23 +66,12 @@ export async function POST(request: Request) {
       imageUrl?: string;
     };
 
-    if (!titleEn?.trim() || !titleTr?.trim() || !contentEn?.trim() || !contentTr?.trim() || !category?.trim()) {
-      return NextResponse.json(
-        { success: false, error: 'All fields (English/Turkish Title and Content, and Category) are required.' },
-        { status: 400 }
-      );
+    const normalized = normalizeBlogFields({ titleEn, titleTr, contentEn, contentTr, category, imageUrl });
+    if ('error' in normalized) {
+      return NextResponse.json({ success: false, error: normalized.error }, { status: 400 });
     }
 
-    const post = await db.blogPost.create({
-      data: {
-        titleEn: titleEn.trim(),
-        titleTr: titleTr.trim(),
-        contentEn: contentEn.trim(),
-        contentTr: contentTr.trim(),
-        category: category.trim(),
-        imageUrl: imageUrl?.trim() ?? '',
-      },
-    });
+    const post = await db.blogPost.create({ data: normalized.data });
 
     invalidateCache('blog_');
 
@@ -75,24 +99,16 @@ export async function PUT(request: Request) {
       imageUrl?: string;
     };
 
-    if (!id || !titleEn?.trim() || !titleTr?.trim() || !contentEn?.trim() || !contentTr?.trim() || !category?.trim()) {
-      return NextResponse.json(
-        { success: false, error: 'ID and all fields are required.' },
-        { status: 400 }
-      );
+    if (!id) {
+      return NextResponse.json({ success: false, error: 'Blog post ID is required.' }, { status: 400 });
     }
 
-    const updated = await db.blogPost.update({
-      where: { id },
-      data: {
-        titleEn: titleEn.trim(),
-        titleTr: titleTr.trim(),
-        contentEn: contentEn.trim(),
-        contentTr: contentTr.trim(),
-        category: category.trim(),
-        imageUrl: imageUrl?.trim() ?? '',
-      },
-    });
+    const normalized = normalizeBlogFields({ titleEn, titleTr, contentEn, contentTr, category, imageUrl });
+    if ('error' in normalized) {
+      return NextResponse.json({ success: false, error: normalized.error }, { status: 400 });
+    }
+
+    const updated = await db.blogPost.update({ where: { id }, data: normalized.data });
 
     invalidateCache('blog_');
 

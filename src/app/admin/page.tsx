@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as XLSX from 'xlsx';
 import styles from './admin.module.css';
+import { BagLabel, BagLabelPrintLayer } from '../../components/admin/BagLabel';
+import CargoLogo from '../../components/admin/CargoLogo';
+import { CARGO_CARRIERS, findCarrier } from '../../lib/cargoCarriers';
 import {
   BrandLogoIcon,
   OverviewIcon,
@@ -996,6 +999,12 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
     blogCatOrigin: 'Origin Stories',
     blogCatNews: 'Roastery News',
     coverImageUrl: 'Cover Image URL',
+    uploadCoverImage: 'Upload cover image',
+    uploadingMedia: 'Uploading...',
+    orPasteUrl: 'or paste an image URL',
+    removeCover: 'Remove cover',
+    insertMedia: 'Insert image / video',
+    insertMediaHint: 'Uploads a file and places it where your cursor is in the article.',
     pasteImageUrlPlaceholder: 'Paste image URL...',
 
     // Thermal Label Modal
@@ -1411,6 +1420,12 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
     blogCatOrigin: 'Köken Hikayeleri',
     blogCatNews: 'Kavurmahane Haberleri',
     coverImageUrl: 'Kapak Görseli URL',
+    uploadCoverImage: 'Kapak görseli yükle',
+    uploadingMedia: 'Yükleniyor...',
+    orPasteUrl: 'veya görsel URL yapıştırın',
+    removeCover: 'Kapağı kaldır',
+    insertMedia: 'Görsel / video ekle',
+    insertMediaHint: 'Dosyayı yükler ve makalede imlecin bulunduğu yere ekler.',
     pasteImageUrlPlaceholder: 'Görsel URL yapıştırın...',
 
     // Thermal Label Modal
@@ -1568,6 +1583,17 @@ export default function AdminDashboardPage() {
   const [blogLangTab, setBlogLangTab] = useState<'tr' | 'en'>('tr');
   const contentTrRef = useRef<HTMLDivElement>(null);
   const contentEnRef = useRef<HTMLDivElement>(null);
+  const blogSelectionRef = useRef<Range | null>(null);
+  const [uploadingBlogMedia, setUploadingBlogMedia] = useState(false);
+
+  // The article editors are uncontrolled: React sets their HTML only when a post is opened or the
+  // language tab changes. Re-injecting it on every keystroke would reset the caret to the start.
+  useEffect(() => {
+    if (!isAddingBlogPost) return;
+    if (contentTrRef.current) contentTrRef.current.innerHTML = blogForm.contentTr || '';
+    if (contentEnRef.current) contentEnRef.current.innerHTML = blogForm.contentEn || '';
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAddingBlogPost, selectedBlogPost, blogLangTab]);
 
   /* ── Data Fetchers ─────────────────────────────────────────── */
   const fetchOrders = async () => {
@@ -2101,6 +2127,69 @@ export default function AdminDashboardPage() {
       setErrorMsg(`${t.uploadFailed}: ${err instanceof Error ? err.message : t.unknownError}`);
     } finally {
       setUploadingImage(false);
+    }
+  };
+
+  const uploadToStorage = async (file: File): Promise<{ url: string; type: 'image' | 'video' }> => {
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    const d = await res.json();
+    if (!d.success) throw new Error(d.error);
+    return d.data;
+  };
+
+  const handleUploadBlogCover = async (file: File) => {
+    setUploadingBlogMedia(true);
+    try {
+      const { url } = await uploadToStorage(file);
+      setBlogForm((prev) => ({ ...prev, imageUrl: url }));
+    } catch (err: unknown) {
+      setErrorMsg(`${t.uploadFailed}: ${err instanceof Error ? err.message : t.unknownError}`);
+    } finally {
+      setUploadingBlogMedia(false);
+    }
+  };
+
+  // Remember where the cursor was in the article editor — opening the file picker blurs it.
+  const rememberBlogSelection = () => {
+    const ref = blogLangTab === 'tr' ? contentTrRef.current : contentEnRef.current;
+    const sel = window.getSelection();
+    if (ref && sel && sel.rangeCount > 0 && ref.contains(sel.anchorNode)) {
+      blogSelectionRef.current = sel.getRangeAt(0).cloneRange();
+    }
+  };
+
+  const handleInsertBlogMedia = async (file: File) => {
+    const lang = blogLangTab;
+    const editor = lang === 'tr' ? contentTrRef.current : contentEnRef.current;
+    if (!editor) return;
+    setUploadingBlogMedia(true);
+    try {
+      const { url, type } = await uploadToStorage(file);
+      const html = type === 'video'
+        ? `<p><video src="${url}" controls playsinline preload="metadata" style="max-width:100%"></video></p><p><br></p>`
+        : `<p><img src="${url}" alt="" style="max-width:100%"></p><p><br></p>`;
+
+      editor.focus();
+      const sel = window.getSelection();
+      const saved = blogSelectionRef.current;
+      if (sel && saved && editor.contains(saved.commonAncestorContainer)) {
+        sel.removeAllRanges();
+        sel.addRange(saved);
+      } else if (sel) {
+        const range = document.createRange();
+        range.selectNodeContents(editor);
+        range.collapse(false); // no cursor yet — append to the end
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+      document.execCommand('insertHTML', false, html);
+      setBlogForm((prev) => ({ ...prev, [lang === 'tr' ? 'contentTr' : 'contentEn']: editor.innerHTML }));
+    } catch (err: unknown) {
+      setErrorMsg(`${t.uploadFailed}: ${err instanceof Error ? err.message : t.unknownError}`);
+    } finally {
+      setUploadingBlogMedia(false);
     }
   };
 
@@ -3709,7 +3798,7 @@ export default function AdminDashboardPage() {
                 {cargoProviders.map((cp) => (
                   <div key={cp.id} className={styles.bentoCard}>
                     <div className={styles.bentoCardHeader}>
-                      <div className={styles.bentoIconBox}><ShippingIcon size={18} /></div>
+                      <CargoLogo name={cp.name} size={44} />
                       <span className={`${styles.statusBadge} ${cp.isActive ? styles.statusActive : styles.statusHidden}`}>
                         {cp.isActive ? t.active : t.hidden}
                       </span>
@@ -5132,11 +5221,34 @@ export default function AdminDashboardPage() {
                   <input
                     type="text"
                     required
+                    list="cargo-carrier-options"
+                    autoComplete="off"
                     placeholder="e.g. Yurtiçi Kargo, MNG Express"
                     value={providerForm.name}
                     onChange={(e) => setProviderForm((prev) => ({ ...prev, name: e.target.value }))}
                     className={styles.formInput}
                   />
+                  <datalist id="cargo-carrier-options">
+                    {CARGO_CARRIERS.map((c) => (
+                      <option key={c.slug} value={c.name} />
+                    ))}
+                  </datalist>
+                  {providerForm.name.trim() && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '10px' }}>
+                      <CargoLogo name={providerForm.name} size={44} />
+                      <div style={{ fontSize: '12px', color: 'var(--ad-text-muted)', lineHeight: 1.4 }}>
+                        <strong style={{ color: 'var(--ad-text-main)' }}>{findCarrier(providerForm.name)?.name ?? providerForm.name}</strong>
+                        {findCarrier(providerForm.name) && (
+                          <>
+                            <br />
+                            <a href={findCarrier(providerForm.name)!.site} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--ad-primary)' }}>
+                              {lang === 'tr' ? 'Güncel tarifeler için kargo sitesi ↗' : 'Carrier site — check your current rates ↗'}
+                            </a>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className={styles.formGroup}>
@@ -5342,7 +5454,6 @@ export default function AdminDashboardPage() {
                       <label className={styles.formLabel}>{t.colTitleTr}</label>
                       <input
                         type="text"
-                        required
                         placeholder="Örn: 2026 Hasadı: Yirgacheffe Kahve Notları"
                         value={blogForm.titleTr || ''}
                         onChange={(e) => setBlogForm((prev) => ({ ...prev, titleTr: e.target.value }))}
@@ -5352,6 +5463,28 @@ export default function AdminDashboardPage() {
 
                     <div className={styles.formGroup}>
                       <label className={styles.formLabel}>{t.articleContentTr}</label>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                        <label
+                          className={styles.secondaryBtn}
+                          style={{ cursor: uploadingBlogMedia ? 'wait' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                          onMouseDown={rememberBlogSelection}
+                        >
+                          <UploadCloudIcon size={14} />
+                          <span>{uploadingBlogMedia ? t.uploadingMedia : t.insertMedia}</span>
+                          <input
+                            type="file"
+                            accept="image/*,video/mp4,video/webm,video/quicktime"
+                            disabled={uploadingBlogMedia}
+                            style={{ display: 'none' }}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              e.target.value = '';
+                              if (file) handleInsertBlogMedia(file);
+                            }}
+                          />
+                        </label>
+                        <span style={{ fontSize: '11px', color: 'var(--ad-text-muted)' }}>{t.insertMediaHint}</span>
+                      </div>
                       <div
                         ref={contentTrRef}
                         contentEditable
@@ -5361,7 +5494,7 @@ export default function AdminDashboardPage() {
                           }
                         }}
                         className={styles.editorContentArea}
-                        dangerouslySetInnerHTML={{ __html: blogForm.contentTr || '' }}
+                        suppressContentEditableWarning
                       />
                     </div>
                   </>
@@ -5371,7 +5504,6 @@ export default function AdminDashboardPage() {
                       <label className={styles.formLabel}>{t.colTitleEn}</label>
                       <input
                         type="text"
-                        required
                         placeholder="e.g. 2026 Harvest: Exploring Yirgacheffe Notes"
                         value={blogForm.titleEn || ''}
                         onChange={(e) => setBlogForm((prev) => ({ ...prev, titleEn: e.target.value }))}
@@ -5381,6 +5513,28 @@ export default function AdminDashboardPage() {
 
                     <div className={styles.formGroup}>
                       <label className={styles.formLabel}>{t.articleContentEn}</label>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                        <label
+                          className={styles.secondaryBtn}
+                          style={{ cursor: uploadingBlogMedia ? 'wait' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                          onMouseDown={rememberBlogSelection}
+                        >
+                          <UploadCloudIcon size={14} />
+                          <span>{uploadingBlogMedia ? t.uploadingMedia : t.insertMedia}</span>
+                          <input
+                            type="file"
+                            accept="image/*,video/mp4,video/webm,video/quicktime"
+                            disabled={uploadingBlogMedia}
+                            style={{ display: 'none' }}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              e.target.value = '';
+                              if (file) handleInsertBlogMedia(file);
+                            }}
+                          />
+                        </label>
+                        <span style={{ fontSize: '11px', color: 'var(--ad-text-muted)' }}>{t.insertMediaHint}</span>
+                      </div>
                       <div
                         ref={contentEnRef}
                         contentEditable
@@ -5390,7 +5544,7 @@ export default function AdminDashboardPage() {
                           }
                         }}
                         className={styles.editorContentArea}
-                        dangerouslySetInnerHTML={{ __html: blogForm.contentEn || '' }}
+                        suppressContentEditableWarning
                       />
                     </div>
                   </>
@@ -5413,12 +5567,44 @@ export default function AdminDashboardPage() {
 
                   <div className={styles.formGroup}>
                     <label className={styles.formLabel}>{t.coverImageUrl}</label>
+                    {blogForm.imageUrl ? (
+                      <div className={styles.filePreviewWrap}>
+                        <img src={blogForm.imageUrl} alt="Cover preview" className={styles.previewImg} />
+                        <button
+                          type="button"
+                          onClick={() => setBlogForm((prev) => ({ ...prev, imageUrl: '' }))}
+                          className={styles.removeFileBtn}
+                        >
+                          <CloseIcon size={12} /> {t.removeCover}
+                        </button>
+                      </div>
+                    ) : (
+                      <label className={styles.dropZone} style={{ cursor: uploadingBlogMedia ? 'wait' : 'pointer' }}>
+                        <span className={styles.dropZoneIcon}><UploadCloudIcon size={26} /></span>
+                        <span className={styles.dropZoneText}>
+                          {uploadingBlogMedia ? t.uploadingMedia : t.uploadCoverImage}
+                        </span>
+                        <span className={styles.dropZoneSub}>{t.supportsFormats}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          disabled={uploadingBlogMedia}
+                          style={{ display: 'none' }}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            e.target.value = '';
+                            if (file) handleUploadBlogCover(file);
+                          }}
+                        />
+                      </label>
+                    )}
                     <input
                       type="text"
-                      placeholder={t.pasteImageUrlPlaceholder}
+                      placeholder={t.orPasteUrl}
                       value={blogForm.imageUrl || ''}
                       onChange={(e) => setBlogForm((prev) => ({ ...prev, imageUrl: e.target.value }))}
                       className={styles.formInput}
+                      style={{ marginTop: '8px' }}
                     />
                   </div>
                 </div>
@@ -5490,57 +5676,27 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
 
-              {/* 4x6" Printable Label Card */}
-              <div className={styles.thermalLabelCard}>
-                <div className={styles.thermalHeaderRow}>
-                  <div>
-                    <div className={styles.thermalBrandName}>ESTO ROASTERY</div>
-                    <div className={styles.thermalBrandOrigin}>ARTISANAL SPECIALTY COFFEE • İSTANBUL</div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 800, color: '#111' }}>{bagLabelSize.toUpperCase()}</div>
-                    <div style={{ fontSize: '9px', color: '#666' }}>DEGAS VALVE SEALED</div>
-                  </div>
-                </div>
-
-                <div className={styles.thermalCoffeeName}>
-                  {bagLabelProduct.name}
-                </div>
-
-                <div className={styles.thermalOriginRow}>
-                  <span><strong>ORIGIN:</strong> {bagLabelProduct.origin || 'Single Origin'}</span>
-                  <span><strong>ALTITUDE:</strong> {bagLabelProduct.altitude || '1,800 - 2,200 MASL'}</span>
-                </div>
-
-                <div className={styles.thermalOriginRow} style={{ marginTop: '3px' }}>
-                  <span><strong>VARIETAL:</strong> {bagLabelProduct.varietal || '100% Arabica'}</span>
-                  <span><strong>PROCESS:</strong> {bagLabelProduct.category === 'filter' ? 'Washed Process' : 'Artisan Natural'}</span>
-                </div>
-
-                <div className={styles.thermalRoastBar}>
-                  <span>ROAST LEVEL: {bagLabelProduct.roastLevel || 50}% • {bagLabelProduct.category.toUpperCase()}</span>
-                </div>
-
-                <div className={styles.thermalNotesBox}>
-                  <div style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', color: '#444' }}>CUPPING FLAVOR PROFILE</div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#111', marginTop: '2px' }}>
-                    {bagLabelProduct.tastingNotes || 'Bergamot, Jasmine, White Peach, Cocoa Nibs'}
-                  </div>
-                </div>
-
-                <div className={styles.thermalFooterRow}>
-                  <div>
-                    <div className={styles.thermalRoastStamp}>ROAST DATE: {bagLabelRoastDate}</div>
-                    <div style={{ fontSize: '8.5px', color: '#666', marginTop: '2px' }}>
-                      Best enjoyed 7 to 28 days from roast date. Store in cool, dry space.
-                    </div>
-                  </div>
-                  <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                    <BarcodeIcon size={28} />
-                    <span className={styles.thermalBarcodeNumber}>*ESTO-{bagLabelProduct.id.slice(0, 4).toUpperCase()}-{bagLabelSize}*</span>
+              {/* 4x6" label preview (same component that gets printed) */}
+              <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <div style={{ width: 'calc(4in * 0.8)', height: 'calc(6in * 0.8)', boxShadow: '0 10px 30px rgba(0,0,0,0.18)', border: '1px solid #ddd' }}>
+                  <div style={{ transform: 'scale(0.8)', transformOrigin: 'top left', width: '4in', height: '6in' }}>
+                    <BagLabel
+                      product={bagLabelProduct}
+                      size={bagLabelSize}
+                      roastDate={bagLabelRoastDate}
+                      categoryLabel={categories.find((c) => c.slug === bagLabelProduct.category)?.label || bagLabelProduct.category}
+                      locale={lang === 'tr' ? 'tr' : 'en'}
+                    />
                   </div>
                 </div>
               </div>
+              <BagLabelPrintLayer
+                product={bagLabelProduct}
+                size={bagLabelSize}
+                roastDate={bagLabelRoastDate}
+                categoryLabel={categories.find((c) => c.slug === bagLabelProduct.category)?.label || bagLabelProduct.category}
+                locale={lang === 'tr' ? 'tr' : 'en'}
+              />
             </div>
 
             <div className={styles.modalFooter}>

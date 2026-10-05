@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useCart } from '../context/CartContext';
 import styles from '../app/checkout/payment/payment.module.css';
 import { isValidTcKimlik } from '@/lib/checkoutShared';
+import CargoLogo from './admin/CargoLogo';
 
 interface CheckoutPaymentContentProps {
   locale: string;
@@ -768,19 +769,36 @@ function PaymentForm({ locale }: CheckoutPaymentContentProps) {
                 <section className={styles.formSection}>
                   <h2 className={styles.sectionTitle}>{t.shippingMethod}</h2>
                   {shippingEnabled && cargoProviders.length > 0 ? (
-                    <div className={styles.shippingMethodBox}>
-                      {cargoProviders.map((provider) => (
-                        <label key={provider.id} className={styles.radioRow}>
-                          <input
-                            type="radio"
-                            name="cargoProvider"
-                            checked={selectedCargoProviderId === provider.id}
-                            onChange={() => setSelectedCargoProviderId(provider.id)}
-                          />
-                          <span>{provider.name}</span>
-                          <span style={{ marginLeft: 'auto' }}>₺{provider.fee.toFixed(2)}</span>
-                        </label>
-                      ))}
+                    <div className={styles.cargoList} role="radiogroup" aria-label={t.shippingMethod}>
+                      {cargoProviders.map((provider) => {
+                        const selected = selectedCargoProviderId === provider.id;
+                        return (
+                          <label
+                            key={provider.id}
+                            className={`${styles.cargoCard} ${selected ? styles.cargoCardSelected : ''}`}
+                          >
+                            <input
+                              type="radio"
+                              name="cargoProvider"
+                              className={styles.cargoRadio}
+                              checked={selected}
+                              onChange={() => setSelectedCargoProviderId(provider.id)}
+                            />
+                            <span className={styles.cargoCheck} aria-hidden="true">
+                              {selected && (
+                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                                  <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                              )}
+                            </span>
+                            <CargoLogo name={provider.name} size={40} />
+                            <span className={styles.cargoName}>{provider.name}</span>
+                            <span className={styles.cargoFee}>
+                              {provider.fee > 0 ? `₺${provider.fee.toFixed(2)}` : t.freeShipping}
+                            </span>
+                          </label>
+                        );
+                      })}
                     </div>
                   ) : shippingEnabled ? (
                     <div className={styles.shippingMethodBox}>

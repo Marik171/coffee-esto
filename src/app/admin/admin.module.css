@@ -2103,6 +2103,14 @@
   line-height: 1.6;
 }
 
+.editorContentArea img,
+.editorContentArea video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 8px 0;
+}
+
 .editorContentArea:focus {
   border-color: var(--ad-primary);
 }
@@ -3100,19 +3108,4 @@
   font-size: 14px;
 }
 
-/* Print Rules */
-@media print {
-  body * {
-    visibility: hidden;
-  }
-  .printableArea, .printableArea * {
-    visibility: visible;
-  }
-  .printableArea {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-  }
-}
 
