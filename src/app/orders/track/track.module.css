@@ -18,7 +18,7 @@
 /* ── Hero ───────────────────────────────────────────────────────── */
 .hero {
   background: var(--color-espresso, #1a0e07);
-  padding: 188px 28px 140px;
+  padding: 188px 28px 64px;
   text-align: center;
   position: relative;
 }
@@ -47,7 +47,7 @@
 
 .heroTitle {
   font-family: var(--font-family-display, 'Playfair Display', Georgia, serif);
-  font-size: clamp(40px, 6vw, 72px);
+  font-size: clamp(32px, 5vw, 52px);
   font-weight: 700;
   font-style: italic;
   line-height: 1.1;
@@ -861,7 +861,7 @@
 
 @media (max-width: 640px) {
   .hero {
-    padding: 148px 20px 110px;
+    padding: 148px 20px 50px;
   }
 
   .trackSection,

@@ -7,6 +7,9 @@ import styles from './coffee.module.css';
 import db from '@/lib/db';
 import { getCached, setCached } from '@/lib/cache';
 
+// Reads live DB data; must never be prerendered at build time.
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Nitelikli Kahve Satın Al — Coffee Esto Roastery',
   description: 'Taze kavrulmuş tek kökenli ve espresso harmanı kahve kataloğumuzu inceleyin. Etik kaynaklı ve sipariş üzerine taze kavrulmuş.',

@@ -1260,6 +1260,18 @@
   border: 1px solid var(--ad-danger-border);
 }
 
+.statusDelivered {
+  background: var(--ad-success-bg);
+  color: #065f46;
+  border: 1px solid var(--ad-success-border);
+}
+
+.statusReturned {
+  background: #fde8e8;
+  color: #9a3412;
+  border: 1px solid rgba(154, 52, 18, 0.2);
+}
+
 /* ── 7. Pipeline Filter Tabs (Orders etc) ─────────────────────── */
 .pipelineTabs {
   display: flex;

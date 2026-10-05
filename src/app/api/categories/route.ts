@@ -3,6 +3,8 @@ import db from '@/lib/db';
 import { getCached, setCached } from '@/lib/cache';
 
 /** GET /api/categories — public: returns all categories sorted by label */
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const cached = getCached('categories_public');

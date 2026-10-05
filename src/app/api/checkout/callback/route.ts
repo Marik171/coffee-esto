@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
+import { invalidateCache } from '@/lib/cache';
 import { completeThreeDSPayment, cancelPayment } from '@/lib/iyzipay';
 import { sendOrderConfirmationEmail, sendOwnerNewOrderNotification, sendLowStockAlert, sendCheckoutFailsafeAlert } from '@/lib/emails';
 import { PICKUP_LABEL, PICKUP_ADDRESS, StockConflictError, type PendingCheckoutPayload } from '@/lib/checkoutShared';
@@ -185,6 +186,9 @@ export async function POST(request: Request) {
           : 'We could not complete your order after payment. Any charge has been automatically reversed — please try again, or contact support if you were still charged.',
       });
     }
+
+    // Stock changed — drop cached product data so the storefront shows live stock.
+    invalidateCache('product');
 
     await db.pendingCheckout.delete({ where: { id: conversationId } }).catch(() => {});
     // Cart converted to an order — stop any pending abandoned-cart reminder for this email.

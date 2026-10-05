@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { getCached, setCached } from '@/lib/cache';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const cached = getCached('storefront_settings');

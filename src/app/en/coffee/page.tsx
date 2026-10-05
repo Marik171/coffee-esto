@@ -7,6 +7,9 @@ import styles from '../../coffee/coffee.module.css';
 import db from '@/lib/db';
 import { getCached, setCached } from '@/lib/cache';
 
+// Reads live DB data; must never be prerendered at build time.
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Buy Specialty Coffee Online — Coffee Esto Roastery',
   description: 'Browse our catalog of freshly roasted single origins and espresso blends. Sourced ethically and roasted to order.',

@@ -396,6 +396,7 @@ interface CoffeeProduct {
   description: string;
   price: number;
   price1kg: number;
+  wholesalePrice: number;
   stock: number;
   imageUrl: string;
   videoUrl: string;
@@ -466,6 +467,7 @@ const emptyProduct = (isCoffee = true): Partial<CoffeeProduct> => ({
   description: '',
   price: 0,
   price1kg: 0,
+  wholesalePrice: 0,
   stock: 25,
   imageUrl: '',
   videoUrl: '',
@@ -477,14 +479,14 @@ type Lang = 'tr' | 'en';
 function fmtStatus(type: 'order' | 'payment' | 'fulfillment', value: string, lang: Lang = 'en'): string {
   const map: Record<Lang, Record<string, Record<string, string>>> = {
     en: {
-      order: { pending: 'Pending', completed: 'Completed', canceled: 'Canceled' },
+      order: { pending: 'Pending', completed: 'Completed', canceled: 'Canceled', returned: 'Returned' },
       payment: { awaiting: 'Awaiting Payment', captured: 'Paid', refunded: 'Refunded', canceled: 'Canceled' },
-      fulfillment: { not_fulfilled: 'Awaiting Roasting', roasting: 'Roasting in Drum', fulfilled: 'Packed & Ready', shipped: 'Dispatched', canceled: 'Canceled' },
+      fulfillment: { not_fulfilled: 'Awaiting Roasting', roasting: 'Roasting in Drum', fulfilled: 'Packed & Ready', shipped: 'Dispatched', delivered: 'Delivered', returned: 'Returned', canceled: 'Canceled' },
     },
     tr: {
-      order: { pending: 'Beklemede', completed: 'Tamamlandı', canceled: 'İptal Edildi' },
+      order: { pending: 'Beklemede', completed: 'Tamamlandı', canceled: 'İptal Edildi', returned: 'İade Edildi' },
       payment: { awaiting: 'Ödeme Bekleniyor', captured: 'Ödendi', refunded: 'İade Edildi', canceled: 'İptal Edildi' },
-      fulfillment: { not_fulfilled: 'Kavrulmayı Bekliyor', roasting: 'Kavruluyor', fulfilled: 'Paketlendi', shipped: 'Kargoya Verildi', canceled: 'İptal Edildi' },
+      fulfillment: { not_fulfilled: 'Kavrulmayı Bekliyor', roasting: 'Kavruluyor', fulfilled: 'Paketlendi', shipped: 'Kargoya Verildi', delivered: 'Teslim Edildi', returned: 'İade Edildi', canceled: 'İptal Edildi' },
     },
   };
   return map[lang]?.[type]?.[value] ?? value.replace(/_/g, ' ');
@@ -680,8 +682,10 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
     roasting: 'Roasting',
     packed: 'Packed',
     shipped: 'Shipped',
+    delivered: 'Delivered',
     completed: 'Completed',
     canceled: 'Canceled',
+    returned: 'Returned',
     colReference: 'Order Ref',
     colDate: 'Date',
     colCustomer: 'Customer',
@@ -717,6 +721,11 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
     packOrder: 'Pack & Assign Cargo',
     dispatchOrder: 'Dispatch & Enter Tracking',
     cancelOrder: 'Cancel Order',
+    markDelivered: 'Mark as Delivered',
+    editTracking: 'Edit Tracking',
+    markReturned: 'Mark as Returned',
+    saveTracking: 'Save Tracking',
+    cancelEdit: 'Cancel',
     carrierLabel: 'Carrier Provider',
     trackingLabel: 'Tracking Code',
     trackingPlaceholder: 'e.g. YK-8921827',
@@ -775,6 +784,7 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
     selectCategory: 'Select Category…',
     price250: '250g Retail Price (₺)',
     price1kg: '1kg Retail Price (₺)',
+    wholesalePrice: 'Wholesale Unit Price (₺)',
     unitPrice: 'Unit Retail Price (₺)',
     stockUnits: 'Available Stock Units',
     origin: 'Origin / Farm / Province',
@@ -1087,8 +1097,10 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
     roasting: 'Kavruluyor',
     packed: 'Paketlendi',
     shipped: 'Kargoya Verildi',
+    delivered: 'Teslim Edildi',
     completed: 'Tamamlandı',
     canceled: 'İptal Edildi',
+    returned: 'İade Edildi',
     colReference: 'Sipariş No',
     colDate: 'Tarih',
     colCustomer: 'Müşteri',
@@ -1124,6 +1136,11 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
     packOrder: 'Paketle ve Kargo Ata',
     dispatchOrder: 'Kargoya Ver & Takip No Gir',
     cancelOrder: 'Siparişi İptal Et',
+    markDelivered: 'Teslim Edildi Olarak İşaretle',
+    editTracking: 'Takip Bilgisini Düzenle',
+    markReturned: 'İade Olarak İşaretle',
+    saveTracking: 'Takip Bilgisini Kaydet',
+    cancelEdit: 'Vazgeç',
     carrierLabel: 'Kargo Firması',
     trackingLabel: 'Takip Numarası',
     trackingPlaceholder: 'örn. YK-8921827',
@@ -1182,6 +1199,7 @@ const ADMIN_STRINGS: Record<Lang, Record<string, string>> = {
     selectCategory: 'Kategori Seçin…',
     price250: '250g Satış Fiyatı (₺)',
     price1kg: '1kg Satış Fiyatı (₺)',
+    wholesalePrice: 'Toptan Birim Fiyatı (₺)',
     unitPrice: 'Birim Satış Fiyatı (₺)',
     stockUnits: 'Mevcut Stok Adedi',
     origin: 'Köken / Bölge / Çiftlik',
@@ -1412,7 +1430,7 @@ export default function AdminDashboardPage() {
 
   // Tab navigation
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'coffee' | 'equipment' | 'orders' | 'customers' | 'coupons' | 'reviews' | 'blog' | 'email' | 'storefront' | 'shipping'
+    'overview' | 'coffee' | 'equipment' | 'orders' | 'customers' | 'coupons' | 'reviews' | 'blog' | 'storefront' | 'shipping'
   >('overview');
 
   // Language state
@@ -1498,6 +1516,7 @@ export default function AdminDashboardPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orderCarrier, setOrderCarrier] = useState('Yurtiçi Kargo');
   const [orderTracking, setOrderTracking] = useState('');
+  const [editingTracking, setEditingTracking] = useState(false);
   const [orderPage, setOrderPage] = useState(1);
   const ORDERS_PER_PAGE = 20;
 
@@ -1815,8 +1834,6 @@ export default function AdminDashboardPage() {
       fetchProducts();
     } else if (activeTab === 'orders' || activeTab === 'customers') {
       fetchOrders();
-    } else if (activeTab === 'email') {
-      fetchEmailSettings();
     } else if (activeTab === 'storefront') {
       fetchStorefrontSettings();
       fetchProducts();
@@ -1897,7 +1914,9 @@ export default function AdminDashboardPage() {
       if (orderStatusFilter === 'roasting' && o.fulfillment_status !== 'roasting') return false;
       if (orderStatusFilter === 'packed' && o.fulfillment_status !== 'fulfilled') return false;
       if (orderStatusFilter === 'shipped' && o.fulfillment_status !== 'shipped') return false;
+      if (orderStatusFilter === 'delivered' && o.fulfillment_status !== 'delivered') return false;
       if (orderStatusFilter === 'completed' && o.status !== 'completed') return false;
+      if (orderStatusFilter === 'returned' && o.status !== 'returned') return false;
       if (orderStatusFilter === 'canceled' && o.status !== 'canceled') return false;
       if (orderStatusFilter === 'awaiting_payment' && o.payment_status !== 'awaiting') return false;
     }
@@ -2095,6 +2114,7 @@ export default function AdminDashboardPage() {
         ...prodForm,
         roastLevel: modalType === 'coffee' ? Number(prodForm.roastLevel || 50) : 0,
         price1kg: modalType === 'coffee' ? Number(prodForm.price1kg || 0) : 0,
+        wholesalePrice: Number(prodForm.wholesalePrice || 0),
       };
       const res = await fetch('/api/admin/products', {
         method,
@@ -2141,8 +2161,8 @@ export default function AdminDashboardPage() {
         body: JSON.stringify({
           orderId: selectedOrder.id,
           action,
-          shippingProvider: action === 'create_fulfillment' ? orderCarrier : undefined,
-          trackingNumber: action === 'ship_fulfillment' ? orderTracking : undefined,
+          shippingProvider: action === 'create_fulfillment' || action === 'update_tracking' ? orderCarrier : undefined,
+          trackingNumber: action === 'ship_fulfillment' || action === 'update_tracking' ? orderTracking : undefined,
         }),
       });
       const d = await res.json();
@@ -2150,6 +2170,7 @@ export default function AdminDashboardPage() {
       setSelectedOrder(d.data);
       setOrders((prev) => prev.map((o) => (o.id === d.data.id ? d.data : o)));
       setOrderTracking('');
+      setEditingTracking(false);
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : 'An error occurred updating the order.');
     } finally {
@@ -2566,7 +2587,6 @@ export default function AdminDashboardPage() {
               {activeTab === 'equipment' && t.equipmentTitle}
               {activeTab === 'orders' && t.ordersTitle}
               {activeTab === 'customers' && t.customersTitle}
-              {activeTab === 'email' && t.emailStudioTitle}
               {activeTab === 'storefront' && t.storefrontTitle}
               {activeTab === 'shipping' && t.shippingTitle}
               {activeTab === 'coupons' && t.couponsTitle}
@@ -2579,7 +2599,6 @@ export default function AdminDashboardPage() {
               {activeTab === 'equipment' && t.equipmentSubtitle}
               {activeTab === 'orders' && t.ordersSubtitle}
               {activeTab === 'customers' && t.customersSubtitle}
-              {activeTab === 'email' && t.emailStudioSubtitle}
               {activeTab === 'storefront' && t.storefrontSubtitle}
               {activeTab === 'shipping' && t.shippingSubtitle}
               {activeTab === 'coupons' && t.couponsSubtitle}
@@ -2797,7 +2816,13 @@ export default function AdminDashboardPage() {
                             </span>
                           </td>
                           <td>
-                            <span className={`${styles.statusBadge} ${ord.fulfillment_status === 'shipped' ? styles.statusShipped : ord.fulfillment_status === 'roasting' ? styles.statusRoasting : styles.statusPending}`}>
+                            <span className={`${styles.statusBadge} ${
+                              ord.fulfillment_status === 'delivered' ? styles.statusDelivered
+                              : ord.fulfillment_status === 'returned' ? styles.statusReturned
+                              : ord.fulfillment_status === 'shipped' ? styles.statusShipped
+                              : ord.fulfillment_status === 'roasting' ? styles.statusRoasting
+                              : styles.statusPending
+                            }`}>
                               {fmtStatus('fulfillment', ord.fulfillment_status, lang)}
                             </span>
                           </td>
@@ -3423,7 +3448,9 @@ export default function AdminDashboardPage() {
                     { key: 'roasting', label: t.roasting, count: orders.filter((o) => o.fulfillment_status === 'roasting').length },
                     { key: 'packed', label: t.packed, count: orders.filter((o) => o.fulfillment_status === 'fulfilled').length },
                     { key: 'shipped', label: t.shipped, count: orders.filter((o) => o.fulfillment_status === 'shipped').length },
+                    { key: 'delivered', label: t.delivered, count: orders.filter((o) => o.fulfillment_status === 'delivered').length },
                     { key: 'completed', label: t.completed, count: orders.filter((o) => o.status === 'completed').length },
+                    { key: 'returned', label: t.returned, count: orders.filter((o) => o.status === 'returned').length },
                     { key: 'canceled', label: t.canceled, count: orders.filter((o) => o.status === 'canceled').length },
                   ].map((tab) => (
                     <button
@@ -3501,7 +3528,11 @@ export default function AdminDashboardPage() {
                             <td>
                               <span
                                 className={`${styles.statusBadge} ${
-                                  ord.fulfillment_status === 'shipped'
+                                  ord.fulfillment_status === 'delivered'
+                                    ? styles.statusDelivered
+                                    : ord.fulfillment_status === 'returned'
+                                    ? styles.statusReturned
+                                    : ord.fulfillment_status === 'shipped'
                                     ? styles.statusShipped
                                     : ord.fulfillment_status === 'roasting'
                                     ? styles.statusRoasting
@@ -3909,848 +3940,6 @@ export default function AdminDashboardPage() {
             </div>
           )}
 
-          {/* ═════════════════════════════════════════════════════════
-              TAB 10: EMAIL STUDIO & AUTOMATIONS
-          ═════════════════════════════════════════════════════════ */}
-          {activeTab === 'email' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {/* Template Selection Tabs */}
-              <div className={styles.emailTemplatePicker}>
-                {(['order_confirmation', 'order_shipped', 'review_request', 'refill_reminder', 'abandoned_cart', 'welcome_series'] as const).map((key) => {
-                  const tmpl = emailTemplates[key] || DEFAULT_EMAIL_TEMPLATES[key];
-                  const isEnabled = tmpl?.enabled !== false;
-                  return (
-                    <button
-                      key={key}
-                      onClick={() => setSelectedEmailKey(key)}
-                      className={`${styles.emailTemplateTab} ${selectedEmailKey === key ? styles.emailTemplateTabActive : ''}`}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          {key === 'order_confirmation' && <FlameRoastIcon size={16} />}
-                          {key === 'order_shipped' && <ShippingIcon size={16} />}
-                          {key === 'review_request' && <StarIcon size={16} />}
-                          {key === 'refill_reminder' && <CoffeeBeanIcon size={16} />}
-                          {key === 'abandoned_cart' && <TagIcon size={16} />}
-                          {key === 'welcome_series' && <SparklesIcon size={16} />}
-                          <span className={styles.emailTabTitle}>{tmpl?.name || key}</span>
-                        </div>
-                        <span className={isEnabled ? styles.emailStatusPillActive : styles.emailStatusPillPaused}>
-                          {isEnabled ? '● Active' : '⏸ Paused'}
-                        </span>
-                      </div>
-                      <span className={styles.emailTabSub}>
-                        {key === 'order_confirmation'
-                          ? 'Triggered on new paid customer order'
-                          : key === 'order_shipped'
-                          ? 'Triggered when tracking barcode is generated'
-                          : key === 'review_request'
-                          ? 'Triggered 7 days post-delivery for cupping review'
-                          : key === 'refill_reminder'
-                          ? 'Sent 21 days after delivery for peak fresh brew'
-                          : key === 'abandoned_cart'
-                          ? 'Sent 2h after shopper leaves bag in cart'
-                          : 'Sent immediately on customer registration'}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Studio Split Layout */}
-              <div className={styles.emailStudioLayout}>
-                {/* Left: Template Editor */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <div className={styles.sectionCard}>
-                    <div className={styles.sectionCardHeader}>
-                      <MailIcon size={16} />
-                      <h4>Editorial Copy & Design ({emailTemplates[selectedEmailKey]?.name || selectedEmailKey})</h4>
-                    </div>
-
-                    {/* Active / Paused Toggle Section */}
-                    <div className={styles.emailToggleSection}>
-                      <div className={styles.emailToggleInfo}>
-                        <div className={styles.emailToggleTitle}>
-                          <span>Automated Trigger Status:</span>
-                          <span className={emailTemplates[selectedEmailKey]?.enabled !== false ? styles.emailStatusPillActive : styles.emailStatusPillPaused}>
-                            {emailTemplates[selectedEmailKey]?.enabled !== false ? '● Live Active' : '⏸ Paused (Skipped)'}
-                          </span>
-                        </div>
-                        <div className={styles.emailToggleDesc}>
-                          {emailTemplates[selectedEmailKey]?.enabled !== false
-                            ? 'When events trigger, this email will automatically be dispatched to the customer.'
-                            : 'This automated flow is paused. Triggers will skip sending this email.'}
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleToggleEmailActive(selectedEmailKey)}
-                        className={`${styles.emailSwitchBtn} ${emailTemplates[selectedEmailKey]?.enabled !== false ? styles.emailSwitchBtnActive : ''}`}
-                        title="Toggle template activation"
-                      >
-                        <div className={styles.emailSwitchKnob} />
-                      </button>
-                    </div>
-
-                    {/* Hero Image Selector & Uploader */}
-                    <div className={styles.formGroup}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <label className={styles.formLabel}>Hero Banner Artwork Preset & Upload</label>
-                        {uploadingEmailImage && (
-                          <span style={{ fontSize: '11px', color: '#09090b', fontWeight: 700 }}>
-                            Uploading image to Supabase...
-                          </span>
-                        )}
-                      </div>
-                      
-                      <div className={styles.heroImageSelectorGroup}>
-                        {[
-                          { name: 'Roasting Drum', url: '/images/hero_roast_order.png' },
-                          { name: 'Courier Box', url: '/images/brand-carrier.webp' },
-                          { name: 'Single Origin Beans', url: '/images/brand-beans.webp' },
-                          { name: 'Coffee Trio', url: '/images/coffee_grouped.png' },
-                          { name: 'Barista Pour-Over', url: '/images/barista-chemex.webp' },
-                          { name: 'Barista Class', url: '/images/barista-class.webp' },
-                        ].map((img) => (
-                          <button
-                            key={img.url}
-                            type="button"
-                            onClick={() => {
-                              setEmailTemplates((prev) => ({
-                                ...prev,
-                                [selectedEmailKey]: { ...prev[selectedEmailKey], heroImage: img.url },
-                              }));
-                            }}
-                            className={`${styles.heroImagePresetThumb} ${
-                              (emailTemplates[selectedEmailKey]?.heroImage || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.heroImage) === img.url
-                                ? styles.heroImagePresetThumbActive
-                                : ''
-                            }`}
-                            title={img.name}
-                          >
-                            <img src={img.url} alt={img.name} />
-                          </button>
-                        ))}
-                      </div>
-
-                      {/* Custom Upload Drop Area */}
-                      <div className={styles.emailImageUploaderSection}>
-                        <label className={styles.emailUploadDropArea}>
-                          <UploadCloudIcon size={18} />
-                          <span style={{ fontSize: '12.5px', fontWeight: 600 }}>
-                            {uploadingEmailImage ? 'Uploading image...' : 'Click or Drop file to upload custom email artwork'}
-                          </span>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            style={{ display: 'none' }}
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) handleUploadEmailHero(file);
-                            }}
-                          />
-                        </label>
-
-                        {/* Direct Image URL input */}
-                        <input
-                          type="text"
-                          className={styles.formInput}
-                          placeholder="Or paste external / custom image URL (/images/... or https://...)"
-                          value={emailTemplates[selectedEmailKey]?.heroImage || ''}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setEmailTemplates((prev) => ({
-                              ...prev,
-                              [selectedEmailKey]: { ...prev[selectedEmailKey], heroImage: val },
-                            }));
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className={styles.formGrid2}>
-                      <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>Top Gold Badge Text</label>
-                        <input
-                          type="text"
-                          className={styles.formInput}
-                          value={emailTemplates[selectedEmailKey]?.badge || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.badge || ''}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setEmailTemplates((prev) => ({
-                              ...prev,
-                              [selectedEmailKey]: { ...prev[selectedEmailKey], badge: val },
-                            }));
-                          }}
-                        />
-                      </div>
-                      <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>{t.subjectLine}</label>
-                        <input
-                          type="text"
-                          className={styles.formInput}
-                          value={emailTemplates[selectedEmailKey]?.subject || ''}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setEmailTemplates((prev) => ({
-                              ...prev,
-                              [selectedEmailKey]: { ...prev[selectedEmailKey], subject: val },
-                            }));
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className={styles.formGroup}>
-                      <label className={styles.formLabel}>Inbox Preheader Text (Snippet shown next to subject line)</label>
-                      <input
-                        type="text"
-                        className={styles.formInput}
-                        value={emailTemplates[selectedEmailKey]?.preheader || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.preheader || ''}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setEmailTemplates((prev) => ({
-                            ...prev,
-                            [selectedEmailKey]: { ...prev[selectedEmailKey], preheader: val },
-                          }));
-                        }}
-                      />
-                    </div>
-
-                    <div className={styles.formGrid2}>
-                      <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>{t.headlineText}</label>
-                        <input
-                          type="text"
-                          className={styles.formInput}
-                          value={emailTemplates[selectedEmailKey]?.headline || ''}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setEmailTemplates((prev) => ({
-                              ...prev,
-                              [selectedEmailKey]: { ...prev[selectedEmailKey], headline: val },
-                            }));
-                          }}
-                        />
-                      </div>
-                      <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>Editorial Subtitle / Lot Reference</label>
-                        <input
-                          type="text"
-                          className={styles.formInput}
-                          value={emailTemplates[selectedEmailKey]?.subtitle || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.subtitle || ''}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setEmailTemplates((prev) => ({
-                              ...prev,
-                              [selectedEmailKey]: { ...prev[selectedEmailKey], subtitle: val },
-                            }));
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className={styles.formGroup}>
-                      <label className={styles.formLabel}>{t.bodyMessage}</label>
-                      <textarea
-                        rows={4}
-                        className={styles.formTextarea}
-                        value={emailTemplates[selectedEmailKey]?.body || ''}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setEmailTemplates((prev) => ({
-                            ...prev,
-                            [selectedEmailKey]: { ...prev[selectedEmailKey], body: val },
-                          }));
-                        }}
-                      />
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '6px' }}>
-                        {[
-                          '{{customer_name}}',
-                          '{{order_id}}',
-                          '{{tracking_url}}',
-                          '{{carrier_name}}',
-                          '{{tracking_number}}',
-                          '{{last_product_name}}',
-                          '{{roast_date}}',
-                          '{{total_amount}}',
-                        ].map((tag) => (
-                          <button
-                            key={tag}
-                            type="button"
-                            onClick={() => {
-                              setEmailTemplates((prev) => ({
-                                ...prev,
-                                [selectedEmailKey]: {
-                                  ...prev[selectedEmailKey],
-                                  body: (prev[selectedEmailKey]?.body || '') + ' ' + tag,
-                                },
-                              }));
-                            }}
-                            className={styles.chipPresetBtn}
-                          >
-                            + {tag}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className={styles.formGroup}>
-                      <label className={styles.formLabel}>Roaster’s Cupping Tip / Highlight Note</label>
-                      <input
-                        type="text"
-                        className={styles.formInput}
-                        value={emailTemplates[selectedEmailKey]?.roastmasterNote || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.roastmasterNote || ''}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setEmailTemplates((prev) => ({
-                            ...prev,
-                            [selectedEmailKey]: { ...prev[selectedEmailKey], roastmasterNote: val },
-                          }));
-                        }}
-                      />
-                    </div>
-
-                    <div className={styles.formGrid2}>
-                      <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>Primary CTA Button Text</label>
-                        <input
-                          type="text"
-                          className={styles.formInput}
-                          value={emailTemplates[selectedEmailKey]?.buttonText || ''}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setEmailTemplates((prev) => ({
-                              ...prev,
-                              [selectedEmailKey]: { ...prev[selectedEmailKey], buttonText: val },
-                            }));
-                          }}
-                        />
-                      </div>
-                      <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>Primary Button URL</label>
-                        <input
-                          type="text"
-                          className={styles.formInput}
-                          value={emailTemplates[selectedEmailKey]?.buttonUrl || ''}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setEmailTemplates((prev) => ({
-                              ...prev,
-                              [selectedEmailKey]: { ...prev[selectedEmailKey], buttonUrl: val },
-                            }));
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className={styles.formGrid2}>
-                      <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>Secondary Link Text (Optional)</label>
-                        <input
-                          type="text"
-                          className={styles.formInput}
-                          value={emailTemplates[selectedEmailKey]?.secondaryButtonText || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.secondaryButtonText || ''}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setEmailTemplates((prev) => ({
-                              ...prev,
-                              [selectedEmailKey]: { ...prev[selectedEmailKey], secondaryButtonText: val },
-                            }));
-                          }}
-                        />
-                      </div>
-                      <div className={styles.formGroup}>
-                        <label className={styles.formLabel}>Secondary Link URL</label>
-                        <input
-                          type="text"
-                          className={styles.formInput}
-                          value={emailTemplates[selectedEmailKey]?.secondaryButtonUrl || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.secondaryButtonUrl || ''}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setEmailTemplates((prev) => ({
-                              ...prev,
-                              [selectedEmailKey]: { ...prev[selectedEmailKey], secondaryButtonUrl: val },
-                            }));
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className={styles.formGroup}>
-                      <label className={styles.formLabel}>{t.footerMessage}</label>
-                      <input
-                        type="text"
-                        className={styles.formInput}
-                        value={emailTemplates[selectedEmailKey]?.footerNote || ''}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setEmailTemplates((prev) => ({
-                            ...prev,
-                            [selectedEmailKey]: { ...prev[selectedEmailKey], footerNote: val },
-                          }));
-                        }}
-                      />
-                    </div>
-
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
-                      <button onClick={() => handleSaveEmailSettings()} className={styles.primaryBtn} disabled={actionLoading}>
-                        <span>{t.saveEmailSettings}</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* SMTP Credentials Drawer */}
-                  <div className={styles.sectionCard}>
-                    <div className={styles.sectionCardHeader} style={{ justifyContent: 'space-between' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <GearIcon size={16} />
-                        <h4>{t.smtpSettings}</h4>
-                      </div>
-                      <button onClick={() => setShowSmtpSettings(!showSmtpSettings)} className={styles.ghostBtn}>
-                        {showSmtpSettings ? 'Hide Credentials' : 'Configure SMTP'}
-                      </button>
-                    </div>
-
-                    {showSmtpSettings && (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '10px' }}>
-                        <div className={styles.formGrid2}>
-                          <div className={styles.formGroup}>
-                            <label className={styles.formLabel}>{t.fromName}</label>
-                            <input
-                              type="text"
-                              className={styles.formInput}
-                              value={emailSettings?.fromName || ''}
-                              onChange={(e) => setEmailSettings((prev: any) => ({ ...prev, fromName: e.target.value }))}
-                            />
-                          </div>
-                          <div className={styles.formGroup}>
-                            <label className={styles.formLabel}>{t.fromEmail}</label>
-                            <input
-                              type="email"
-                              className={styles.formInput}
-                              value={emailSettings?.fromEmail || ''}
-                              onChange={(e) => setEmailSettings((prev: any) => ({ ...prev, fromEmail: e.target.value }))}
-                            />
-                          </div>
-                        </div>
-
-                        <div className={styles.formGrid2}>
-                          <div className={styles.formGroup}>
-                            <label className={styles.formLabel}>{t.smtpHost}</label>
-                            <input
-                              type="text"
-                              className={styles.formInput}
-                              value={emailSettings?.smtpHost || ''}
-                              onChange={(e) => setEmailSettings((prev: any) => ({ ...prev, smtpHost: e.target.value }))}
-                            />
-                          </div>
-                          <div className={styles.formGroup}>
-                            <label className={styles.formLabel}>{t.smtpPort}</label>
-                            <input
-                              type="number"
-                              className={styles.formInput}
-                              value={emailSettings?.smtpPort || 587}
-                              onChange={(e) => setEmailSettings((prev: any) => ({ ...prev, smtpPort: Number(e.target.value) }))}
-                            />
-                          </div>
-                        </div>
-
-                        <div className={styles.formGrid2}>
-                          <div className={styles.formGroup}>
-                            <label className={styles.formLabel}>{t.smtpUser}</label>
-                            <input
-                              type="text"
-                              className={styles.formInput}
-                              value={emailSettings?.smtpUser || ''}
-                              onChange={(e) => setEmailSettings((prev: any) => ({ ...prev, smtpUser: e.target.value }))}
-                            />
-                          </div>
-                          <div className={styles.formGroup}>
-                            <label className={styles.formLabel}>{t.smtpPass}</label>
-                            <input
-                              type="password"
-                              className={styles.formInput}
-                              value={emailSettings?.smtpPass || ''}
-                              onChange={(e) => setEmailSettings((prev: any) => ({ ...prev, smtpPass: e.target.value }))}
-                            />
-                          </div>
-                        </div>
-
-                        <div className={styles.formGroup}>
-                          <label className={styles.formLabel}>{t.resendApiKey}</label>
-                          <input
-                            type="password"
-                            className={styles.formInput}
-                            placeholder="re_xxxxxxxxxxxx"
-                            value={emailSettings?.resendApiKey || ''}
-                            onChange={(e) => setEmailSettings((prev: any) => ({ ...prev, resendApiKey: e.target.value }))}
-                          />
-                        </div>
-
-                        <button onClick={() => handleSaveEmailSettings()} className={styles.primaryBtn} style={{ alignSelf: 'flex-start' }}>
-                          <span>Save SMTP Credentials</span>
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Test Email Dispatcher */}
-                    <div style={{ borderTop: '1px solid var(--ad-border-subtle)', paddingTop: '14px', marginTop: '10px' }}>
-                      <label className={styles.formLabel}>{t.testEmailRecipient}</label>
-                      <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-                        <input
-                          type="email"
-                          className={styles.formInput}
-                          placeholder="youremail@domain.com"
-                          value={testEmailAddress}
-                          onChange={(e) => setTestEmailAddress(e.target.value)}
-                        />
-                        <button
-                          onClick={handleSendTestEmail}
-                          className={styles.secondaryBtn}
-                          disabled={testEmailLoading}
-                          style={{ whiteSpace: 'nowrap' }}
-                        >
-                          <SendIcon size={14} />
-                          <span>{testEmailLoading ? 'Dispatching...' : t.sendTestEmail}</span>
-                        </button>
-                      </div>
-                      {testEmailStatus && (
-                        <div style={{ marginTop: '8px', fontSize: '12px', color: testEmailStatus.includes('Delivered') ? '#2b7a4b' : '#b3261e', fontWeight: 600 }}>
-                          {testEmailStatus}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right: Live Responsive Preview Frame */}
-                <div className={styles.emailPreviewPane}>
-                  <div className={styles.emailPreviewTopBar}>
-                    <span style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff' }}>
-                      Live Inbox Preview
-                    </span>
-                    <div className={styles.emailDeviceToggle}>
-                      <button
-                        onClick={() => setEmailPreviewDevice('desktop')}
-                        className={`${styles.deviceBtn} ${emailPreviewDevice === 'desktop' ? styles.deviceBtnActive : ''}`}
-                      >
-                        <DesktopIcon size={14} />
-                        <span>Desktop (580px)</span>
-                      </button>
-                      <button
-                        onClick={() => setEmailPreviewDevice('mobile')}
-                        className={`${styles.deviceBtn} ${emailPreviewDevice === 'mobile' ? styles.deviceBtnActive : ''}`}
-                      >
-                        <SmartphoneIcon size={14} />
-                        <span>Mobile (360px)</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Simulated Inbox Client Header */}
-                  <div className={styles.emailInboxSimulation}>
-                    <div className={styles.emailInboxSimRow}>
-                      <span className={styles.emailInboxSimLabel}>From:</span>
-                      <span style={{ color: '#ffffff', fontWeight: 600 }}>
-                        {emailSettings?.fromName || 'Coffee Esto Roastery'} &lt;{emailSettings?.fromEmail || 'orders@grainandgrind.com'}&gt;
-                      </span>
-                    </div>
-                    <div className={styles.emailInboxSimRow}>
-                      <span className={styles.emailInboxSimLabel}>Subject:</span>
-                      <span style={{ color: '#f4f4f5' }}>
-                        {(emailTemplates[selectedEmailKey]?.subject || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.subject || '')
-                          .replace(/{{customer_name}}/g, 'Alex')
-                          .replace(/{{order_id}}/g, 'ESTO-9281')}
-                      </span>
-                    </div>
-                    <div className={styles.emailInboxSimRow}>
-                      <span className={styles.emailInboxSimLabel}>Preview:</span>
-                      <span style={{ color: '#a1a1aa' }}>
-                        {(emailTemplates[selectedEmailKey]?.preheader || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.preheader || '')
-                          .replace(/{{customer_name}}/g, 'Alex')
-                          .replace(/{{order_id}}/g, 'ESTO-9281')}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Rendered Luxury Email Body */}
-                  <div className={`${styles.emailPreviewFrame} ${emailPreviewDevice === 'mobile' ? styles.emailPreviewFrameMobile : ''}`}>
-                    {/* Header */}
-                    <div className={styles.emailLuxuryHeader}>
-                      <div className={styles.emailLuxuryLogoContainer}>
-                        <img
-                          src="/images/logo.png"
-                          alt="Coffee Esto Logo"
-                          style={{ width: '42px', height: '42px', objectFit: 'contain', borderRadius: '8px', marginBottom: '6px' }}
-                          onError={(e) => {
-                            (e.target as HTMLElement).style.display = 'none';
-                          }}
-                        />
-                        <div className={styles.emailBrandLogo}>COFFEE ESTO</div>
-                        <div className={styles.emailBrandTagline}>SPECIALTY COFFEE ROASTERS • İSTANBUL</div>
-                      </div>
-                    </div>
-
-                    {/* Hero Artwork Banner */}
-                    <div className={styles.emailHeroBannerWrap}>
-                      <img
-                        src={emailTemplates[selectedEmailKey]?.heroImage || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.heroImage || '/images/hero_roast_order.png'}
-                        alt="Hero Artwork"
-                        className={styles.emailHeroBannerImg}
-                      />
-                      <div className={styles.emailHeroBannerOverlay}>
-                        <div className={styles.emailHeroBadge}>
-                          {emailTemplates[selectedEmailKey]?.badge || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.badge || 'ARTISAN SPECIALTY ROAST'}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Content Body */}
-                    <div className={styles.emailPreviewContent}>
-                      <div>
-                        <div className={styles.emailEditorialTitle}>
-                          {(emailTemplates[selectedEmailKey]?.headline || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.headline || '')
-                            .replace(/{{customer_name}}/g, 'Alex')
-                            .replace(/{{order_id}}/g, 'ESTO-9281')}
-                        </div>
-                        <div className={styles.emailEditorialSubtitle}>
-                          {(emailTemplates[selectedEmailKey]?.subtitle || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.subtitle || '')
-                            .replace(/{{order_id}}/g, 'ESTO-9281')
-                            .replace(/{{tracking_number}}/g, 'YK-8921827')
-                            .replace(/{{carrier_name}}/g, 'Yurtiçi Kargo')}
-                        </div>
-                      </div>
-
-                      <div className={styles.emailBodyText}>
-                        {(emailTemplates[selectedEmailKey]?.body || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.body || '')
-                          .replace(/{{customer_name}}/g, 'Alex')
-                          .replace(/{{order_id}}/g, 'ESTO-9281')
-                          .replace(/{{tracking_url}}/g, 'https://yurticikargo.com/track/YK-8921827')
-                          .replace(/{{carrier_name}}/g, 'Yurtiçi Kargo')
-                          .replace(/{{tracking_number}}/g, 'YK-8921827')
-                          .replace(/{{roast_date}}/g, new Date().toLocaleDateString('tr-TR'))
-                          .replace(/{{last_product_name}}/g, 'Ethiopia Yirgacheffe G1')
-                          .replace(/{{total_amount}}/g, '₺690.00')}
-                      </div>
-
-                      {/* 1. Dynamic Progress Stepper (for Order Confirmation & Shipped) */}
-                      {(selectedEmailKey === 'order_confirmation' || selectedEmailKey === 'order_shipped') && (
-                        <div className={styles.emailStepper}>
-                          <div className={`${styles.stepperItem} ${styles.stepperDone}`}>
-                            <div className={styles.stepperDot}>✓</div>
-                            <span className={styles.stepperTitle}>1. Order Placed</span>
-                          </div>
-                          <div
-                            className={`${styles.stepperItem} ${
-                              selectedEmailKey === 'order_confirmation' ? styles.stepperActive : styles.stepperDone
-                            }`}
-                          >
-                            <div className={styles.stepperDot}>
-                              {selectedEmailKey === 'order_confirmation' ? '●' : '✓'}
-                            </div>
-                            <span className={styles.stepperTitle}>2. Drum Roast</span>
-                          </div>
-                          <div
-                            className={`${styles.stepperItem} ${
-                              selectedEmailKey === 'order_shipped' ? styles.stepperDone : ''
-                            }`}
-                          >
-                            <div className={styles.stepperDot}>
-                              {selectedEmailKey === 'order_shipped' ? '✓' : '3'}
-                            </div>
-                            <span className={styles.stepperTitle}>3. Degas Sealed</span>
-                          </div>
-                          <div
-                            className={`${styles.stepperItem} ${
-                              selectedEmailKey === 'order_shipped' ? styles.stepperActive : ''
-                            }`}
-                          >
-                            <div className={styles.stepperDot}>
-                              {selectedEmailKey === 'order_shipped' ? '🚚' : '4'}
-                            </div>
-                            <span className={styles.stepperTitle}>4. Dispatched</span>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* 2. Review Rating Prompt (for Review Request) */}
-                      {selectedEmailKey === 'review_request' && (
-                        <div className={styles.emailBentoReceipt} style={{ textAlign: 'center', padding: '20px 16px' }}>
-                          <div style={{ fontSize: '11px', fontWeight: 800, color: '#09090b', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '8px' }}>
-                            Rate Your Cupping Experience
-                          </div>
-                          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', fontSize: '24px', cursor: 'pointer', margin: '8px 0' }}>
-                            <span>⭐️</span>
-                            <span>⭐️</span>
-                            <span>⭐️</span>
-                            <span>⭐️</span>
-                            <span>⭐️</span>
-                          </div>
-                          <div style={{ fontSize: '12px', color: '#71717a' }}>
-                            Click any star to open our 1-click tasting questionnaire
-                          </div>
-                        </div>
-                      )}
-
-                      {/* 3. Welcome Series Perks Box (for Welcome Series) */}
-                      {selectedEmailKey === 'welcome_series' && (
-                        <div className={styles.emailVipCouponBox}>
-                          <div>
-                            <div style={{ fontSize: '12px', fontWeight: 800, color: '#09090b' }}>
-                              Welcome Atelier Member Gift
-                            </div>
-                            <div style={{ fontSize: '11px', color: '#71717a' }}>
-                              10% off your first whole bean or drip bag order
-                            </div>
-                          </div>
-                          <div className={styles.emailCouponCode}>WELCOME10</div>
-                        </div>
-                      )}
-
-                      {/* 4. Bento Order Receipt (for Order Confirmation & Abandoned Cart) */}
-                      {(selectedEmailKey === 'order_confirmation' || selectedEmailKey === 'abandoned_cart') && (
-                        <div className={styles.emailBentoReceipt}>
-                          <div style={{ fontSize: '11px', fontWeight: 800, color: '#09090b', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-                            {selectedEmailKey === 'order_confirmation' ? 'Order Summary' : 'Reserved Items in Cart'}
-                          </div>
-
-                          <div className={styles.emailBentoItem}>
-                            <div className={styles.emailBentoThumb}>
-                              <img src="/images/coffee_packs/ETHIOPIA_YIRGACHEFF.png" alt="Ethiopia Yirgacheffe" />
-                            </div>
-                            <div className={styles.emailBentoDetails}>
-                              <div className={styles.emailBentoName}>Ethiopia Yirgacheffe G1</div>
-                              <div className={styles.emailBentoMeta}>250g Pouch • V60 Filter Grind</div>
-                              <div className={styles.emailBentoPills}>
-                                <span className={styles.emailTastingPill}>Jasmine</span>
-                                <span className={styles.emailTastingPill}>Bergamot</span>
-                                <span className={styles.emailTastingPill}>Peach</span>
-                              </div>
-                            </div>
-                            <div className={styles.emailBentoPrice}>₺360.00</div>
-                          </div>
-
-                          <div className={styles.emailBentoItem} style={{ borderBottom: 'none', paddingBottom: 0 }}>
-                            <div className={styles.emailBentoThumb}>
-                              <img src="/images/coffee_packs/COLOMBIA.png" alt="Colombia Supremo" />
-                            </div>
-                            <div className={styles.emailBentoDetails}>
-                              <div className={styles.emailBentoName}>Colombia Supremo Huila</div>
-                              <div className={styles.emailBentoMeta}>250g Pouch • Whole Bean</div>
-                              <div className={styles.emailBentoPills}>
-                                <span className={styles.emailTastingPill}>Cocoa</span>
-                                <span className={styles.emailTastingPill}>Hazelnut</span>
-                              </div>
-                            </div>
-                            <div className={styles.emailBentoPrice}>₺330.00</div>
-                          </div>
-
-                          <div className={styles.emailReceiptSummary}>
-                            <div className={styles.emailReceiptRow}>
-                              <span>Subtotal</span>
-                              <span>₺690.00</span>
-                            </div>
-                            <div className={styles.emailReceiptRow}>
-                              <span>Express Courier Delivery</span>
-                              <span style={{ color: '#059669', fontWeight: 700 }}>FREE</span>
-                            </div>
-                            <div className={styles.emailReceiptTotal}>
-                              <span>Total Amount</span>
-                              <span>₺690.00</span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* 5. 21-Day Freshness Curve & VIP Coupon (for Refill Reminder) */}
-                      {selectedEmailKey === 'refill_reminder' && (
-                        <>
-                          <div className={styles.emailFreshnessGauge}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <span style={{ fontSize: '12px', fontWeight: 800, color: '#09090b' }}>
-                                Degassing & Freshness Curve
-                              </span>
-                              <span style={{ fontSize: '11px', fontWeight: 700, color: '#059669' }}>
-                                Day 21 (Reorder Window)
-                              </span>
-                            </div>
-                            <div className={styles.emailFreshnessBar} />
-                            <div className={styles.emailFreshnessLabels}>
-                              <span>Day 1–6 (Degassing)</span>
-                              <span style={{ color: '#09090b', fontWeight: 800 }}>Day 7–28 (Peak Flavors)</span>
-                              <span>Day 30+ (Fading)</span>
-                            </div>
-                          </div>
-
-                          <div className={styles.emailVipCouponBox}>
-                            <div>
-                              <div style={{ fontSize: '12px', fontWeight: 800, color: '#09090b' }}>
-                                VIP Replenishment Discount
-                              </div>
-                              <div style={{ fontSize: '11px', color: '#71717a' }}>
-                                Apply at checkout for 10% off entire roast catalog
-                              </div>
-                            </div>
-                            <div className={styles.emailCouponCode}>REFILL10</div>
-                          </div>
-                        </>
-                      )}
-
-                      {/* Roastmaster Note Box */}
-                      {(emailTemplates[selectedEmailKey]?.roastmasterNote || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.roastmasterNote) && (
-                        <div className={styles.emailRoasterNoteBox}>
-                          <span style={{ fontSize: '15px', lineHeight: 1 }}>💬</span>
-                          <div>
-                            {emailTemplates[selectedEmailKey]?.roastmasterNote || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.roastmasterNote}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* CTA Group */}
-                      <div className={styles.emailCtaGroup}>
-                        <a href="#preview" onClick={(e) => e.preventDefault()} className={styles.emailGoldBtn}>
-                          <span>{emailTemplates[selectedEmailKey]?.buttonText || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.buttonText || 'View Order'}</span>
-                          <span>→</span>
-                        </a>
-                        {(emailTemplates[selectedEmailKey]?.secondaryButtonText || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.secondaryButtonText) && (
-                          <a href="#preview" onClick={(e) => e.preventDefault()} className={styles.emailGhostBtn}>
-                            {emailTemplates[selectedEmailKey]?.secondaryButtonText || DEFAULT_EMAIL_TEMPLATES[selectedEmailKey]?.secondaryButtonText}
-                          </a>
-                        )}
-                      </div>
-
-                      {/* Barista Micro Brewing Bar */}
-                      <div className={styles.emailBrewBar}>
-                        <span>⚖️ 1:16 Brew Ratio</span>
-                        <span>🌡️ 93°C Water</span>
-                        <span>⏱️ 2:45 min Total Time</span>
-                      </div>
-                    </div>
-
-                    {/* Footer with Deliverability Compliance */}
-                    <div className={styles.emailLuxuryFooter}>
-                      <div className={styles.emailFooterSocials}>
-                        <span>Instagram @esto.roastery</span>
-                        <span>•</span>
-                        <span>Brewing Journal</span>
-                        <span>•</span>
-                        <span>Support</span>
-                      </div>
-                      <div>{emailTemplates[selectedEmailKey]?.footerNote || 'Coffee Esto Roastery • Karaköy, İstanbul • Direct Trade Single Origins'}</div>
-                      <div className={styles.emailFooterFineprint}>
-                        Coffee Esto Roastery Atelier • Topselvi Mh, Kartal, İstanbul • thecoffeeesto@gmail.com
-                        <br />
-                        Heat-sealed in Istanbul with one-way degassing valves. Best consumed within 60 days of roast date.
-                        <br />
-                        © {new Date().getFullYear()} Coffee Esto Roastery. All rights reserved. • <a href="#preview" onClick={(e) => e.preventDefault()} style={{ color: '#71717a', textDecoration: 'underline' }}>Manage Preferences</a> • <a href="#preview" onClick={(e) => e.preventDefault()} style={{ color: '#71717a', textDecoration: 'underline' }}>Unsubscribe</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* ═════════════════════════════════════════════════════════
               TAB 11: STOREFRONT & BANNERS
@@ -5125,6 +4314,18 @@ export default function AdminDashboardPage() {
                           />
                         </div>
                       )}
+
+                      <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>{t.wholesalePrice}</label>
+                        <input
+                          type="number"
+                          min="0"
+                          step="any"
+                          value={prodForm.wholesalePrice || ''}
+                          onChange={(e) => setProdForm((prev) => ({ ...prev, wholesalePrice: Number(e.target.value) }))}
+                          className={styles.formInput}
+                        />
+                      </div>
                     </div>
                   )}
 
@@ -5800,7 +5001,45 @@ export default function AdminDashboardPage() {
                     </div>
                   )}
 
-                  {selectedOrder.status !== 'canceled' && (
+                  {selectedOrder.fulfillment_status === 'shipped' && (
+                    <button
+                      onClick={() => handleOrderAction('mark_delivered')}
+                      disabled={actionLoading}
+                      className={styles.primaryBtn}
+                    >
+                      <OrdersIcon size={14} />
+                      <span>{t.markDelivered}</span>
+                    </button>
+                  )}
+
+                  {(selectedOrder.fulfillment_status === 'shipped' || selectedOrder.fulfillment_status === 'delivered') && !editingTracking && (
+                    <button
+                      onClick={() => {
+                        setOrderCarrier(selectedOrder.shippingProvider || cargoProviders[0]?.name || '');
+                        setOrderTracking(selectedOrder.trackingNumber || '');
+                        setEditingTracking(true);
+                      }}
+                      disabled={actionLoading}
+                      className={styles.secondaryBtn}
+                    >
+                      <ShippingIcon size={13} />
+                      <span>{t.editTracking}</span>
+                    </button>
+                  )}
+
+                  {(selectedOrder.fulfillment_status === 'shipped' || selectedOrder.fulfillment_status === 'delivered') && (
+                    <button
+                      onClick={() => handleOrderAction('mark_returned')}
+                      disabled={actionLoading}
+                      className={styles.secondaryBtn}
+                      style={{ color: 'var(--ad-danger)' }}
+                    >
+                      <CloseIcon size={13} />
+                      <span>{t.markReturned}</span>
+                    </button>
+                  )}
+
+                  {!['shipped', 'delivered', 'returned', 'canceled'].includes(selectedOrder.fulfillment_status) && (
                     <button
                       onClick={() => handleOrderAction('cancel_order')}
                       disabled={actionLoading}
@@ -5812,6 +5051,43 @@ export default function AdminDashboardPage() {
                     </button>
                   )}
                 </div>
+
+                {editingTracking && (selectedOrder.fulfillment_status === 'shipped' || selectedOrder.fulfillment_status === 'delivered') && (
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center', width: '100%', flexWrap: 'wrap' }}>
+                    <select
+                      value={orderCarrier}
+                      onChange={(e) => setOrderCarrier(e.target.value)}
+                      className={styles.formSelect}
+                      style={{ maxWidth: '240px' }}
+                    >
+                      {cargoProviders.map((cp) => (
+                        <option key={cp.id} value={cp.name}>{cp.name}</option>
+                      ))}
+                    </select>
+                    <input
+                      type="text"
+                      placeholder={t.trackingPlaceholder}
+                      value={orderTracking}
+                      onChange={(e) => setOrderTracking(e.target.value)}
+                      className={styles.formInput}
+                      style={{ maxWidth: '260px' }}
+                    />
+                    <button
+                      onClick={() => handleOrderAction('update_tracking')}
+                      disabled={actionLoading || !orderTracking.trim() || !orderCarrier.trim()}
+                      className={styles.primaryBtn}
+                    >
+                      <span>{t.saveTracking}</span>
+                    </button>
+                    <button
+                      onClick={() => setEditingTracking(false)}
+                      disabled={actionLoading}
+                      className={styles.ghostBtn}
+                    >
+                      <span>{t.cancelEdit}</span>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 

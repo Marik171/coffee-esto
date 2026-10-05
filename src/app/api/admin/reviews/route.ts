@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
+import { invalidateCache } from '@/lib/cache';
 
 // Admin moderation — lists every review with the product name attached
 // (Review.productId isn't a Prisma relation, so we join it manually).
@@ -49,6 +50,7 @@ export async function PUT(request: Request) {
       );
     }
     await db.review.update({ where: { id }, data: { isHidden } });
+    invalidateCache('reviews_');
     return NextResponse.json({ success: true, error: null });
   } catch (error) {
     console.error('[PUT /api/admin/reviews] error:', error);
@@ -67,6 +69,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ success: false, error: 'id is required.' }, { status: 400 });
     }
     await db.review.delete({ where: { id } });
+    invalidateCache('reviews_');
     return NextResponse.json({ success: true, error: null });
   } catch (error) {
     console.error('[DELETE /api/admin/reviews] error:', error);

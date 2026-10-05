@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
+import { invalidateCache } from '@/lib/cache';
 import { cancelPayment, refundPayment } from '@/lib/iyzipay';
 import { checkRateLimit } from '@/lib/rateLimiter';
 
@@ -113,6 +114,7 @@ export async function POST(request: Request) {
         })
       ),
     ]);
+    invalidateCache('product');
 
     return NextResponse.json({ success: true, error: null });
 

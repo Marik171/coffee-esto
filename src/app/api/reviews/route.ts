@@ -8,6 +8,8 @@ import { getCached, setCached, invalidateCache } from '@/lib/cache';
    GET /api/reviews?productId=xxx
    Public — returns all reviews + aggregated stats for a product.
 ───────────────────────────────────────────────────────────── */
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

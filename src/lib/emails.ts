@@ -308,6 +308,48 @@ const orderShippedTranslations = {
   },
 };
 
+const orderDeliveredTranslations = {
+  tr: {
+    subject: (id: string) => `Siparişiniz teslim edildi — ${id}`,
+    preheader: (id: string) => `${id} numaralı siparişiniz size ulaştı.`,
+    eyebrow: 'TESLİM EDİLDİ',
+    title: (name?: string) => `Afiyet olsun${name ? `, ${name}` : ''}!`,
+    bodyText: 'Siparişiniz teslim edildi. Taze kavrulmuş kahvenizin keyfini çıkarın!',
+    orderLabel: 'Sipariş',
+    closingText: 'Sorularınız olursa, bu e-postayı doğrudan yanıtlayabilirsiniz.',
+  },
+  en: {
+    subject: (id: string) => `Your order has been delivered — ${id}`,
+    preheader: (id: string) => `Your order ${id} has arrived.`,
+    eyebrow: 'DELIVERED',
+    title: (name?: string) => `Enjoy${name ? `, ${name}` : ''}!`,
+    bodyText: 'Your order has been delivered. Enjoy your freshly roasted coffee!',
+    orderLabel: 'Order',
+    closingText: 'Questions? Just reply to this email.',
+  },
+};
+
+const orderReturnedTranslations = {
+  tr: {
+    subject: (id: string) => `İade işlendi — ${id}`,
+    preheader: (id: string) => `${id} numaralı siparişiniz için iade işlendi.`,
+    eyebrow: 'İADE İŞLENDİ',
+    title: () => 'İadeniz işlendi',
+    bodyText: 'Siparişinizin iadesini aldık ve ödemenizin iadesi işleme alındı. Tutar birkaç iş günü içinde hesabınıza yansıyacaktır.',
+    orderLabel: 'Sipariş',
+    closingText: 'Sorularınız olursa, bu e-postayı doğrudan yanıtlayabilirsiniz.',
+  },
+  en: {
+    subject: (id: string) => `Return processed — ${id}`,
+    preheader: (id: string) => `Your return for order ${id} has been processed.`,
+    eyebrow: 'RETURN PROCESSED',
+    title: () => 'Your return is processed',
+    bodyText: "We've received your return and your refund has been issued. It may take a few business days to appear on your statement.",
+    orderLabel: 'Order',
+    closingText: 'Questions? Just reply to this email.',
+  },
+};
+
 export async function sendOrderRoastingStartedEmail(order: {
   orderId: string;
   email: string;
@@ -390,6 +432,79 @@ export async function sendOrderShippedEmail(order: {
       preheader: t.preheader(order.orderId),
       heroEyebrow: t.eyebrow,
       heroTitle: t.title(safeFirstName),
+      bodyHtml,
+      locale: tLoc,
+    }),
+  });
+}
+
+export async function sendOrderDeliveredEmail(order: {
+  orderId: string;
+  email: string;
+  fullName?: string;
+  locale?: string;
+}): Promise<void> {
+  const tLoc = order.locale === 'en' ? 'en' : 'tr';
+  const t = orderDeliveredTranslations[tLoc];
+
+  const firstName = order.fullName?.trim().split(/\s+/)[0];
+  const safeFirstName = firstName ? escapeHtml(firstName) : undefined;
+
+  const bodyHtml = `
+    <p style="margin: 0 0 4px; font-size: 15px; line-height: 1.7; color: ${colors.warmMid};">
+      ${t.bodyText}
+    </p>
+    <p style="margin: 24px 0 0; font-size: 13px; color: ${colors.warmMid};">
+      ${t.orderLabel} <strong style="color: ${colors.warmText};">${order.orderId}</strong>
+    </p>
+    ${divider()}
+    <p style="margin: 0; font-size: 14px; line-height: 1.7; color: ${colors.warmMid};">
+      ${t.closingText}
+    </p>
+  `;
+
+  await sendEmail({
+    to: [{ email: order.email, name: order.fullName }],
+    subject: t.subject(order.orderId),
+    htmlContent: renderEmailLayout({
+      preheader: t.preheader(order.orderId),
+      heroEyebrow: t.eyebrow,
+      heroTitle: t.title(safeFirstName),
+      bodyHtml,
+      locale: tLoc,
+    }),
+  });
+}
+
+export async function sendOrderReturnedEmail(order: {
+  orderId: string;
+  email: string;
+  fullName?: string;
+  locale?: string;
+}): Promise<void> {
+  const tLoc = order.locale === 'en' ? 'en' : 'tr';
+  const t = orderReturnedTranslations[tLoc];
+
+  const bodyHtml = `
+    <p style="margin: 0 0 4px; font-size: 15px; line-height: 1.7; color: ${colors.warmMid};">
+      ${t.bodyText}
+    </p>
+    <p style="margin: 24px 0 0; font-size: 13px; color: ${colors.warmMid};">
+      ${t.orderLabel} <strong style="color: ${colors.warmText};">${order.orderId}</strong>
+    </p>
+    ${divider()}
+    <p style="margin: 0; font-size: 14px; line-height: 1.7; color: ${colors.warmMid};">
+      ${t.closingText}
+    </p>
+  `;
+
+  await sendEmail({
+    to: [{ email: order.email, name: order.fullName }],
+    subject: t.subject(order.orderId),
+    htmlContent: renderEmailLayout({
+      preheader: t.preheader(order.orderId),
+      heroEyebrow: t.eyebrow,
+      heroTitle: t.title(),
       bodyHtml,
       locale: tLoc,
     }),

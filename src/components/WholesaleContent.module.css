@@ -22,8 +22,8 @@
     height: 100px;
   }
   .heroSection {
-    min-height: 400px;
-    padding: 140px 24px 80px;
+    min-height: 220px;
+    padding: 140px 24px 28px;
     background-attachment: scroll;
     background-size: cover;
   }
@@ -36,11 +36,11 @@
   background-size: cover;
   background-position: center 15%; /* Shuffled upward to prevent cutting off the crown/head */
   background-attachment: fixed;
-  min-height: 600px;
+  min-height: 260px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 100px 24px;
+  padding: 100px 24px 36px;
   color: #ffffff;
   text-align: center;
   overflow: hidden;
@@ -83,7 +83,7 @@
 
 .heroTitle {
   font-family: var(--font-family-display, Georgia, serif);
-  font-size: clamp(36px, 5.5vw, 64px);
+  font-size: clamp(30px, 4.5vw, 48px);
   font-weight: 300;
   line-height: 1.15;
   letter-spacing: -0.01em;
@@ -461,8 +461,8 @@
 
 @media (max-width: 600px) {
   .heroSection {
-    min-height: 320px;
-    padding: 120px 16px 60px;
+    min-height: 190px;
+    padding: 120px 16px 24px;
     background-attachment: scroll; /* Fixed attachment breaks on iOS Safari */
     background-size: cover;
   }

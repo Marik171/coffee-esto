@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 import db from '@/lib/db';
+import { invalidateCache } from '@/lib/cache';
 import { cancelPayment, refundPayment } from '@/lib/iyzipay';
-import { sendOrderRoastingStartedEmail, sendOrderShippedEmail } from '@/lib/emails';
+import {
+  sendOrderRoastingStartedEmail,
+  sendOrderShippedEmail,
+  sendOrderDeliveredEmail,
+  sendOrderReturnedEmail,
+} from '@/lib/emails';
 
 interface OrderItem {
   id: string;
@@ -116,6 +122,51 @@ export async function DELETE(request: Request) {
   }
 }
 
+// Same-day void first (instant, fee-free); once iyzico has settled the payment
+// that fails, so fall back to a per-transaction refund. Shared by cancel_order
+// (pre-shipment) and mark_returned (post-delivery) — both end with the money
+// back in the customer's hands, just at different points in the order lifecycle.
+async function voidOrRefundPayment(
+  order: { paymentId: string; paymentStatus: string; paymentTransactions: unknown },
+  ip: string
+): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
+  if (order.paymentStatus !== 'captured' || !order.paymentId) {
+    return { ok: true };
+  }
+
+  const cancelResult = await cancelPayment(order.paymentId, ip).catch(
+    (err): { status: 'failure'; errorMessage: string } => ({ status: 'failure', errorMessage: String(err) })
+  );
+  if (cancelResult.status === 'success') {
+    return { ok: true };
+  }
+
+  const transactions = (order.paymentTransactions as Array<{ paymentTransactionId: string; price: string }> | null) ?? [];
+  if (transactions.length === 0) {
+    return {
+      ok: false,
+      status: 402,
+      error: `Payment void failed: ${cancelResult.errorMessage ?? 'iyzico error'}. Issue refund manually from the iyzico dashboard.`,
+    };
+  }
+
+  const refundResults = await Promise.all(
+    transactions.map((t) => refundPayment(t.paymentTransactionId, t.price, ip).catch(
+      (err): { status: 'failure'; errorMessage: string } => ({ status: 'failure', errorMessage: String(err) })
+    ))
+  );
+  const failed = refundResults.find((r) => r.status !== 'success');
+  if (failed) {
+    console.error('Admin refund: void and refund both failed', { cancelResult, refundResults });
+    return {
+      ok: false,
+      status: 402,
+      error: `Refund failed: ${failed.errorMessage ?? 'iyzico error'}. Issue refund manually from the iyzico dashboard.`,
+    };
+  }
+  return { ok: true };
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -198,55 +249,70 @@ export async function POST(request: Request) {
         }
         nextFulfillmentStatus = 'shipped';
         nextTrackingNumber    = trackingNumber;
-        nextStatus            = 'completed';
+        nextShippingProvider  = shippingProvider || order.shippingProvider;
         break;
 
-      case 'cancel_order':
-        if (order.fulfillmentStatus === 'shipped') {
+      case 'update_tracking':
+        if (!['shipped', 'delivered'].includes(order.fulfillmentStatus)) {
           return NextResponse.json(
-            { success: false, error: 'Cannot cancel an order that has already been shipped.' },
+            { success: false, error: 'Tracking can only be edited once the order has shipped.' },
             { status: 400 }
           );
         }
-        if (order.paymentStatus === 'captured' && order.paymentId) {
-          // Same-day void first (instant, fee-free); once iyzico has settled the
-          // payment that fails, so fall back to a per-transaction refund.
-          const cancelResult = await cancelPayment(order.paymentId, ip).catch(
-            (err): { status: 'failure'; errorMessage: string } => ({ status: 'failure', errorMessage: String(err) })
+        if (!trackingNumber?.trim() || !shippingProvider?.trim()) {
+          return NextResponse.json(
+            { success: false, error: 'Both carrier and tracking number are required.' },
+            { status: 400 }
           );
-          if (cancelResult.status !== 'success') {
-            const transactions = (order.paymentTransactions as Array<{ paymentTransactionId: string; price: string }> | null) ?? [];
-            if (transactions.length === 0) {
-              return NextResponse.json(
-                {
-                  success: false,
-                  error: `Payment void failed: ${cancelResult.errorMessage ?? 'iyzico error'}. Issue refund manually from the iyzico dashboard.`,
-                },
-                { status: 402 }
-              );
-            }
-            const refundResults = await Promise.all(
-              transactions.map((t) => refundPayment(t.paymentTransactionId, t.price, ip).catch(
-                (err): { status: 'failure'; errorMessage: string } => ({ status: 'failure', errorMessage: String(err) })
-              ))
-            );
-            const failed = refundResults.find((r) => r.status !== 'success');
-            if (failed) {
-              console.error('Admin cancel: void and refund both failed', { orderId, cancelResult, refundResults });
-              return NextResponse.json(
-                {
-                  success: false,
-                  error: `Refund failed: ${failed.errorMessage ?? 'iyzico error'}. Issue refund manually from the iyzico dashboard.`,
-                },
-                { status: 402 }
-              );
-            }
-          }
+        }
+        nextTrackingNumber   = trackingNumber;
+        nextShippingProvider = shippingProvider;
+        break;
+
+      case 'mark_delivered':
+        if (order.fulfillmentStatus !== 'shipped') {
+          return NextResponse.json(
+            { success: false, error: 'Order must be shipped before it can be marked delivered.' },
+            { status: 400 }
+          );
+        }
+        nextFulfillmentStatus = 'delivered';
+        nextStatus            = 'completed';
+        break;
+
+      case 'mark_returned': {
+        if (!['shipped', 'delivered'].includes(order.fulfillmentStatus)) {
+          return NextResponse.json(
+            { success: false, error: 'Only shipped or delivered orders can be marked as returned.' },
+            { status: 400 }
+          );
+        }
+        const refundResult = await voidOrRefundPayment(order, ip);
+        if (!refundResult.ok) {
+          return NextResponse.json({ success: false, error: refundResult.error }, { status: refundResult.status });
+        }
+        nextFulfillmentStatus = 'returned';
+        nextStatus            = 'returned';
+        nextPaymentStatus     = order.paymentStatus === 'captured' ? 'refunded' : order.paymentStatus;
+        break;
+      }
+
+      case 'cancel_order': {
+        if (['shipped', 'delivered', 'returned'].includes(order.fulfillmentStatus)) {
+          return NextResponse.json(
+            { success: false, error: 'Cannot cancel an order that has already shipped — use Mark as Returned instead.' },
+            { status: 400 }
+          );
+        }
+        const refundResult = await voidOrRefundPayment(order, ip);
+        if (!refundResult.ok) {
+          return NextResponse.json({ success: false, error: refundResult.error }, { status: refundResult.status });
         }
         nextStatus            = 'canceled';
         nextFulfillmentStatus = 'canceled';
         nextPaymentStatus     = order.paymentStatus === 'captured' ? 'refunded' : 'canceled';
         break;
+      }
 
       default:
         return NextResponse.json(
@@ -255,7 +321,13 @@ export async function POST(request: Request) {
         );
     }
 
-    const isNewlyCanceled = action === 'cancel_order' && order.status !== 'canceled';
+    // Items physically come back into stock whenever an order newly becomes
+    // canceled or returned — guarded by "newly" so re-running the action on an
+    // already-canceled/returned order (which the earlier switch cases already
+    // mostly prevent) can't double-increment stock.
+    const shouldRestock =
+      (action === 'cancel_order' && order.status !== 'canceled') ||
+      (action === 'mark_returned' && order.fulfillmentStatus !== 'returned');
 
     const [updated] = await db.$transaction([
       db.order.update({
@@ -269,8 +341,8 @@ export async function POST(request: Request) {
         },
         include: { items: true },
       }),
-      ...(isNewlyCanceled
-        ? order.items.map((item) =>
+      ...(shouldRestock
+        ? order.items.map((item: OrderItem) =>
             db.product.updateMany({
               where: { id: item.coffeeId },
               data: { stock: { increment: item.quantity } },
@@ -278,6 +350,7 @@ export async function POST(request: Request) {
           )
         : []),
     ]);
+    if (shouldRestock) invalidateCache('product');
 
     // Notify the customer of the status change — best-effort, never blocks the response
     // (sendEmail() already swallows its own provider errors internally).
@@ -297,6 +370,20 @@ export async function POST(request: Request) {
         trackingNumber: updated.trackingNumber,
         shippingProvider: updated.shippingProvider,
       }).catch((err) => console.error('Failed to send shipped email:', err));
+    } else if (action === 'mark_delivered') {
+      await sendOrderDeliveredEmail({
+        orderId: updated.id,
+        email: updated.email,
+        fullName: order.fullName,
+        locale: order.locale,
+      }).catch((err) => console.error('Failed to send delivered email:', err));
+    } else if (action === 'mark_returned') {
+      await sendOrderReturnedEmail({
+        orderId: updated.id,
+        email: updated.email,
+        fullName: order.fullName,
+        locale: order.locale,
+      }).catch((err) => console.error('Failed to send returned email:', err));
     }
 
     return NextResponse.json({ success: true, data: formatOrder(updated), error: null });

@@ -37,11 +37,11 @@
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  min-height: 600px;
+  min-height: 260px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 130px 24px 100px;
+  padding: 130px 24px 36px;
   color: #ffffff;
   text-align: center;
   overflow: hidden;
@@ -86,7 +86,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
 }
 
 .heroBadge {
@@ -103,7 +103,7 @@
 }
 
 .heroBrandLine {
-  display: inline-block;
+  display: none; /* compact header: products should be visible without scrolling */
   font-family: var(--font-family-display, Georgia, serif);
   font-size: clamp(13px, 1.6vw, 16px);
   font-weight: 600;
@@ -115,7 +115,7 @@
 
 .heroTitle {
   font-family: var(--font-family-display, Georgia, serif);
-  font-size: clamp(48px, 7.5vw, 88px);
+  font-size: clamp(34px, 5vw, 52px);
   font-weight: 300;
   line-height: 1.15;
   letter-spacing: -0.01em;
@@ -134,7 +134,7 @@
 /* ── 2. Catalog Section ─────────────────────────────────────── */
 .catalogSection {
   background-color: #fdfcf7;
-  padding: 80px 20px 120px;
+  padding: 40px 20px 120px;
   position: relative;
 }
 
@@ -143,54 +143,73 @@
   margin: 0 auto;
 }
 
-/* ── Filter Bar ─────────────────────────────────────────────── */
-.filterBar {
+/* ── Catalog layout: left filter sidebar + product grid ─────── */
+.catalogLayout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.catalogMain {
+  min-width: 0;
+}
+
+.sidebar {
+  position: sticky;
+  top: 130px;
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding-right: 4px;
+}
+
+.filtersToggle {
+  display: none;
+}
+
+.sidebarBody {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: column;
   gap: 24px;
-  margin-bottom: 50px;
-  flex-wrap: wrap;
-  border-bottom: 1px solid #eaeaea;
-  padding-bottom: 24px;
 }
 
 .filterGroups {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  flex: 1;
-  min-width: 0;
+  gap: 24px;
 }
 
 .filterGroup {
   display: flex;
-  align-items: baseline;
-  gap: 14px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .filterGroupLabel {
-  flex: 0 0 auto;
   font-family: var(--font-family-primary);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #c9963a;
-  white-space: nowrap;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #eaeaea;
 }
 
 .filterTags {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .tagBtn {
+  width: 100%;
+  text-align: left;
   background-color: transparent;
-  border: 1px solid #eaeaea;
-  padding: 10px 18px;
+  border: none;
+  border-left: 2px solid transparent;
+  padding: 9px 12px;
   border-radius: 0; /* Sharp corners */
   font-family: var(--font-family-primary);
   font-size: 11px;
@@ -199,12 +218,12 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
   outline: none;
 }
 
 .tagBtn:hover {
-  border-color: #1a0e07;
+  background-color: #f3efe8;
   color: #1a0e07;
 }
 
@@ -214,9 +233,9 @@
 }
 
 .tagBtnActive {
-  background-color: #1a0e07 !important;
-  border-color: #1a0e07 !important;
-  color: #ffffff !important;
+  background-color: #f3efe8 !important;
+  border-left-color: #c9963a !important;
+  color: #1a0e07 !important;
 }
 
 /* ── Search Bar ─────────────────────────────────────────────── */
@@ -224,7 +243,6 @@
   position: relative;
   display: flex;
   align-items: center;
-  max-width: 320px;
   width: 100%;
 }
 
@@ -237,7 +255,7 @@
 
 .searchInput {
   width: 100%;
-  padding: 12px 16px 12px 44px;
+  padding: 10px 16px 10px 44px;
   border-radius: 0; /* Sharp corners */
   border: 1px solid #eaeaea;
   background-color: #ffffff;
@@ -683,15 +701,63 @@
 }
 
 /* ── Media Queries ──────────────────────────────────────────── */
+@media (max-width: 1150px) {
+  .coffeeGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px 24px;
+  }
+}
+
 @media (max-width: 992px) {
+  .catalogLayout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .sidebar {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .filtersToggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 16px;
+    background: #ffffff;
+    border: 1px solid #eaeaea;
+    font-family: var(--font-family-primary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #1a0e07;
+    cursor: pointer;
+  }
+
+  .sidebarBody {
+    display: none;
+    padding: 16px;
+    border: 1px solid #eaeaea;
+    border-top: none;
+    background: #ffffff;
+  }
+
+  .sidebarBodyOpen {
+    display: flex;
+  }
+
   .backgroundVideo {
     top: 70px; /* Aligned to start below the mobile navbar (70px) */
     height: calc(100% - 70px);
   }
 
   .heroSection {
-    min-height: 400px;
-    padding: 140px 24px 80px;
+    min-height: 220px;
+    padding: 110px 24px 28px;
     background-attachment: scroll; /* Fixed attachment breaks on iOS Safari */
     background-size: cover;
   }
@@ -708,26 +774,16 @@
 
 @media (max-width: 600px) {
   .heroSection {
-    min-height: 320px;
-    padding: 120px 16px 60px;
+    min-height: 190px;
+    padding: 100px 16px 24px;
     background-attachment: scroll;
     background-size: cover;
   }
   
   .catalogSection {
-    padding: 50px 16px 80px;
+    padding: 28px 16px 80px;
   }
   
-  .filterBar {
-    flex-direction: column-reverse;
-    align-items: stretch;
-    gap: 16px;
-    margin-bottom: 30px;
-  }
-  
-  .searchWrapper {
-    max-width: 100%;
-  }
   
   .coffeeGrid {
     grid-template-columns: 1fr;

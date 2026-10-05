@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     const {
       id, name, category, origin, altitude,
       varietal, roastLevel, tastingNotes, description,
-      price, price1kg, stock, imageUrl, videoUrl, isActive,
+      price, price1kg, wholesalePrice, stock, imageUrl, videoUrl, isActive,
     } = body;
 
     if (!id || !name || !category || price === undefined) {
@@ -54,6 +54,7 @@ export async function POST(request: Request) {
         description: description || '',
         price: Number(price),
         price1kg: Number(price1kg) || 0,
+        wholesalePrice: Number(wholesalePrice) || 0,
         stock: Number(stock) || 0,
         imageUrl: imageUrl || '',
         videoUrl: videoUrl || '',
@@ -61,7 +62,7 @@ export async function POST(request: Request) {
       },
     });
 
-    invalidateCache('products');
+    invalidateCache('product');
 
     return NextResponse.json({ success: true, data: newProduct, error: null });
   } catch (error) {
@@ -79,7 +80,7 @@ export async function PUT(request: Request) {
     const {
       id, name, category, origin, altitude,
       varietal, roastLevel, tastingNotes, description,
-      price, price1kg, stock, imageUrl, videoUrl, isActive,
+      price, price1kg, wholesalePrice, stock, imageUrl, videoUrl, isActive,
     } = body;
 
     if (!id) {
@@ -102,6 +103,7 @@ export async function PUT(request: Request) {
         description,
         price:        price !== undefined ? Number(price) : undefined,
         price1kg:     price1kg !== undefined ? Number(price1kg) : undefined,
+        wholesalePrice: wholesalePrice !== undefined ? Number(wholesalePrice) : undefined,
         stock:        stock !== undefined ? Number(stock) : undefined,
         imageUrl:     imageUrl !== undefined ? imageUrl : undefined,
         videoUrl:     videoUrl !== undefined ? videoUrl : undefined,
@@ -109,7 +111,7 @@ export async function PUT(request: Request) {
       },
     });
 
-    invalidateCache('products');
+    invalidateCache('product');
 
     return NextResponse.json({ success: true, data: updated, error: null });
   } catch (error) {
@@ -140,7 +142,7 @@ export async function DELETE(request: Request) {
       data: { isActive: false },
     });
 
-    invalidateCache('products');
+    invalidateCache('product');
 
     return NextResponse.json({ success: true, error: null });
   } catch (error) {

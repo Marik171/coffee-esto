@@ -303,8 +303,9 @@ function CoffeeCatalogInner({
     initialProducts ? initialProducts.map((p: any) => localizeProduct(p, locale)) : []
   );
   const [categories, setCategories] = useState<Category[]>(() => initialCategories || []);
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [activeFilter, setActiveFilter] = useState(categoryParam || 'all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [filtersOpen, setFiltersOpen] = useState(false); // mobile filter panel
   const [selectedCoffee, setSelectedCoffee] = useState<CoffeeProduct | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(() => !(initialProducts && initialProducts.length > 0));
@@ -317,6 +318,7 @@ function CoffeeCatalogInner({
       eyebrow: 'Roastery Catalog',
       title: 'Specialty Coffees',
       subtitle: 'Direct-trade, small-batch roasted single origins and espresso blends. Freshly sealed and shipped from İstanbul.',
+      filtersTitle: 'Filters',
       allFilters: 'All Coffees',
       lightRoasts: 'Light Roasts',
       mediumDark: 'Medium & Dark',
@@ -344,6 +346,7 @@ function CoffeeCatalogInner({
       eyebrow: 'Kavurmahane Kataloğu',
       title: 'Nitelikli Kahveler',
       subtitle: 'Doğrudan ticaret, küçük partiler halinde kavrulmuş tek kökenler ve espresso harmanları. Taze mühürlenip İstanbul\'dan gönderilir.',
+      filtersTitle: 'Filtrele',
       allFilters: 'Tüm Kahveler',
       lightRoasts: 'Açık Kavrum',
       mediumDark: 'Orta & Koyu',
@@ -501,26 +504,6 @@ function CoffeeCatalogInner({
         className={`${styles.heroSection} ${styles.inView}`}
         aria-labelledby="catalog-hero-title"
       >
-        <video
-          ref={videoRef}
-          src="/videos/catalog-hero.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          className={styles.backgroundVideo}
-        />
-        <div className={styles.heroOverlay} />
-
-        {/* Floating Coffee Beans */}
-        <img src="/images/beans.webp" className="heroBean heroBean1" alt="" />
-        <img src="/images/beans.webp" className="heroBean heroBean2" alt="" />
-        <img src="/images/beans.webp" className="heroBean heroBean3" alt="" />
-        <img src="/images/beans.webp" className="heroBean heroBean4" alt="" />
-        <img src="/images/beans.webp" className="heroBean heroBean5" alt="" />
-        <img src="/images/beans.webp" className="heroBean heroBean6" alt="" />
-        <img src="/images/beans.webp" className="heroBean heroBean7" alt="" />
-
         <div className={styles.heroInner}>
           <span className={styles.heroBadge}>{t.eyebrow}</span>
           <span className={styles.heroBrandLine}>COFFEE ESTO Roastery</span>
@@ -540,10 +523,38 @@ function CoffeeCatalogInner({
         aria-label="Product Showcase Filter"
       >
         <div className={styles.container}>
+          <div className={styles.catalogLayout}>
 
-          {/* Filter Bar Row */}
-          <div className={styles.filterBar}>
-            <div className={styles.filterGroups} role="tablist" aria-label="Coffee Category Filters">
+          {/* Left sidebar: search + category filters (collapsible on mobile) */}
+          <aside className={styles.sidebar} aria-label={t.filtersTitle}>
+            <button
+              type="button"
+              className={styles.filtersToggle}
+              onClick={() => setFiltersOpen((o) => !o)}
+              aria-expanded={filtersOpen}
+            >
+              <span>{t.filtersTitle}</span>
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: filtersOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div className={`${styles.sidebarBody} ${filtersOpen ? styles.sidebarBodyOpen : ''}`}>
+              <div className={styles.searchWrapper}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles.searchIcon}>
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder={t.searchPlaceholder}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={styles.searchInput}
+                  aria-label="Search origins or flavor notes"
+                />
+              </div>
+
+            <div className={styles.filterGroups} role="tablist" aria-label="Coffee Category Filters" onClick={() => setFiltersOpen(false)}>
 
               {/* Group: Coffees */}
               <div className={styles.filterGroup}>
@@ -617,22 +628,10 @@ function CoffeeCatalogInner({
               )}
             </div>
 
-            {/* Search Input Box */}
-            <div className={styles.searchWrapper}>
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles.searchIcon}>
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              <input
-                type="text"
-                placeholder={t.searchPlaceholder}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={styles.searchInput}
-                aria-label="Search origins or flavor notes"
-              />
             </div>
-          </div>
+          </aside>
+
+          <div className={styles.catalogMain}>
 
           {/* Coffees Showcase Grid */}
           {filteredCoffees.length > 0 ? (
@@ -757,6 +756,8 @@ function CoffeeCatalogInner({
             </div>
           )}
 
+          </div>
+          </div>
         </div>
       </section>
 

@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import db from '@/lib/db';
 
 /** GET /api/shipping — public endpoint the checkout page uses to render cargo options. */
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const settings = await db.shippingSettings.findUnique({ where: { id: 1 } });

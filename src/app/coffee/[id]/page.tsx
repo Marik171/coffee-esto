@@ -4,6 +4,9 @@ import CoffeeDetailContent from '../../../components/CoffeeDetailContent';
 import db from '@/lib/db';
 import { getCached, setCached } from '@/lib/cache';
 
+// Reads live DB data; must never be prerendered at build time.
+export const dynamic = 'force-dynamic';
+
 async function getProduct(id: string) {
   try {
     const cleanId = id.trim().toLowerCase();
